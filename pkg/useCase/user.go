@@ -6,15 +6,15 @@ import (
 	"fmt"
 
 	"github.com/Noush-012/Project-eCommerce-smart_gads/pkg/domain"
-	"github.com/Noush-012/Project-eCommerce-smart_gads/repository/interfaces"
+	"github.com/Noush-012/Project-eCommerce-smart_gads/pkg/repository/interfaces"
 	"golang.org/x/crypto/bcrypt"
 )
 
-type userUseCase struct {
+type UserUseCase struct {
 	userRepo interfaces.UserRepository
 }
 
-func (u *userUseCase) SignUp(ctx context.Context, user domain.Users) error {
+func (u *UserUseCase) SignUp(ctx context.Context, user domain.Users) error {
 	fmt.Println("Signup super")
 	// Check the user already exist in DB
 	ok := u.userRepo.FindByEmail(ctx, user.Email)

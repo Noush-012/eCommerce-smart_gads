@@ -6,11 +6,16 @@ import (
 	"time"
 
 	"github.com/Noush-012/Project-eCommerce-smart_gads/pkg/domain"
+	"github.com/Noush-012/Project-eCommerce-smart_gads/pkg/repository/interfaces"
 	"gorm.io/gorm"
 )
 
 type userDatabase struct {
 	DB *gorm.DB
+}
+
+func NewUserRepository(DB *gorm.DB) interfaces.UserRepository {
+	return &userDatabase{DB: DB}
 }
 
 func (i *userDatabase) SaveUser(ctx context.Context, user domain.Users) error {

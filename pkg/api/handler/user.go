@@ -7,7 +7,7 @@ import (
 
 	"github.com/Noush-012/Project-eCommerce-smart_gads/pkg/domain"
 	"github.com/Noush-012/Project-eCommerce-smart_gads/pkg/helpers/request"
-	helper "github.com/Noush-012/Project-eCommerce-smart_gads/useCase/interfaces"
+	helper "github.com/Noush-012/Project-eCommerce-smart_gads/pkg/useCase/interfaces"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator"
 	"github.com/jinzhu/copier"
@@ -17,9 +17,9 @@ type UserHandler struct {
 	userCase helper.UserUseCase
 }
 
-// func NewUserHandler(userUsecase helper.UserUseCase) *UserHandler {
-// 	return &UserHandler{userCase: userUsecase}
-// }
+func NewUserHandler(userUsecase helper.UserUseCase) *UserHandler {
+	return &UserHandler{userCase: userUsecase}
+}
 
 // User signup handler
 func (u *UserHandler) UserSignup(c *gin.Context) {
@@ -29,7 +29,7 @@ func (u *UserHandler) UserSignup(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, response)
 		return
 	}
-	user := domain.Users{}
+	var user domain.Users
 	// var user domain.Users
 	if err := copier.Copy(&user, body); err != nil {
 		fmt.Println("Copy failed")

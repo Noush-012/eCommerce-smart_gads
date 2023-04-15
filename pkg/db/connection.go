@@ -1,6 +1,7 @@
 package db
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/Noush-012/Project-eCommerce-smart_gads/pkg/domain"
@@ -16,12 +17,12 @@ var (
 )
 
 // To connect database
-func ConnToDB() {
+func ConnToDB() (*gorm.DB, error) {
 	dsn := viper.GetString("DATABASE")
 
 	if DB, err = gorm.Open(postgres.Open(dsn), &gorm.Config{}); err != nil {
-		fmt.Println("Faild to Connect Database")
-		return
+		fmt.Println("Failed to Connect Database")
+		return nil, errors.New("failed to connect database")
 	}
 	fmt.Println("Successfully Connected to database")
 
@@ -33,4 +34,5 @@ func ConnToDB() {
 	} else {
 		fmt.Println("Migration Failed!", errUSr, errAdm)
 	}
+	return DB, nil
 }
