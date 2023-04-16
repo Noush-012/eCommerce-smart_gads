@@ -1,17 +1,16 @@
 package routes
 
 import (
+	"github.com/Noush-012/Project-eCommerce-smart_gads/pkg/api/handler"
 	"github.com/gin-gonic/gin"
 )
 
-func UserRoutes(r *gin.Engine) {
-	// userHandler := handler.NewUserHandler()
-	// Signup
-	// signup := api.Group("/signup")
-	// {
-	// 	signup.POST("/")
-	// }
+func UserRoutes(r *gin.Engine, userHandler *handler.UserHandler) {
 
-	r.POST("/signup")
+	// Signup
+	r.POST("/signup", userHandler.UserSignup)
+
+	// Login
+	r.POST("/login", userHandler.LoginSubmit)
 
 }

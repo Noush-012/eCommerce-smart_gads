@@ -6,19 +6,19 @@ import (
 	"net/http"
 
 	"github.com/Noush-012/Project-eCommerce-smart_gads/pkg/domain"
-	"github.com/Noush-012/Project-eCommerce-smart_gads/pkg/helpers/request"
-	helper "github.com/Noush-012/Project-eCommerce-smart_gads/pkg/useCase/interfaces"
+	"github.com/Noush-012/Project-eCommerce-smart_gads/pkg/useCase/interfaces"
+	request "github.com/Noush-012/Project-eCommerce-smart_gads/pkg/utils/req"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator"
 	"github.com/jinzhu/copier"
 )
 
 type UserHandler struct {
-	userCase helper.UserUseCase
+	toRepo interfaces.UserService
 }
 
-func NewUserHandler(userUsecase helper.UserUseCase) *UserHandler {
-	return &UserHandler{userCase: userUsecase}
+func NewUserHandler(userUsecase interfaces.UserService) *UserHandler {
+	return &UserHandler{toRepo: userUsecase}
 }
 
 // User signup handler
@@ -43,8 +43,8 @@ func (u *UserHandler) UserSignup(c *gin.Context) {
 	}
 
 	// Check the user already exist in DB and save user if not
-	if err := u.userCase.SignUp(c, user); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err})
+	if err := u.toRepo.SignUp(c, user); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -53,7 +53,7 @@ func (u *UserHandler) UserSignup(c *gin.Context) {
 
 }
 
-func LoginSubmit(c *gin.Context) {
+func (u *UserHandler) LoginSubmit(c *gin.Context) {
 	var body request.LoginData
 	if err := c.ShouldBindJSON(&body); err != nil {
 		response := "invalid input"
@@ -66,4 +66,15 @@ func LoginSubmit(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, response)
 		return
 	}
+	// Copying
+	var user domain.Users
+	copier.Copy(&user, body)
+
+	_, err := u.toRepo.Login(c, user)
+	if err != nil {
+
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	}
+	// setup JWT
+
 }

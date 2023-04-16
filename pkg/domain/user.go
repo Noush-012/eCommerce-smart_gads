@@ -4,7 +4,7 @@ import "time"
 
 // User model
 type Users struct {
-	ID          uint      `json:"id" gorm:"primaryKey;unique"`
+	ID          uint      `json:"id" gorm:"primaryKey;unique;autoIncrement"`
 	UserName    string    `json:"user_name" gorm:"not null" binding:"required,min=3,max=15"`
 	FirstName   string    `json:"first_name" gorm:"not null" binding:"required,min=2,max=40"`
 	LastName    string    `json:"last_name" gorm:"not null" binding:"required,min=1,max=40"`

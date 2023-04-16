@@ -35,4 +35,5 @@ func ConnToDB() (*gorm.DB, error) {
 		fmt.Println("Migration Failed!", errUSr, errAdm)
 	}
 	return DB, nil
+
 }
