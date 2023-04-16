@@ -1,4 +1,4 @@
-package request
+package req
 
 type LoginData struct {
 	UserName string `json:"user_name" binding:"omitempty,min=3,max=15"`
@@ -15,4 +15,9 @@ type SignupUserData struct {
 	Phone           string `json:"phone" binding:"required,min=10,max=10"`
 	Password        string `json:"password"  binding:"required,eqfield=ConfirmPassword"`
 	ConfirmPassword string `json:"confirm_password" binding:"required"`
+}
+
+type OTPVerify struct {
+	OTP    string `json:"otp" binding:"required,min=4,max=8"`
+	UserID uint   `json:"user_id" binding:"required,numeric"`
 }

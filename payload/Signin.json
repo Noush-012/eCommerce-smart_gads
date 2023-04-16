@@ -1,0 +1,33 @@
+[{
+  "user_name": "yedhu",
+  "first_name": "Yedhu",
+  "last_name": "Krishna",
+  "age": 24,
+  "email": "yedhu@abc.com",
+  "phone": "9778589242",
+  "password": "password",
+  "confirm_password": "password"
+},
+
+{
+  "user_name": "noush",
+  "first_name": "Noushad",
+  "last_name": "Ibrahim",
+  "age": 24,
+  "email": "noush@abc.com",
+  "phone": "8606879012",
+  "password": "password",
+  "confirm_password": "password"
+},
+{
+  "user_name": "suhl",
+  "first_name": "Suhail",
+  "last_name": "Yousaf",
+  "age": 25,
+  "email": "suhl@abc.com",
+  "phone": "9544486876",
+  "password": "password",
+  "confirm_password": "password"
+}
+
+]

@@ -52,7 +52,7 @@ func (u *UserUseCase) Login(ctx context.Context, user domain.Users) (domain.User
 	// Find user in db
 	usr, err := u.repo.FindUser(ctx, user)
 	if err != nil {
-		return user, nil
+		return user, err
 	} else if usr.ID == 0 {
 		return user, errors.New("user not exist")
 	}
@@ -63,4 +63,14 @@ func (u *UserUseCase) Login(ctx context.Context, user domain.Users) (domain.User
 
 	return usr, nil
 
+}
+func (u *UserUseCase) OTPLogin(ctx context.Context, user domain.Users) (domain.Users, error) {
+	// Find user in db
+	usr, err := u.repo.FindUser(ctx, user)
+	if err != nil {
+		return user, err
+	} else if usr.ID == 0 {
+		return user, errors.New("user not exist")
+	}
+	return usr, nil
 }

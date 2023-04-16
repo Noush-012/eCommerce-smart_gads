@@ -10,7 +10,10 @@ func UserRoutes(r *gin.Engine, userHandler *handler.UserHandler) {
 	// Signup
 	r.POST("/signup", userHandler.UserSignup)
 
-	// Login
+	// Login with otp
 	r.POST("/login", userHandler.LoginSubmit)
+
+	// OTP verfication
+	r.POST("/login-otp", userHandler.UserOTPVerify)
 
 }
