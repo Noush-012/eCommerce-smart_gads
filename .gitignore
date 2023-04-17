@@ -1,2 +1,5 @@
 # env excluding
 .env
+
+# payload excluding
+payload/

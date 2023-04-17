@@ -28,6 +28,36 @@
   "phone": "9544486876",
   "password": "password",
   "confirm_password": "password"
+},
+{
+  "user_name": "nimisha",
+  "first_name": "Nimisha",
+  "last_name": "K",
+  "age": 29,
+  "email": "nimisha@abc.com",
+  "phone": "9048918535",
+  "password": "password",
+  "confirm_password": "password"
+},
+{
+  "user_name": "jkutty",
+  "first_name": "Jose",
+  "last_name": "Kutty",
+  "age": 21,
+  "email": "jkutty@abc.com",
+  "phone": "9745949352",
+  "password": "password",
+  "confirm_password": "password"
+},
+{
+  "user_name": "amrutha",
+  "first_name": "Amrutha",
+  "last_name": "M",
+  "age": 30,
+  "email": "amrutha@abc.com",
+  "phone": "9562407693",
+  "password": "password",
+  "confirm_password": "password"
 }
 
 ]

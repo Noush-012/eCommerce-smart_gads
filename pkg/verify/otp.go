@@ -2,7 +2,6 @@ package verify
 
 import (
 	"errors"
-	"fmt"
 
 	"github.com/spf13/viper"
 	"github.com/twilio/twilio-go"
@@ -42,7 +41,6 @@ func TwilioSendOTP(phoneNumber string) (string, error) {
 }
 
 func TwilioVerifyOTP(phoneNumber string, code string) error {
-	fmt.Println("OTP Verification")
 	params := &twilioApi.CreateVerificationCheckParams{}
 	params.SetTo(phoneNumber)
 	params.SetCode(code)

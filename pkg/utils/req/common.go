@@ -21,3 +21,8 @@ type OTPVerify struct {
 	OTP    string `json:"otp" binding:"required,min=4,max=8"`
 	UserID uint   `json:"user_id" binding:"required,numeric"`
 }
+
+type ReqPagination struct {
+	Count      uint `json:"count"`
+	PageNumber uint `json:"page_number"`
+}

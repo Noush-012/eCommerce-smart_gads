@@ -78,7 +78,6 @@ func (u *UserHandler) LoginSubmit(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	fmt.Println(usr.Phone)
 	// Proceed for OTP if no error
 	if _, err := verify.TwilioSendOTP("+91" + usr.Phone); err != nil {
 		response := "failed to send otp"
@@ -117,7 +116,7 @@ func (u *UserHandler) UserOTPVerify(c *gin.Context) {
 		return
 	}
 	// setup JWT
-	ok := auth.JwtCookieSetup(c, "user", usr.ID)
+	ok := auth.JwtCookieSetup(c, "user-auth", usr.ID)
 	if !ok {
 		response := "failed to login"
 		c.JSON(http.StatusInternalServerError, response)
@@ -127,4 +126,18 @@ func (u *UserHandler) UserOTPVerify(c *gin.Context) {
 	response := "Successfuly logged in"
 	c.JSON(http.StatusOK, response)
 
+}
+
+// Home page
+func (u *UserHandler) Home(c *gin.Context) {
+
+	response := "welcome to home page"
+	c.JSON(http.StatusOK, response)
+}
+
+// Logout
+func (u *UserHandler) LogoutUser(c *gin.Context) {
+	c.SetCookie("user-auth", "", -1, "", "", false, true)
+	respone := "Log out successful"
+	c.JSON(http.StatusOK, respone)
 }
