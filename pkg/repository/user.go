@@ -39,10 +39,3 @@ func (i *userDatabase) SaveUser(ctx context.Context, user domain.Users) error {
 	}
 	return nil
 }
-
-// func (i *userDatabase) FindByEmail(ctx context.Context, id string) bool {
-// 	query := `SELECT * FROM users WHERE email = ?`
-// 	var result string
-// 	i.DB.Raw(query, id).Scan(&result)
-// 	return result != ""
-// }

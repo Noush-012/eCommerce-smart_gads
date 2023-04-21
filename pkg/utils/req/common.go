@@ -22,6 +22,7 @@ type OTPVerify struct {
 	UserID uint   `json:"user_id" binding:"required,numeric"`
 }
 
+// Page number and count of products
 type ReqPagination struct {
 	Count      uint `json:"count"`
 	PageNumber uint `json:"page_number"`

@@ -3,11 +3,10 @@ package interfaces
 import (
 	"context"
 
-	"github.com/Noush-012/Project-eCommerce-smart_gads/pkg/utils/req"
-	"github.com/Noush-012/Project-eCommerce-smart_gads/pkg/utils/resp"
+	"github.com/Noush-012/Project-eCommerce-smart_gads/pkg/domain"
 )
 
-type productUseCase interface {
-	// products
-	GetProducts(ctx context.Context, pagination req.ReqPagination) (products []resp.ResponseProduct, err error)
+type ProductService interface {
+	AddProduct(ctx context.Context, product domain.Product) error
+	AddBrand(ctx context.Context, brand domain.Brand) error
 }

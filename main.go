@@ -11,15 +11,18 @@ import (
 func init() {
 	initializer.LoadViper()
 	verify.SetClient()
+
 }
 
 func main() {
-	uH := initializer.InitializeApi()
+	uH, aH, pH := initializer.InitializeApi()
 
 	g := gin.New()
 
 	routes.UserRoutes(g.Group("/"), uH)
+	routes.AdminRoutes(g.Group("/admin"), aH, pH)
 
-	g.Run() // listen and serve on 0.0.0.0:8080
+	// port := ":3000"
+	g.Run()
 
 }

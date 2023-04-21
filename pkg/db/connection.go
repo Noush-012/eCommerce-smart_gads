@@ -3,6 +3,7 @@ package db
 import (
 	"errors"
 	"fmt"
+	"log"
 
 	"github.com/Noush-012/Project-eCommerce-smart_gads/pkg/domain"
 	"github.com/spf13/viper"
@@ -27,13 +28,21 @@ func ConnToDB() (*gorm.DB, error) {
 	fmt.Println("Successfully Connected to database")
 
 	// Migrate models
-	errUSr := DB.AutoMigrate(domain.Users{})
-	errAdm := DB.AutoMigrate(domain.Admin{})
-	if errUSr == nil || errAdm == nil {
-		fmt.Println("Migration success!")
-	} else {
-		fmt.Println("Migration Failed!", errUSr, errAdm)
+	err := DB.AutoMigrate(
+		// Users
+		domain.Users{},
+		domain.Admin{},
+
+		// Product tables
+		domain.Product{},
+		domain.ProductVarient{},
+		domain.Brand{},
+	)
+	if err != nil {
+		log.Fatal("Migration failed")
+		return nil, nil
 	}
+	fmt.Println("DB migration success")
 	return DB, nil
 
 }

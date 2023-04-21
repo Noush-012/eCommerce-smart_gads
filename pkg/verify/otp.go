@@ -2,6 +2,7 @@ package verify
 
 import (
 	"errors"
+	"fmt"
 
 	"github.com/spf13/viper"
 	"github.com/twilio/twilio-go"
@@ -24,6 +25,9 @@ func SetClient() {
 		Password: AUTHTOKEN,
 		Username: ACCOUNTSID,
 	})
+	if client != nil {
+		fmt.Println("Twilio connected")
+	}
 }
 
 func TwilioSendOTP(phoneNumber string) (string, error) {

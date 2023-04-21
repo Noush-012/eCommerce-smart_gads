@@ -10,6 +10,7 @@ import (
 	"github.com/Noush-012/Project-eCommerce-smart_gads/pkg/useCase/interfaces"
 	"github.com/Noush-012/Project-eCommerce-smart_gads/pkg/utils/req"
 	request "github.com/Noush-012/Project-eCommerce-smart_gads/pkg/utils/req"
+	"github.com/Noush-012/Project-eCommerce-smart_gads/pkg/utils/resp"
 	"github.com/Noush-012/Project-eCommerce-smart_gads/pkg/verify"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator"
@@ -17,11 +18,11 @@ import (
 )
 
 type UserHandler struct {
-	toRepo interfaces.UserService
+	userService interfaces.UserService
 }
 
 func NewUserHandler(userUsecase interfaces.UserService) *UserHandler {
-	return &UserHandler{toRepo: userUsecase}
+	return &UserHandler{userService: userUsecase}
 }
 
 // User signup handler
@@ -32,12 +33,13 @@ func (u *UserHandler) UserSignup(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, response)
 		return
 	}
+	//
 	var user domain.Users
 	// var user domain.Users
 	if err := copier.Copy(&user, body); err != nil {
 		fmt.Println("Copy failed")
 	}
-
+	// - chk
 	// validate user struct
 	validate := validator.New()
 	if err := validate.Struct(user); err != nil {
@@ -46,7 +48,7 @@ func (u *UserHandler) UserSignup(c *gin.Context) {
 	}
 
 	// Check the user already exist in DB and save user if not
-	if err := u.toRepo.SignUp(c, user); err != nil {
+	if err := u.userService.SignUp(c, user); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
@@ -73,7 +75,7 @@ func (u *UserHandler) LoginSubmit(c *gin.Context) {
 	var user domain.Users
 	copier.Copy(&user, body)
 
-	usr, err := u.toRepo.Login(c, user)
+	usr, err := u.userService.Login(c, user)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -102,7 +104,7 @@ func (u *UserHandler) UserOTPVerify(c *gin.Context) {
 		ID: body.UserID,
 	}
 
-	usr, err := u.toRepo.OTPLogin(c, user)
+	usr, err := u.userService.OTPLogin(c, user)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -138,6 +140,6 @@ func (u *UserHandler) Home(c *gin.Context) {
 // Logout
 func (u *UserHandler) LogoutUser(c *gin.Context) {
 	c.SetCookie("user-auth", "", -1, "", "", false, true)
-	respone := "Log out successful"
-	c.JSON(http.StatusOK, respone)
+	response := resp.SuccessResponse(http.StatusOK, "Log out successful", nil)
+	c.JSON(http.StatusOK, response)
 }

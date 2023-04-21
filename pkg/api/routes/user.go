@@ -29,5 +29,11 @@ func UserRoutes(api *gin.RouterGroup, userHandler *handler.UserHandler) {
 		api.GET("/", userHandler.Home)
 		api.GET("/logout", userHandler.LogoutUser)
 	}
+	// products routes
+	// products := api.Group("/products")
+	// {
+	// 	products.GET("/")                         // show products
+	// 	products.GET("/product-item/:product_id") // show product items of a product
+	// }
 
 }
