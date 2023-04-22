@@ -1,13 +1,55 @@
 package config
 
+import (
+	"fmt"
+
+	"github.com/go-playground/validator"
+	"github.com/spf13/viper"
+)
+
 type Config struct {
-	DBHost     string `mapstructure:"DB_HOST"`
-	DBName     string `mapstructure:"DB_NAME"`
-	DBUser     string `mapstructure:"DB_USER"`
-	DBPassword string `mapstructure:"DB_PASSWORD"`
-	DBPort     string `mapstructure:"DB_PORT"`
-	JWT        string `mapstructure:"JWT_CODE"`
-	AUTHTOKEN  string `mapstructure:"AUTH_TOKEN"`
-	ACCOUNTSID string `mapstructure:"ACCOUNT_SID"`
-	SERVICESID string `mapstructure:"SERVICE_SID"`
+	// DBHost     string `mapstructure:"DB_HOST"`
+	// DBName     string `mapstructure:"DB_NAME"`
+	// DBUser     string `mapstructure:"DB_USER"`
+	// DBPassword string `mapstructure:"DB_PASSWORD"`
+	// DBPort     string `mapstructure:"DB_PORT"`
+	DATABASE   string `mapstructure:"DATABASE"`
+	JWT        string `mapstructure:"SECRET_KEY"`
+	AUTHTOKEN  string `mapstructure:"TWILIO_AUTH_TOKEN"`
+	ACCOUNTSID string `mapstructure:"TWILIO_ACCOUNT_SID"`
+	SERVICESID string `mapstructure:"TWILIO_SERVICES_ID"`
+}
+
+var envVariables = []string{
+	"DATABASE", "SECRET_KEY", "TWILIO_AUTH_TOKEN", "TWILIO_ACCOUNT_SID", "TWILIO_SERVICES_ID",
+}
+
+var config Config
+
+func LoadConfig() (Config, error) {
+
+	viper.SetConfigType("env")  // set the file type
+	viper.SetConfigFile(".env") // set the file name and path
+	err := viper.ReadInConfig() // read the config file
+	if err != nil {             // handle errors while reading the config file
+		panic(fmt.Errorf("fatal error config file: %s", err))
+	}
+
+	for _, env := range envVariables {
+		if err := viper.BindEnv(env); err != nil {
+			return config, err
+		}
+	}
+	if err := viper.Unmarshal(&config); err != nil {
+		return config, err
+	}
+
+	if err := validator.New().Struct(config); err != nil {
+		return config, err
+	}
+	return config, nil
+}
+
+func GetConfig() Config {
+	return config
 }

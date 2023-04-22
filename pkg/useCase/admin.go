@@ -7,6 +7,9 @@ import (
 	"github.com/Noush-012/Project-eCommerce-smart_gads/pkg/domain"
 	"github.com/Noush-012/Project-eCommerce-smart_gads/pkg/repository/interfaces"
 	service "github.com/Noush-012/Project-eCommerce-smart_gads/pkg/useCase/interfaces"
+	"github.com/Noush-012/Project-eCommerce-smart_gads/pkg/utils/request"
+	"github.com/Noush-012/Project-eCommerce-smart_gads/pkg/utils/response"
+	"github.com/jinzhu/copier"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -47,4 +50,24 @@ func (a *adminService) Login(c context.Context, admin domain.Admin) (domain.Admi
 	}
 	return dbAdmin, nil
 
+}
+
+func (a *adminService) GetAllUser(c context.Context, page request.ReqPagination) (users []response.UserRespStrcut, err error) {
+	users, err = a.adminRepository.GetAllUser(c, page)
+
+	if err != nil {
+		return nil, err
+	}
+
+	// if no error then copy users details to an array response struct
+	var response []response.UserRespStrcut
+	copier.Copy(&response, &users)
+
+	return response, nil
+}
+
+// to block or unblock a user
+func (a *adminService) BlockUser(c context.Context, userID uint) error {
+
+	return a.adminRepository.BlockUser(c, userID)
 }

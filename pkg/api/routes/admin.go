@@ -29,6 +29,11 @@ func AdminRoutes(api *gin.RouterGroup, adminHandler *handler.AdminHandler, produ
 		// Sales report
 
 		// Users dashboard
+		user := api.Group("/users")
+		{
+			user.GET("/", adminHandler.ListUsers)
+			user.PATCH("/block", adminHandler.BlockUser)
+		}
 
 		// Brand
 		brand := api.Group("/brands")

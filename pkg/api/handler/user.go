@@ -8,9 +8,9 @@ import (
 	"github.com/Noush-012/Project-eCommerce-smart_gads/pkg/api/auth"
 	"github.com/Noush-012/Project-eCommerce-smart_gads/pkg/domain"
 	"github.com/Noush-012/Project-eCommerce-smart_gads/pkg/useCase/interfaces"
-	"github.com/Noush-012/Project-eCommerce-smart_gads/pkg/utils/req"
-	request "github.com/Noush-012/Project-eCommerce-smart_gads/pkg/utils/req"
-	"github.com/Noush-012/Project-eCommerce-smart_gads/pkg/utils/resp"
+	request "github.com/Noush-012/Project-eCommerce-smart_gads/pkg/utils/request"
+	request1 "github.com/Noush-012/Project-eCommerce-smart_gads/pkg/utils/request"
+	"github.com/Noush-012/Project-eCommerce-smart_gads/pkg/utils/response"
 	"github.com/Noush-012/Project-eCommerce-smart_gads/pkg/verify"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator"
@@ -25,7 +25,15 @@ func NewUserHandler(userUsecase interfaces.UserService) *UserHandler {
 	return &UserHandler{userService: userUsecase}
 }
 
-// User signup handler
+// UserSignUp godoc
+// @summary api for register user
+// @security ApiKeyAuth
+// @id UserSignUp
+// @tags User Signup
+// @Param input body request.SignupUserData{} true "Input Fields"
+// @Router /signup [post]
+// @Success 200 "Account created successfuly"
+// @Failure 400 "invalid entry"
 func (u *UserHandler) UserSignup(c *gin.Context) {
 	var body request.SignupUserData
 	if err := c.ShouldBindJSON(&body); err != nil {
@@ -58,6 +66,16 @@ func (u *UserHandler) UserSignup(c *gin.Context) {
 
 }
 
+// LoginSubmit godoc
+// @summary api for user login
+// @security ApiKeyAuth
+// @id UserLogin
+// @tags User Login
+// @Param input body request.LoginData{} true "Input Fields"
+// @Router /login [post]
+// @Success 200 {object} response.Response{} "Login successful"
+// @Failure 400  {object} response.Response{} "invalid entry"
+// @Failure 500 {object} response.Response{}  "failed to send OTP"
 func (u *UserHandler) LoginSubmit(c *gin.Context) {
 	var body request.LoginData
 	if err := c.ShouldBindJSON(&body); err != nil {
@@ -89,12 +107,11 @@ func (u *UserHandler) LoginSubmit(c *gin.Context) {
 
 	response := gin.H{"Successfuly send OTP to registered mobile number": usr.ID}
 	c.JSON(http.StatusOK, response)
-
 }
 
 func (u *UserHandler) UserOTPVerify(c *gin.Context) {
 
-	var body req.OTPVerify
+	var body request1.OTPVerify
 	if err := c.ShouldBindJSON(&body); err != nil {
 		response := "invalid input"
 		c.JSON(http.StatusBadRequest, response)
@@ -127,7 +144,6 @@ func (u *UserHandler) UserOTPVerify(c *gin.Context) {
 	}
 	response := "Successfuly logged in"
 	c.JSON(http.StatusOK, response)
-
 }
 
 // Home page
@@ -140,6 +156,6 @@ func (u *UserHandler) Home(c *gin.Context) {
 // Logout
 func (u *UserHandler) LogoutUser(c *gin.Context) {
 	c.SetCookie("user-auth", "", -1, "", "", false, true)
-	response := resp.SuccessResponse(http.StatusOK, "Log out successful", nil)
+	response := response.SuccessResponse(http.StatusOK, "Log out successful", nil)
 	c.JSON(http.StatusOK, response)
 }

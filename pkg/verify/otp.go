@@ -4,7 +4,7 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/spf13/viper"
+	"github.com/Noush-012/Project-eCommerce-smart_gads/pkg/config"
 	"github.com/twilio/twilio-go"
 	twilioApi "github.com/twilio/twilio-go/rest/verify/v2"
 )
@@ -17,9 +17,27 @@ var (
 )
 
 func SetClient() {
-	SERVICESID = viper.GetString("TWILIO_SERVICES_ID")
-	ACCOUNTSID = viper.GetString("TWILIO_ACCOUNT_SID")
-	AUTHTOKEN = viper.GetString("TWILIO_AUTHTOKEN")
+	// SERVICESID = viper.GetString("TWILIO_SERVICES_ID")
+	// ACCOUNTSID = viper.GetString("TWILIO_ACCOUNT_SID")
+	// AUTHTOKEN = viper.GetString("TWILIO_AUTHTOKEN")
+	// SERVICESID = config.GetConfig().SERVICESID
+	// ACCOUNTSID = config.GetConfig().ACCOUNTSID
+	// AUTHTOKEN = config.GetConfig().AUTHTOKEN
+
+	// client = twilio.NewRestClientWithParams(twilio.ClientParams{
+	// 	Password: AUTHTOKEN,
+	// 	Username: ACCOUNTSID,
+	// })
+	// if client != nil {
+	// 	fmt.Println("Twilio connected")
+	// }
+}
+
+func TwilioSendOTP(phoneNumber string) (string, error) {
+
+	SERVICESID = config.GetConfig().SERVICESID
+	ACCOUNTSID = config.GetConfig().ACCOUNTSID
+	AUTHTOKEN = config.GetConfig().AUTHTOKEN
 
 	client = twilio.NewRestClientWithParams(twilio.ClientParams{
 		Password: AUTHTOKEN,
@@ -28,9 +46,6 @@ func SetClient() {
 	if client != nil {
 		fmt.Println("Twilio connected")
 	}
-}
-
-func TwilioSendOTP(phoneNumber string) (string, error) {
 
 	params := &twilioApi.CreateVerificationParams{}
 	params.SetTo(phoneNumber)

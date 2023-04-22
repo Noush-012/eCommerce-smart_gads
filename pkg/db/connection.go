@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/Noush-012/Project-eCommerce-smart_gads/pkg/config"
 	"github.com/Noush-012/Project-eCommerce-smart_gads/pkg/domain"
-	"github.com/spf13/viper"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -18,8 +18,9 @@ var (
 )
 
 // To connect database
-func ConnToDB() (*gorm.DB, error) {
-	dsn := viper.GetString("DATABASE")
+func ConnToDB(cfg config.Config) (*gorm.DB, error) {
+
+	dsn := cfg.DATABASE
 
 	if DB, err = gorm.Open(postgres.Open(dsn), &gorm.Config{}); err != nil {
 		fmt.Println("Failed to Connect Database")

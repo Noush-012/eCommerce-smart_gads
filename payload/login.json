@@ -12,6 +12,14 @@
     "user_name": "suhl",
     "email": "suhl@abc.com",
     "password": "password"
+  },
+  {
+    "status_code": 400,
+    "message": "Invalid inputs",
+    "errors": [
+        "Missing or invalid 'count' value",
+        "Missing or invalid 'page_number' value"
+    ]
   }
 
 ]

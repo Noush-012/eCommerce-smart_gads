@@ -6,7 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func UserRoutes(api *gin.RouterGroup, userHandler *handler.UserHandler) {
+func UserRoutes(api *gin.RouterGroup, userHandler *handler.UserHandler, productHandler *handler.ProductHandler) {
 
 	// Signup
 	signup := api.Group("/signup")
@@ -30,10 +30,10 @@ func UserRoutes(api *gin.RouterGroup, userHandler *handler.UserHandler) {
 		api.GET("/logout", userHandler.LogoutUser)
 	}
 	// products routes
-	// products := api.Group("/products")
-	// {
-	// 	products.GET("/")                         // show products
-	// 	products.GET("/product-item/:product_id") // show product items of a product
-	// }
+	products := api.Group("/products")
+	{
+		products.GET("/", productHandler.ListProducts) // show products
+		// products.GET("/product-item/:product_id")      // show product items of a product
+	}
 
 }

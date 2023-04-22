@@ -1,0 +1,30 @@
+# .air.toml
+
+[build]
+  # You can change this to the path of your main Go file
+  # if it's not in the root directory of your project.
+  main = "."
+
+  # The directory where the built executable will be placed.
+  # Change this to a directory that makes sense for your project.
+  bin = "bin"
+
+  # The command to build your project. Change this to your build command.
+  cmd = "go build -o ./bin/main"
+
+[[targets]]
+  # The name of your target.
+  name = "app"
+
+  # The directory where your Go code is located.
+  dir = "."
+
+  # The command to run your Go application. Change this to your run command.
+  cmd = "./bin/main"
+
+  # The patterns of files to watch for changes. Change this to match your project.
+  patterns = [
+    "**/*.go",
+    "**/*.html",
+    "**/*.css",
+  ]

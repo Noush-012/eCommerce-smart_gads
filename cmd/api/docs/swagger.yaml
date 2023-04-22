@@ -1,0 +1,113 @@
+definitions:
+  request.LoginData:
+    properties:
+      email:
+        type: string
+      password:
+        maxLength: 30
+        minLength: 5
+        type: string
+      user_name:
+        maxLength: 15
+        minLength: 3
+        type: string
+    required:
+    - password
+    type: object
+  request.SignupUserData:
+    properties:
+      age:
+        type: integer
+      confirm_password:
+        type: string
+      email:
+        type: string
+      first_name:
+        maxLength: 50
+        minLength: 2
+        type: string
+      last_name:
+        maxLength: 50
+        minLength: 1
+        type: string
+      password:
+        type: string
+      phone:
+        maxLength: 10
+        minLength: 10
+        type: string
+      user_name:
+        maxLength: 15
+        minLength: 3
+        type: string
+    required:
+    - age
+    - confirm_password
+    - email
+    - first_name
+    - last_name
+    - password
+    - phone
+    - user_name
+    type: object
+  response.Response:
+    properties:
+      data: {}
+      errors: {}
+      message:
+        type: string
+      status_code:
+        type: integer
+    type: object
+info:
+  contact: {}
+paths:
+  /login:
+    post:
+      operationId: UserLogin
+      parameters:
+      - description: Input Fields
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/request.LoginData'
+      responses:
+        "200":
+          description: Login successful
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: invalid entry
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: failed to send OTP
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: api for user login
+      tags:
+      - User Login
+  /signup:
+    post:
+      operationId: UserSignUp
+      parameters:
+      - description: Input Fields
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/request.SignupUserData'
+      responses:
+        "200":
+          description: Account created successfuly
+        "400":
+          description: invalid entry
+      security:
+      - ApiKeyAuth: []
+      summary: api for register user
+      tags:
+      - User Signup
+swagger: "2.0"

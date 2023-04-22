@@ -3,10 +3,13 @@ package repository
 import (
 	"context"
 	"errors"
+	"fmt"
 	"time"
 
 	"github.com/Noush-012/Project-eCommerce-smart_gads/pkg/domain"
 	"github.com/Noush-012/Project-eCommerce-smart_gads/pkg/repository/interfaces"
+	"github.com/Noush-012/Project-eCommerce-smart_gads/pkg/utils/request"
+	"github.com/Noush-012/Project-eCommerce-smart_gads/pkg/utils/response"
 	"gorm.io/gorm"
 )
 
@@ -34,4 +37,30 @@ func (a *adminDatabase) SaveAdmin(ctx context.Context, admin domain.Admin) error
 		return errors.New("failed to save admin")
 	}
 	return nil
+}
+
+func (a *adminDatabase) BlockUser(ctx context.Context, userID uint) error {
+	// Check user if valid or not
+	var user domain.Users
+	query := `SELECT * FROM users WHERE id=?`
+	a.DB.Raw(query, userID).Scan(&user)
+	if user.Email == "" { // check user email with user ID
+		return errors.New("invalid user id user doesn't exist")
+	}
+
+	query = `UPDATE users SET block_status = $1 WHERE id = $2`
+	if a.DB.Exec(query, !user.BlockStatus, userID).Error != nil {
+		return fmt.Errorf("failed to update user block_status to %v", !user.BlockStatus)
+	}
+	return nil
+}
+
+func (a *adminDatabase) GetAllUser(ctx context.Context, page request.ReqPagination) (users []response.UserRespStrcut, err error) {
+	limit := page.Count
+	offset := (page.PageNumber - 1) * limit
+
+	query := `SELECT * FROM users ORDER BY created_at DESC LIMIT $1 OFFSET $2`
+	err = a.DB.Raw(query, limit, offset).Scan(&users).Error
+
+	return users, err
 }

@@ -7,6 +7,8 @@ import (
 
 	"github.com/Noush-012/Project-eCommerce-smart_gads/pkg/domain"
 	"github.com/Noush-012/Project-eCommerce-smart_gads/pkg/repository/interfaces"
+	"github.com/Noush-012/Project-eCommerce-smart_gads/pkg/utils/request"
+	"github.com/Noush-012/Project-eCommerce-smart_gads/pkg/utils/response"
 	"gorm.io/gorm"
 )
 
@@ -79,4 +81,29 @@ func (p *productDatabase) SaveBrand(ctx context.Context, brand domain.Brand) (er
 		return errors.New("failed to save brand")
 	}
 	return nil
+}
+func (p *productDatabase) GetAllBrand(ctx context.Context) ([]response.Brand, error) {
+	// var brands []response.Brand
+	// query := `SELECT `
+
+	return nil, nil
+}
+
+// get all products from database
+func (c *productDatabase) GetAllProducts(ctx context.Context, page request.ReqPagination) (products []response.ResponseProduct, err error) {
+
+	limit := page.Count
+	offset := (page.PageNumber - 1) * limit
+
+	// aliase :: p := product; c := category
+	querry := `SELECT p.id, p.product_name, p.description, p.price, p.offer_price, p.image, p.brand_id, 
+	p.image, c.brand_name, p.created_at, p.updated_at  
+	FROM products p LEFT JOIN brands c ON p.brand_id=c.id 
+	ORDER BY created_at DESC LIMIT $1 OFFSET $2`
+
+	if c.DB.Raw(querry, limit, offset).Scan(&products).Error != nil {
+		return products, errors.New("failed to get products from database")
+	}
+
+	return products, nil
 }

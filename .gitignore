@@ -2,4 +2,4 @@
 .env
 
 # payload excluding
-payload/
+/payload/

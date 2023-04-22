@@ -7,6 +7,8 @@ import (
 	"github.com/Noush-012/Project-eCommerce-smart_gads/pkg/domain"
 	"github.com/Noush-012/Project-eCommerce-smart_gads/pkg/repository/interfaces"
 	service "github.com/Noush-012/Project-eCommerce-smart_gads/pkg/useCase/interfaces"
+	"github.com/Noush-012/Project-eCommerce-smart_gads/pkg/utils/request"
+	"github.com/Noush-012/Project-eCommerce-smart_gads/pkg/utils/response"
 )
 
 type productUseCase struct {
@@ -39,4 +41,9 @@ func (p *productUseCase) AddBrand(ctx context.Context, brand domain.Brand) error
 
 	return nil
 
+}
+
+// to get all product
+func (p *productUseCase) GetProducts(ctx context.Context, page request.ReqPagination) (products []response.ResponseProduct, err error) {
+	return p.ProductRepository.GetAllProducts(ctx, page)
 }
