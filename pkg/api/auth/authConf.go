@@ -14,7 +14,7 @@ import (
 
 func JwtCookieSetup(c *gin.Context, name string, userId interface{}) bool {
 	//time = 10 mins
-	cookieTime := time.Now().Add(10 * time.Minute).Unix()
+	cookieTime := time.Now().Add(30 * time.Minute).Unix()
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"userId": userId, // Store logged user info in token
@@ -25,7 +25,7 @@ func JwtCookieSetup(c *gin.Context, name string, userId interface{}) bool {
 	if tokenString, err := token.SignedString([]byte(viper.GetString("SECRET_KEY"))); err == nil {
 
 		// Set cookie with signed string if no error time = 10 mins
-		c.SetCookie(name, tokenString, 10*60, "", "", false, true)
+		c.SetCookie(name, tokenString, 30*60, "", "", false, true)
 
 		fmt.Println("JWT sign & set Cookie successful")
 		return true

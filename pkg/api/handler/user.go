@@ -9,7 +9,7 @@ import (
 	"github.com/Noush-012/Project-eCommerce-smart_gads/pkg/domain"
 	"github.com/Noush-012/Project-eCommerce-smart_gads/pkg/useCase/interfaces"
 	request "github.com/Noush-012/Project-eCommerce-smart_gads/pkg/utils/request"
-	request1 "github.com/Noush-012/Project-eCommerce-smart_gads/pkg/utils/request"
+
 	"github.com/Noush-012/Project-eCommerce-smart_gads/pkg/utils/response"
 	"github.com/Noush-012/Project-eCommerce-smart_gads/pkg/verify"
 	"github.com/gin-gonic/gin"
@@ -74,12 +74,12 @@ func (u *UserHandler) UserSignup(c *gin.Context) {
 // @Param input body request.LoginData{} true "Input Fields"
 // @Router /login [post]
 // @Success 200 {object} response.Response{} "Login successful"
-// @Failure 400  {object} response.Response{} "invalid entry"
+// @Failure 400  {object} response.Response{} "Missing or invalid entry"
 // @Failure 500 {object} response.Response{}  "failed to send OTP"
 func (u *UserHandler) LoginSubmit(c *gin.Context) {
 	var body request.LoginData
 	if err := c.ShouldBindJSON(&body); err != nil {
-		response := "invalid input"
+		response := response.ErrorResponse(400, "Missing or invalid entry", err.Error(), body)
 		c.JSON(http.StatusBadRequest, response)
 		return
 	}
@@ -100,7 +100,7 @@ func (u *UserHandler) LoginSubmit(c *gin.Context) {
 	}
 	// Proceed for OTP if no error
 	if _, err := verify.TwilioSendOTP("+91" + usr.Phone); err != nil {
-		response := "failed to send otp"
+		response := response.ErrorResponse(500, "failed to send otp", err.Error(), nil)
 		c.JSON(http.StatusInternalServerError, response)
 		return
 	}
@@ -109,11 +109,21 @@ func (u *UserHandler) LoginSubmit(c *gin.Context) {
 	c.JSON(http.StatusOK, response)
 }
 
+// OTPVerification godoc
+// @summary api for user otp verification
+// @security ApiKeyAuth
+// @id UserOtpVerify
+// @tags User OTP verification
+// @Param input body request.OTPVerify{} true "Input Fields"
+// @Router /otp-verify [post]
+// @Success 200 {object} response.Response{} "Login successful"
+// @Failure 400  {object} response.Response{} "Missing or invalid entry"
+// @Failure 500 {object} response.Response{}  "failed to send OTP"
 func (u *UserHandler) UserOTPVerify(c *gin.Context) {
 
-	var body request1.OTPVerify
+	var body request.OTPVerify
 	if err := c.ShouldBindJSON(&body); err != nil {
-		response := "invalid input"
+		response := response.ErrorResponse(400, "Missing or invalid entry", err.Error(), body)
 		c.JSON(http.StatusBadRequest, response)
 		return
 	}
@@ -123,7 +133,8 @@ func (u *UserHandler) UserOTPVerify(c *gin.Context) {
 
 	usr, err := u.userService.OTPLogin(c, user)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		response := response.ErrorResponse(500, "user not registereds", err.Error(), user)
+		c.JSON(http.StatusBadRequest, response)
 		return
 	}
 	fmt.Println(body.OTP)
@@ -137,23 +148,37 @@ func (u *UserHandler) UserOTPVerify(c *gin.Context) {
 	// setup JWT
 	ok := auth.JwtCookieSetup(c, "user-auth", usr.ID)
 	if !ok {
-		response := "failed to login"
+		response := response.ErrorResponse(500, "failed to login", "", nil)
 		c.JSON(http.StatusInternalServerError, response)
 		return
 
 	}
-	response := "Successfuly logged in"
+	response := response.SuccessResponse(200, "Successfuly logged in!", user)
 	c.JSON(http.StatusOK, response)
 }
 
-// Home page
+// Home godoc
+// @summary api for user home page
+// @description after user login user will seen this page with user informations
+// @security ApiKeyAuth
+// @id User Home
+// @tags Home
+// @Router / [get]
+// @Success 200 "Welcome to home !"
 func (u *UserHandler) Home(c *gin.Context) {
 
-	response := "welcome to home page"
+	response := response.SuccessResponse(200, "Welcome to home !", nil)
 	c.JSON(http.StatusOK, response)
 }
 
-// Logout
+// Logout godoc
+// @summary api for user to logout
+// @description user can logout
+// @security ApiKeyAuth
+// @id UserLogout
+// @tags User Logout
+// @Router /logout [post]
+// @Success 200 "Log out successful"
 func (u *UserHandler) LogoutUser(c *gin.Context) {
 	c.SetCookie("user-auth", "", -1, "", "", false, true)
 	response := response.SuccessResponse(http.StatusOK, "Log out successful", nil)

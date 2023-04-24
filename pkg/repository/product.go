@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"errors"
+	"fmt"
 	"time"
 
 	"github.com/Noush-012/Project-eCommerce-smart_gads/pkg/domain"
@@ -90,20 +91,61 @@ func (p *productDatabase) GetAllBrand(ctx context.Context) ([]response.Brand, er
 }
 
 // get all products from database
-func (c *productDatabase) GetAllProducts(ctx context.Context, page request.ReqPagination) (products []response.ResponseProduct, err error) {
+func (p *productDatabase) GetAllProducts(ctx context.Context, page request.ReqPagination) (products []response.ResponseProduct, err error) {
 
 	limit := page.Count
 	offset := (page.PageNumber - 1) * limit
 
 	// aliase :: p := product; c := category
-	querry := `SELECT p.id, p.product_name, p.description, p.price, p.offer_price, p.image, p.brand_id, 
+	querry := `SELECT p.id, p.product_name, p.description, p.price, p.discount_price, p.image, p.brand_id, 
 	p.image, c.brand_name, p.created_at, p.updated_at  
 	FROM products p LEFT JOIN brands c ON p.brand_id=c.id 
 	ORDER BY created_at DESC LIMIT $1 OFFSET $2`
 
-	if c.DB.Raw(querry, limit, offset).Scan(&products).Error != nil {
+	if p.DB.Raw(querry, limit, offset).Scan(&products).Error != nil {
 		return products, errors.New("failed to get products from database")
 	}
 
 	return products, nil
+}
+
+// find product by id
+func (p *productDatabase) FindProductByID(ctx context.Context, productID uint) (product domain.Product, err error) {
+	query := `SELECT * FROM products WHERE id = $1`
+	err = p.DB.Raw(query, productID).Scan(&product).Error
+	if err != nil {
+		return product, fmt.Errorf("failed find product with prduct_id %v", productID)
+	}
+	return product, nil
+}
+
+// update product
+func (p *productDatabase) UpdateProduct(ctx context.Context, product domain.Product) error {
+	existingProduct, err := p.FindProductByID(ctx, product.ID)
+	if err != nil {
+		return err
+	}
+	if product.ProductName == "" {
+		product.ProductName = existingProduct.ProductName
+	}
+	if product.Description == "" {
+		product.Description = existingProduct.Description
+	}
+	if product.Price == 0 {
+		product.Price = existingProduct.Price
+	}
+	if product.Image == "" {
+		product.Image = existingProduct.Image
+	}
+	query := `UPDATE products SET product_name = $1, description = $2, brand_id = $3,
+	price = $4, image = $5, updated_at = $6 WHERE id = $7`
+
+	updatedAt := time.Now()
+
+	if p.DB.Exec(query, product.ProductName, product.Description, product.BrandID,
+		product.Price, product.Image, updatedAt, product.ID).Error != nil {
+		return errors.New("faild to update product")
+	}
+
+	return nil
 }

@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
 	"github.com/Noush-012/Project-eCommerce-smart_gads/pkg/domain"
@@ -46,4 +47,25 @@ func (p *productUseCase) AddBrand(ctx context.Context, brand domain.Brand) error
 // to get all product
 func (p *productUseCase) GetProducts(ctx context.Context, page request.ReqPagination) (products []response.ResponseProduct, err error) {
 	return p.ProductRepository.GetAllProducts(ctx, page)
+}
+
+// to update product
+func (p *productUseCase) UpdateProduct(ctx context.Context, product domain.Product) error {
+	// validate the product_id
+	checkProduct, err := p.ProductRepository.FindProductByID(ctx, product.ID)
+	if err != nil {
+		return err
+	} else if checkProduct.ProductName == "" {
+		return errors.New("invalid product_id")
+	}
+
+	// check the given product_name already exist or not
+	checkProduct, err = p.ProductRepository.FindProduct(ctx, domain.Product{ProductName: product.ProductName})
+	if err != nil {
+		return err
+	} else if checkProduct.ID != 0 && checkProduct.ID != product.ID {
+		return errors.New("can't update the product \nthere is alread a product exist with this product_name")
+	}
+
+	return p.ProductRepository.UpdateProduct(ctx, product)
 }

@@ -46,11 +46,11 @@ func AdminRoutes(api *gin.RouterGroup, adminHandler *handler.AdminHandler, produ
 		product := api.Group("/products")
 		{
 			// To list products
-			// product.GET("/")
+			product.GET("/", productHandler.ListProducts)
 			// To add product
 			product.POST("/", productHandler.AddProduct)
 			// To update product
-
+			product.PUT("/", productHandler.UpdateProduct)
 			// Get product item
 			// Add product item
 

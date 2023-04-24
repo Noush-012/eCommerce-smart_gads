@@ -16,6 +16,26 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "after user login user will seen this page with user informations",
+                "tags": [
+                    "Home"
+                ],
+                "summary": "api for user home page",
+                "operationId": "User Home",
+                "responses": {
+                    "200": {
+                        "description": "Welcome to home !"
+                    }
+                }
+            }
+        },
         "/login": {
             "post": {
                 "security": [
@@ -47,7 +67,72 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "invalid entry",
+                        "description": "Missing or invalid entry",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "failed to send OTP",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/logout": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "user can logout",
+                "tags": [
+                    "User Logout"
+                ],
+                "summary": "api for user to logout",
+                "operationId": "UserLogout",
+                "responses": {
+                    "200": {
+                        "description": "Log out successful"
+                    }
+                }
+            }
+        },
+        "/otp-verify": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "tags": [
+                    "User OTP verification"
+                ],
+                "summary": "api for user otp verification",
+                "operationId": "UserOtpVerify",
+                "parameters": [
+                    {
+                        "description": "Input Fields",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.OTPVerify"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Login successful",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Missing or invalid entry",
                         "schema": {
                             "$ref": "#/definitions/response.Response"
                         }
@@ -114,6 +199,23 @@ const docTemplate = `{
                     "type": "string",
                     "maxLength": 15,
                     "minLength": 3
+                }
+            }
+        },
+        "request.OTPVerify": {
+            "type": "object",
+            "required": [
+                "otp",
+                "user_id"
+            ],
+            "properties": {
+                "otp": {
+                    "type": "string",
+                    "maxLength": 8,
+                    "minLength": 4
+                },
+                "user_id": {
+                    "type": "integer"
                 }
             }
         },

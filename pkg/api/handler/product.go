@@ -104,3 +104,29 @@ func (p *ProductHandler) AddBrand(c *gin.Context) {
 func (p *ProductHandler) GetAllBrands(c *gin.Context) {
 	//
 }
+
+func (p *ProductHandler) UpdateProduct(ctx *gin.Context) {
+
+	var body request.ReqProductUpdate
+
+	if err := ctx.ShouldBindJSON(&body); err != nil {
+		response := response.ErrorResponse(400, "Missing or invalid input", err.Error(), body)
+		ctx.JSON(http.StatusBadRequest, response)
+		return
+	}
+
+	var product domain.Product
+	copier.Copy(&product, &body)
+
+	err := p.ProductService.UpdateProduct(ctx, product)
+	if err != nil {
+		response := response.ErrorResponse(400, "failed to update product", err.Error(), body)
+		ctx.JSON(400, response)
+		return
+	}
+
+	response := response.SuccessResponse(200, "Product updated successful", body)
+	ctx.JSON(200, response)
+
+	ctx.Abort()
+}

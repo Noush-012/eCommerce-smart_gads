@@ -14,6 +14,18 @@ definitions:
     required:
     - password
     type: object
+  request.OTPVerify:
+    properties:
+      otp:
+        maxLength: 8
+        minLength: 4
+        type: string
+      user_id:
+        type: integer
+    required:
+    - otp
+    - user_id
+    type: object
   request.SignupUserData:
     properties:
       age:
@@ -62,6 +74,18 @@ definitions:
 info:
   contact: {}
 paths:
+  /:
+    get:
+      description: after user login user will seen this page with user informations
+      operationId: User Home
+      responses:
+        "200":
+          description: Welcome to home !
+      security:
+      - ApiKeyAuth: []
+      summary: api for user home page
+      tags:
+      - Home
   /login:
     post:
       operationId: UserLogin
@@ -78,7 +102,7 @@ paths:
           schema:
             $ref: '#/definitions/response.Response'
         "400":
-          description: invalid entry
+          description: Missing or invalid entry
           schema:
             $ref: '#/definitions/response.Response'
         "500":
@@ -90,6 +114,46 @@ paths:
       summary: api for user login
       tags:
       - User Login
+  /logout:
+    post:
+      description: user can logout
+      operationId: UserLogout
+      responses:
+        "200":
+          description: Log out successful
+      security:
+      - ApiKeyAuth: []
+      summary: api for user to logout
+      tags:
+      - User Logout
+  /otp-verify:
+    post:
+      operationId: UserOtpVerify
+      parameters:
+      - description: Input Fields
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/request.OTPVerify'
+      responses:
+        "200":
+          description: Login successful
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Missing or invalid entry
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: failed to send OTP
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: api for user otp verification
+      tags:
+      - User OTP verification
   /signup:
     post:
       operationId: UserSignUp

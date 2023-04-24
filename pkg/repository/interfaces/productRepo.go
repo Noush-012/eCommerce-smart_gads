@@ -18,4 +18,7 @@ type ProductRepository interface {
 	FindBrand(ctx context.Context, brand domain.Brand) (domain.Brand, error)
 	SaveBrand(ctx context.Context, brand domain.Brand) (err error)
 	GetAllBrand(ctx context.Context) ([]response.Brand, error)
+
+	FindProductByID(ctx context.Context, productID uint) (product domain.Product, err error)
+	UpdateProduct(ctx context.Context, product domain.Product) error
 }
