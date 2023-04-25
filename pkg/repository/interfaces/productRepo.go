@@ -21,4 +21,5 @@ type ProductRepository interface {
 
 	FindProductByID(ctx context.Context, productID uint) (product domain.Product, err error)
 	UpdateProduct(ctx context.Context, product domain.Product) error
+	DeleteProduct(ctx context.Context, productID uint) (domain.Product, error)
 }

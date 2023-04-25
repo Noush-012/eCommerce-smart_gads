@@ -51,21 +51,31 @@ func (p *productUseCase) GetProducts(ctx context.Context, page request.ReqPagina
 
 // to update product
 func (p *productUseCase) UpdateProduct(ctx context.Context, product domain.Product) error {
-	// validate the product_id
-	checkProduct, err := p.ProductRepository.FindProductByID(ctx, product.ID)
+	// Check requested product is exist or not
+	existingProduct, err := p.ProductRepository.FindProductByID(ctx, product.ID)
 	if err != nil {
 		return err
-	} else if checkProduct.ProductName == "" {
+	} else if existingProduct.ProductName == "" {
 		return errors.New("invalid product_id")
 	}
 
 	// check the given product_name already exist or not
-	checkProduct, err = p.ProductRepository.FindProduct(ctx, domain.Product{ProductName: product.ProductName})
+	existingProduct, err = p.ProductRepository.FindProduct(ctx, domain.Product{ProductName: product.ProductName})
 	if err != nil {
 		return err
-	} else if checkProduct.ID != 0 && checkProduct.ID != product.ID {
-		return errors.New("can't update the product \nthere is alread a product exist with this product_name")
+	} else if existingProduct.ID != 0 && existingProduct.ID != product.ID {
+		return errors.New("can't update the product \nrequested product_name already existing in database")
 	}
 
 	return p.ProductRepository.UpdateProduct(ctx, product)
+}
+
+// to delete a product
+func (p *productUseCase) DeleteProduct(ctx context.Context, productID uint) (domain.Product, error) {
+
+	existingProduct, err := p.ProductRepository.DeleteProduct(ctx, productID)
+	if err != nil {
+		return domain.Product{}, err
+	}
+	return existingProduct, nil
 }

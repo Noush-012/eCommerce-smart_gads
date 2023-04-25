@@ -8,11 +8,15 @@ type ReqProduct struct {
 	Image       string `json:"image" gorm:"not null" binding:"required"`
 }
 
-type ReqProductUpdate struct {
+type UpdateProductReq struct {
 	ID          uint   `json:"id"`
 	ProductName string `json:"product_name,omitempty"`
 	Description string `json:"description,omitempty"`
 	BrandID     uint   `json:"brand_id,omitempty"`
 	Price       uint   `json:"price,omitempty"`
 	Image       string `json:"image,omitempty"`
+}
+
+type DeleteProductReq struct {
+	ProductID uint `json:"Prod_id"`
 }

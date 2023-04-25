@@ -149,3 +149,21 @@ func (p *productDatabase) UpdateProduct(ctx context.Context, product domain.Prod
 
 	return nil
 }
+
+func (p *productDatabase) DeleteProduct(ctx context.Context, productID uint) (domain.Product, error) {
+	// Check requested product is exist or not
+	var existingProduct domain.Product
+	existingProduct, err := p.FindProductByID(ctx, productID)
+	if err != nil {
+		return domain.Product{}, err
+	} else if existingProduct.ProductName == "" {
+		return domain.Product{}, errors.New("invalid product_id")
+	}
+
+	//delete query
+	query := `DELETE FROM products WHERE id = $1`
+	if p.DB.Exec(query, productID).Error != nil {
+		return domain.Product{}, fmt.Errorf("failed to delete error : %v", err)
+	}
+	return existingProduct, nil
+}

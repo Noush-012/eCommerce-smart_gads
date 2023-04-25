@@ -1,4 +1,30 @@
 definitions:
+  domain.Admin:
+    properties:
+      created_at:
+        type: string
+      email:
+        type: string
+      id:
+        type: integer
+      password:
+        maxLength: 30
+        minLength: 5
+        type: string
+      updated_at:
+        type: string
+      user_name:
+        maxLength: 15
+        minLength: 4
+        type: string
+    required:
+    - password
+    type: object
+  request.DeleteProductReq:
+    properties:
+      Prod_id:
+        type: integer
+    type: object
   request.LoginData:
     properties:
       email:
@@ -25,6 +51,29 @@ definitions:
     required:
     - otp
     - user_id
+    type: object
+  request.ReqProduct:
+    properties:
+      brand_id:
+        type: integer
+      description:
+        maxLength: 1000
+        minLength: 10
+        type: string
+      image:
+        type: string
+      price:
+        type: integer
+      product_name:
+        maxLength: 50
+        minLength: 3
+        type: string
+    required:
+    - brand_id
+    - description
+    - image
+    - price
+    - product_name
     type: object
   request.SignupUserData:
     properties:
@@ -62,6 +111,21 @@ definitions:
     - phone
     - user_name
     type: object
+  request.UpdateProductReq:
+    properties:
+      brand_id:
+        type: integer
+      description:
+        type: string
+      id:
+        type: integer
+      image:
+        type: string
+      price:
+        type: integer
+      product_name:
+        type: string
+    type: object
   response.Response:
     properties:
       data: {}
@@ -86,6 +150,114 @@ paths:
       summary: api for user home page
       tags:
       - Home
+  /admin:
+    get:
+      operationId: AdminHome
+      responses:
+        "200":
+          description: Welcome to Admin Home
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: api admin home
+      tags:
+      - Admin Home
+  /admin/login:
+    post:
+      operationId: AdminLogin
+      parameters:
+      - description: inputs
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/request.LoginData'
+      responses:
+        "200":
+          description: successfully logged in
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Failed to login
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Generate JWT failure
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: api for admin to login
+      tags:
+      - Admin Login
+  /admin/products:
+    post:
+      operationId: AddBrand
+      parameters:
+      - description: inputs
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/request.ReqProduct'
+      responses:
+        "200":
+          description: Successfuly added a new brand in database
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Missing or invalid entry
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: api for admin to add a parent brand
+      tags:
+      - Admin Brand
+    put:
+      operationId: UpdateProduct
+      parameters:
+      - description: inputs
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/request.DeleteProductReq'
+      responses:
+        "200":
+          description: Successfuly deleted product
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Missing or invalid input
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Missing or invalid input
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: api for admin to delete a product
+      tags:
+      - Admin Product
+  /admin/users:
+    get:
+      operationId: ListUsers
+      parameters:
+      - description: Page Number
+        in: query
+        name: page_number
+        type: integer
+      - description: Count Of Order
+        in: query
+        name: count
+        type: integer
+      responses:
+        "200":
+          description: List user successful
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: failed to get all users
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: api for admin to list users
+      tags:
+      - Admin User
   /login:
     post:
       operationId: UserLogin
@@ -154,6 +326,32 @@ paths:
       summary: api for user otp verification
       tags:
       - User OTP verification
+  /products:
+    get:
+      operationId: ListProducts-User
+      parameters:
+      - description: Page Number
+        in: query
+        name: page_number
+        type: integer
+      - description: Count Of Order
+        in: query
+        name: count
+        type: integer
+      responses:
+        "200":
+          description: Product listed successfuly
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: failed to get all products
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: api for user to list all products
+      tags:
+      - User Products
   /signup:
     post:
       operationId: UserSignUp

@@ -22,13 +22,21 @@ func NewAdminHandler(adminService interfaces.AdminService) *AdminHandler {
 	return &AdminHandler{adminService: adminService}
 }
 
-// Admin signup
+// AdminSignUp godoc
+// @summary api for admin to login
+// @id AdminSignUp
+// @tags Admin Login
+// @Param input body domain.Admin{} true "inputs"
+// @Router /admin/login [post]
+// @Success 200 {object} response.Response{} "Create admin account successful"
+// @Failure 400 {object} response.Response{} "Missing or invalid entry"
+// @Failure 500 {object} response.Response{} "Failed to create admin account"
 func (a *AdminHandler) AdminSignUp(c *gin.Context) {
 	var body domain.Admin
 
 	// Bind signup form data
 	if err := c.ShouldBindJSON(&body); err != nil {
-		c.JSON(http.StatusBadRequest, "Invalid entry")
+		c.JSON(http.StatusBadRequest, "Missing or invalid entry")
 		return
 	}
 
@@ -42,13 +50,22 @@ func (a *AdminHandler) AdminSignUp(c *gin.Context) {
 	c.JSON(http.StatusOK, "Create admin account successful")
 }
 
-// Admin login submit
+// AdminLogin godoc
+// @summary api for admin to login
+// @id AdminLogin
+// @tags Admin Login
+// @Param input body request.LoginData{} true "inputs"
+// @Router /admin/login [post]
+// @Success 200 {object} response.Response{} "successfully logged in"
+// @Failure 400 {object} response.Response{} "Missing or invalid entry"
+// @Failure 400 {object} response.Response{} "Failed to login"
+// @Failure 500 {object} response.Response{} "Generate JWT failure"
 func (a *AdminHandler) AdminLoginSubmit(c *gin.Context) {
 
 	//
 	var body request.LoginData
 	if err := c.ShouldBindJSON(&body); err != nil {
-		response := response.ErrorResponse(400, "invalid entry", err.Error(), body)
+		response := response.ErrorResponse(400, "Missing or invalid entry", err.Error(), body)
 		c.JSON(http.StatusBadRequest, response)
 	}
 
@@ -73,7 +90,12 @@ func (a *AdminHandler) AdminLoginSubmit(c *gin.Context) {
 	c.JSON(http.StatusOK, response)
 }
 
-// Homepage
+// AdminHome godoc
+// @summary api admin home
+// @id AdminHome
+// @tags Admin Home
+// @Router /admin [get]
+// @Success 200 {object} response.Response{} "Welcome to Admin Home"
 func (a *AdminHandler) AdminHome(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{
@@ -90,7 +112,15 @@ func (a *AdminHandler) LogoutAdmin(c *gin.Context) {
 	c.JSON(http.StatusOK, response)
 }
 
-// list users
+// ListUsers godoc
+// @summary api for admin to list users
+// @id ListUsers
+// @tags Admin User
+// @Param page_number query int false "Page Number"
+// @Param count query int false "Count Of Order"
+// @Router /admin/users [get]
+// @Success 200 {object} response.Response{} "List user successful"
+// @Failure 500 {object} response.Response{} "failed to get all users"
 func (a *AdminHandler) ListUsers(c *gin.Context) {
 
 	count, err1 := utils.StringToUint(c.Query("count"))
@@ -122,7 +152,7 @@ func (a *AdminHandler) ListUsers(c *gin.Context) {
 		return
 	}
 
-	response := response.SuccessResponse(200, "successfully got all users", users)
+	response := response.SuccessResponse(200, "List user successful", users)
 	c.JSON(http.StatusOK, response)
 
 }

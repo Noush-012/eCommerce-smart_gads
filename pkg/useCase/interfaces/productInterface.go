@@ -13,4 +13,5 @@ type ProductService interface {
 	AddBrand(ctx context.Context, brand domain.Brand) error
 	GetProducts(ctx context.Context, page request.ReqPagination) (products []response.ResponseProduct, err error)
 	UpdateProduct(ctx context.Context, product domain.Product) error
+	DeleteProduct(ctx context.Context, productID uint) (domain.Product, error)
 }

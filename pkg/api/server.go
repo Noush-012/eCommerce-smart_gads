@@ -34,5 +34,5 @@ func NewServerHTTP(adminHandler *handler.AdminHandler, userHandler *handler.User
 }
 
 func (s *ServerHTTP) Run() {
-	s.engine.Run()
+	s.engine.Run(":3000")
 }
