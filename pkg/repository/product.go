@@ -83,11 +83,13 @@ func (p *productDatabase) SaveBrand(ctx context.Context, brand domain.Brand) (er
 	}
 	return nil
 }
-func (p *productDatabase) GetAllBrand(ctx context.Context) ([]response.Brand, error) {
-	// var brands []response.Brand
-	// query := `SELECT `
-
-	return nil, nil
+func (p *productDatabase) GetAllBrand(ctx context.Context) (brand []response.Brand, err error) {
+	// get all brands from database
+	query := `SELECT b.brand_id, b.brand_name FROM brands b`
+	if p.DB.Raw(query).Scan(&brand).Error != nil {
+		return brand, fmt.Errorf("failed to get brands data from db")
+	}
+	return brand, nil
 }
 
 // get all products from database
@@ -97,12 +99,12 @@ func (p *productDatabase) GetAllProducts(ctx context.Context, page request.ReqPa
 	offset := (page.PageNumber - 1) * limit
 
 	// aliase :: p := product; c := category
-	querry := `SELECT p.id, p.product_name, p.description, p.price, p.discount_price, p.image, p.brand_id, 
+	query := `SELECT p.id, p.product_name, p.description, p.price, p.discount_price, p.image, p.brand_id, 
 	p.image, c.brand_name, p.created_at, p.updated_at  
 	FROM products p LEFT JOIN brands c ON p.brand_id=c.id 
 	ORDER BY created_at DESC LIMIT $1 OFFSET $2`
 
-	if p.DB.Raw(querry, limit, offset).Scan(&products).Error != nil {
+	if p.DB.Raw(query, limit, offset).Scan(&products).Error != nil {
 		return products, errors.New("failed to get products from database")
 	}
 

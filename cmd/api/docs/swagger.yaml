@@ -258,6 +258,23 @@ paths:
       summary: api for admin to list users
       tags:
       - Admin User
+  /brands:
+    get:
+      operationId: ListBrands-admin
+      responses:
+        "200":
+          description: Successfuly listed all brands
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Failed to get brands
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: api for admin to list all brands
+      tags:
+      - Product brands
   /login:
     post:
       operationId: UserLogin

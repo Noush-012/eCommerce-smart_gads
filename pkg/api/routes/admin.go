@@ -38,7 +38,7 @@ func AdminRoutes(api *gin.RouterGroup, adminHandler *handler.AdminHandler, produ
 		// Brand
 		brand := api.Group("/brands")
 		{
-			brand.GET("/")
+			brand.GET("/", productHandler.GetAllBrands)
 			brand.POST("/", productHandler.AddBrand)
 		}
 

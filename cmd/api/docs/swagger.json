@@ -190,6 +190,34 @@
                 }
             }
         },
+        "/brands": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "tags": [
+                    "Product brands"
+                ],
+                "summary": "api for admin to list all brands",
+                "operationId": "ListBrands-admin",
+                "responses": {
+                    "200": {
+                        "description": "Successfuly listed all brands",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Failed to get brands",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
         "/login": {
             "post": {
                 "security": [

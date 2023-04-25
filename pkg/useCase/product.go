@@ -44,6 +44,15 @@ func (p *productUseCase) AddBrand(ctx context.Context, brand domain.Brand) error
 
 }
 
+// to get all brands
+func (p *productUseCase) GetAllBrands(ctx context.Context) (brand []response.Brand, err error) {
+	allBrands, err := p.ProductRepository.GetAllBrand(ctx)
+	if err != nil {
+		return brand, err
+	}
+	return allBrands, nil
+}
+
 // to get all product
 func (p *productUseCase) GetProducts(ctx context.Context, page request.ReqPagination) (products []response.ResponseProduct, err error) {
 	return p.ProductRepository.GetAllProducts(ctx, page)

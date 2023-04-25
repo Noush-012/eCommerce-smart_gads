@@ -16,8 +16,6 @@ type ResponseProduct struct {
 }
 
 type Brand struct {
-	ID                 uint   `json:"Brand_id"`
-	BrandName          string `json:"Brand_name"`
-	BrandID            uint   `json:"master_category_id"`
-	MasterCategoryName string `json:"master_category_name"`
+	BrandID   uint   `json:"Brand_id"`
+	BrandName string `json:"Brand_name"`
 }

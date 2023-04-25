@@ -106,7 +106,7 @@ func (p *ProductHandler) AddProduct(c *gin.Context) {
 
 }
 
-// AddBrand godoc
+// AddBrand Admin godoc
 // @summary api for admin to add a parent brand
 // @id AddBrand
 // @tags Admin Brand
@@ -138,8 +138,25 @@ func (p *ProductHandler) AddBrand(c *gin.Context) {
 
 }
 
+// ListBrands-Admin godoc
+// @summary api for admin to list all brands
+// @security ApiKeyAuth
+// @tags Product brands
+// @id ListBrands-admin
+// @Router /brands [get]
+// @Success 200 {object} response.Response{} ""Successfuly listed all brands""
+// @Failure 500 {object} response.Response{}  "Failed to get brands"
 func (p *ProductHandler) GetAllBrands(c *gin.Context) {
-	//
+
+	allBrands, err := p.ProductService.GetAllBrands(c)
+	if err != nil {
+		response := response.ErrorResponse(500, "Failed to get brands", err.Error(), allBrands)
+		c.JSON(http.StatusInternalServerError, response)
+		return
+	}
+	// Success response
+	response := response.SuccessResponse(200, "Successfuly listed all brands", allBrands)
+	c.JSON(200, response)
 }
 
 // UpdateProduct godoc
