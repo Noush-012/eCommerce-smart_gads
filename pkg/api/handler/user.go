@@ -133,7 +133,7 @@ func (u *UserHandler) UserOTPVerify(c *gin.Context) {
 
 	usr, err := u.userService.OTPLogin(c, user)
 	if err != nil {
-		response := response.ErrorResponse(500, "user not registereds", err.Error(), user)
+		response := response.ErrorResponse(500, "user not registered", err.Error(), user)
 		c.JSON(http.StatusBadRequest, response)
 		return
 	}
@@ -153,7 +153,7 @@ func (u *UserHandler) UserOTPVerify(c *gin.Context) {
 		return
 
 	}
-	response := response.SuccessResponse(200, "Successfuly logged in!", user)
+	response := response.SuccessResponse(200, "Successfuly logged in!", nil)
 	c.JSON(http.StatusOK, response)
 }
 

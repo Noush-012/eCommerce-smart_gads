@@ -25,16 +25,16 @@ func (p *productUseCase) AddProduct(ctx context.Context, product domain.Product)
 	if dbProd, err := p.ProductRepository.FindProduct(ctx, product); err != nil {
 		return err
 	} else if dbProd.ID != 0 {
-		return fmt.Errorf("product already exist with %s product name", dbProd.ProductName)
+		return fmt.Errorf("product already exist with %s product name", dbProd.Name)
 	}
 	return p.ProductRepository.SaveProduct(ctx, product)
 
 }
-func (p *productUseCase) AddBrand(ctx context.Context, brand domain.Brand) error {
+func (p *productUseCase) AddBrand(ctx context.Context, brand domain.Category) error {
 	// check if req brand already exists in db
 	dbBrand, _ := p.ProductRepository.FindBrand(ctx, brand)
 	if dbBrand.ID != 0 {
-		return fmt.Errorf("brand already exist with %s name", brand.BrandName)
+		return fmt.Errorf("brand already exist with %s name", brand.CategoryName)
 	}
 	if err := p.ProductRepository.SaveBrand(ctx, brand); err != nil {
 		return err
@@ -64,12 +64,12 @@ func (p *productUseCase) UpdateProduct(ctx context.Context, product domain.Produ
 	existingProduct, err := p.ProductRepository.FindProductByID(ctx, product.ID)
 	if err != nil {
 		return err
-	} else if existingProduct.ProductName == "" {
+	} else if existingProduct.Name == "" {
 		return errors.New("invalid product_id")
 	}
 
 	// check the given product_name already exist or not
-	existingProduct, err = p.ProductRepository.FindProduct(ctx, domain.Product{ProductName: product.ProductName})
+	existingProduct, err = p.ProductRepository.FindProduct(ctx, domain.Product{Name: product.Name})
 	if err != nil {
 		return err
 	} else if existingProduct.ID != 0 && existingProduct.ID != product.ID {

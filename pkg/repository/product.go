@@ -21,28 +21,19 @@ func NewProductRepository(db *gorm.DB) interfaces.ProductRepository {
 	return &productDatabase{DB: db}
 }
 
-// func GetAllProducts(ctx context.Context, page req.ReqPagination) ([]resp.ResponseProduct, error) {
-// 	limit := page.Count
-// 	offset := page.PageNumber
-
-// 	// Alias : p = product, c = category
-// 	query := `SELECT p.id,`
-// }
-
 func (p *productDatabase) GetProduct(ctx context.Context, product domain.Product) (domain.Product, error) {
 	query := `SELECT * FROM products where id = ? product_name = ?`
-	if p.DB.Raw(query, product.ID, product.ProductName).Scan(&product).Error != nil {
+	if p.DB.Raw(query, product.ID, product.Name).Scan(&product).Error != nil {
 		return product, errors.New("failure to get product")
 	}
 	return product, nil
 }
 
 func (p *productDatabase) SaveProduct(ctx context.Context, product domain.Product) error {
-	query := `INSERT INTO products (product_name, description, brand_id, price, image, created_at)
-VALUES($1, $2, $3, $4, $5, $6)`
+	query := `INSERT INTO products (name, description, category_id, price, image, created_at) VALUES ($1, $2, $3, $4, $5, $6)`
+
 	createdAt := time.Now()
-	if p.DB.Exec(query, product.ProductName, product.Description,
-		product.BrandID, product.Price, product.Image, createdAt).Error != nil {
+	if p.DB.Exec(query, product.Name, product.Description, product.CategoryID, product.Price, product.Image, createdAt).Error != nil {
 		return errors.New("failed to save product on database")
 	}
 	return nil
@@ -50,19 +41,29 @@ VALUES($1, $2, $3, $4, $5, $6)`
 
 // find product by name
 func (p *productDatabase) FindProduct(ctx context.Context, product domain.Product) (domain.Product, error) {
-	query := `SELECT * FROM products WHERE id = ? OR product_name=?`
-	if p.DB.Raw(query, product.ID, product.ProductName).Scan(&product).Error != nil {
+	query := `SELECT * FROM products WHERE id = ? OR name=?`
+	if p.DB.Raw(query, product.ID, product.Name).Scan(&product).Error != nil {
 		return product, errors.New("faild to get product")
+	}
+	return product, nil
+}
+
+// find product by id
+func (p *productDatabase) FindProductByID(ctx context.Context, productID uint) (product domain.Product, err error) {
+	query := `SELECT * FROM products WHERE id = $1`
+	err = p.DB.Raw(query, productID).Scan(&product).Error
+	if err != nil {
+		return product, fmt.Errorf("failed find product with prduct_id %v", productID)
 	}
 	return product, nil
 }
 
 // ================ Brand CRUD ================ //
 
-func (p *productDatabase) FindBrand(ctx context.Context, brand domain.Brand) (domain.Brand, error) {
+func (p *productDatabase) FindBrand(ctx context.Context, brand domain.Category) (domain.Category, error) {
 	query := `SELECT * FROM brands WHERE id = ? OR brand_name=?`
 
-	if p.DB.Raw(query, brand.ID, brand.BrandName).Scan(&brand).Error != nil {
+	if p.DB.Raw(query).Scan(&brand).Error != nil {
 		return brand, errors.New("failed to get brand")
 
 	}
@@ -70,22 +71,23 @@ func (p *productDatabase) FindBrand(ctx context.Context, brand domain.Brand) (do
 }
 
 // To add brand
-func (p *productDatabase) SaveBrand(ctx context.Context, brand domain.Brand) (err error) {
-	if brand.BrandID == 0 {
+func (p *productDatabase) SaveBrand(ctx context.Context, brand domain.Category) (err error) {
+	if brand.ID == 0 {
 		query := `INSERT INTO brands (brand_name) VALUES ($1)`
-		err = p.DB.Exec(query, brand.BrandName).Error
+		err = p.DB.Exec(query).Error
 	} else {
 		query := `INSERT INTO brands (brand_id, brand_name)VALUES($1,$2)`
-		err = p.DB.Exec(query, brand.BrandID, brand.BrandName).Error
+		err = p.DB.Exec(query).Error
 	}
 	if err != nil {
 		return errors.New("failed to save brand")
 	}
 	return nil
 }
+
 func (p *productDatabase) GetAllBrand(ctx context.Context) (brand []response.Brand, err error) {
 	// get all brands from database
-	query := `SELECT b.brand_id, b.brand_name FROM brands b`
+	query := `SELECT c.id, c.category_name FROM categories c OFFSET 1`
 	if p.DB.Raw(query).Scan(&brand).Error != nil {
 		return brand, fmt.Errorf("failed to get brands data from db")
 	}
@@ -99,9 +101,9 @@ func (p *productDatabase) GetAllProducts(ctx context.Context, page request.ReqPa
 	offset := (page.PageNumber - 1) * limit
 
 	// aliase :: p := product; c := category
-	query := `SELECT p.id, p.product_name, p.description, p.price, p.discount_price, p.image, p.brand_id, 
-	p.image, c.brand_name, p.created_at, p.updated_at  
-	FROM products p LEFT JOIN brands c ON p.brand_id=c.id 
+	query := `SELECT p.id, p.name, p.description, c.category_name, p.price, p.discount_price,
+	 p.image,  p.created_at, p.updated_at  
+	FROM products p LEFT JOIN categories c ON p.category_id = c.id 
 	ORDER BY created_at DESC LIMIT $1 OFFSET $2`
 
 	if p.DB.Raw(query, limit, offset).Scan(&products).Error != nil {
@@ -111,24 +113,14 @@ func (p *productDatabase) GetAllProducts(ctx context.Context, page request.ReqPa
 	return products, nil
 }
 
-// find product by id
-func (p *productDatabase) FindProductByID(ctx context.Context, productID uint) (product domain.Product, err error) {
-	query := `SELECT * FROM products WHERE id = $1`
-	err = p.DB.Raw(query, productID).Scan(&product).Error
-	if err != nil {
-		return product, fmt.Errorf("failed find product with prduct_id %v", productID)
-	}
-	return product, nil
-}
-
 // update product
 func (p *productDatabase) UpdateProduct(ctx context.Context, product domain.Product) error {
 	existingProduct, err := p.FindProductByID(ctx, product.ID)
 	if err != nil {
 		return err
 	}
-	if product.ProductName == "" {
-		product.ProductName = existingProduct.ProductName
+	if product.Name == "" {
+		product.Name = existingProduct.Name
 	}
 	if product.Description == "" {
 		product.Description = existingProduct.Description
@@ -139,14 +131,17 @@ func (p *productDatabase) UpdateProduct(ctx context.Context, product domain.Prod
 	if product.Image == "" {
 		product.Image = existingProduct.Image
 	}
-	query := `UPDATE products SET product_name = $1, description = $2, brand_id = $3,
+	if product.CategoryID == 0 {
+		product.CategoryID = existingProduct.CategoryID
+	}
+	query := `UPDATE products SET name = $1, description = $2, category_id = $3,
 	price = $4, image = $5, updated_at = $6 WHERE id = $7`
 
 	updatedAt := time.Now()
 
-	if p.DB.Exec(query, product.ProductName, product.Description, product.BrandID,
+	if p.DB.Exec(query, product.Name, product.Description, product.CategoryID,
 		product.Price, product.Image, updatedAt, product.ID).Error != nil {
-		return errors.New("faild to update product")
+		return errors.New("failed to update product")
 	}
 
 	return nil
@@ -158,7 +153,7 @@ func (p *productDatabase) DeleteProduct(ctx context.Context, productID uint) (do
 	existingProduct, err := p.FindProductByID(ctx, productID)
 	if err != nil {
 		return domain.Product{}, err
-	} else if existingProduct.ProductName == "" {
+	} else if existingProduct.Name == "" {
 		return domain.Product{}, errors.New("invalid product_id")
 	}
 

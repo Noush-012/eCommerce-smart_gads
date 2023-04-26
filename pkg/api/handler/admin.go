@@ -54,7 +54,7 @@ func (a *AdminHandler) AdminSignUp(c *gin.Context) {
 // @summary api for admin to login
 // @id AdminLogin
 // @tags Admin Login
-// @Param input body request.LoginData{} true "inputs"
+// @Param input body request.LoginData{} true "Credentials"
 // @Router /admin/login [post]
 // @Success 200 {object} response.Response{} "successfully logged in"
 // @Failure 400 {object} response.Response{} "Missing or invalid entry"

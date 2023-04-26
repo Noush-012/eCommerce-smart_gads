@@ -87,7 +87,7 @@ func (p *ProductHandler) ListProducts(c *gin.Context) {
 // @Success 200 {object} response.Response{} "Product added successful"
 // @Failure 400 {object} response.Response{} "Missing or invalid entry"
 func (p *ProductHandler) AddProduct(c *gin.Context) {
-	var body request.ReqProduct
+	var body request.ProductReq
 	if err := c.ShouldBindJSON(&body); err != nil {
 		responce := response.ErrorResponse(400, "Missing or invalid entry", err.Error(), body)
 		c.JSON(http.StatusBadRequest, responce)
@@ -101,7 +101,7 @@ func (p *ProductHandler) AddProduct(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, response)
 		return
 	}
-	response := response.SuccessResponse(http.StatusOK, "Product added successful", product)
+	response := response.SuccessResponse(http.StatusOK, "Product added successful", body)
 	c.JSON(http.StatusOK, response)
 
 }
@@ -115,7 +115,7 @@ func (p *ProductHandler) AddProduct(c *gin.Context) {
 // @Success 200 {object} response.Response{} "Successfuly added a new brand in database"
 // @Failure 400 {object} response.Response{} "Missing or invalid entry"
 func (p *ProductHandler) AddBrand(c *gin.Context) {
-	var ProductBrand domain.Brand
+	var ProductBrand domain.Category
 
 	// Get json and bind
 	if err := c.ShouldBindJSON(&ProductBrand); err != nil {
@@ -209,7 +209,7 @@ func (p *ProductHandler) DeleteProduct(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, response)
 		return
 	}
-	productID := body.ProductID
+	productID := body.ID
 
 	deletedProduct, err := p.ProductService.DeleteProduct(c, productID)
 	if err != nil {
