@@ -37,11 +37,11 @@ type ProductItem struct {
 	DiscountPrice  uint             `json:"discount_price" gorm:"default:null"`
 	CreatedAt      time.Time        `json:"created_at" gorm:"not null"`
 	UpdatedAt      time.Time        `json:"updated_at" gorm:"default:null"`
-	Configurations []*ProductConfig `json:"-" gorm:"many2many:product_configurations;"`
+	Configurations []*ProductConfig `json:"product_config" gorm:"many2many:product_configurations;"`
 	Images         []*ProductImage  `json:"-" gorm:"foreignKey:ProductItemID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
 }
 
-// Variation struct
+// Variation struct COLOR or STORAGE
 type Variation struct {
 	ID            uint               `json:"id" gorm:"primaryKey;not null;autoIncrement"`
 	CategoryID    uint               `json:"category_id" gorm:"index;not null"`
@@ -50,7 +50,7 @@ type Variation struct {
 	Options       []*VariationOption `json:"-" gorm:"foreignKey:VariationID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
 }
 
-// VariationOption struct
+// VariationOption struct eg: 128 , 512, red, black
 type VariationOption struct {
 	ID             uint             `json:"id" gorm:"primaryKey;not null;autoIncrement"`
 	VariationID    uint             `json:"variation_id" gorm:"index;not null"`

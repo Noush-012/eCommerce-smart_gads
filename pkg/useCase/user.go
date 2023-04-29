@@ -8,6 +8,7 @@ import (
 	"github.com/Noush-012/Project-eCommerce-smart_gads/pkg/domain"
 	"github.com/Noush-012/Project-eCommerce-smart_gads/pkg/repository/interfaces"
 	service "github.com/Noush-012/Project-eCommerce-smart_gads/pkg/useCase/interfaces"
+	"github.com/Noush-012/Project-eCommerce-smart_gads/pkg/verify"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -55,6 +56,13 @@ func (u *UserUseCase) Login(ctx context.Context, user domain.Users) (domain.User
 		return user, err
 	} else if DBUser.ID == 0 {
 		return user, errors.New("user not exist")
+	}
+
+	if _, err := verify.TwilioSendOTP("+91" + DBUser.Phone); err != nil {
+		// response := response.ErrorResponse(500, "failed to send otp", err.Error(), nil)
+		// c.JSON(http.StatusInternalServerError, response)
+		return user, fmt.Errorf("failed to send otp %v",
+			err)
 	}
 	// check password with hashed pass
 	if bcrypt.CompareHashAndPassword([]byte(DBUser.Password), []byte(user.Password)) != nil {

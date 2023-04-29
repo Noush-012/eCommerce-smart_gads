@@ -13,7 +13,6 @@ import (
 	"github.com/Noush-012/Project-eCommerce-smart_gads/pkg/utils/response"
 	"github.com/Noush-012/Project-eCommerce-smart_gads/pkg/verify"
 	"github.com/gin-gonic/gin"
-	"github.com/go-playground/validator"
 	"github.com/jinzhu/copier"
 )
 
@@ -47,13 +46,6 @@ func (u *UserHandler) UserSignup(c *gin.Context) {
 	if err := copier.Copy(&user, body); err != nil {
 		fmt.Println("Copy failed")
 	}
-	// - chk
-	// validate user struct
-	validate := validator.New()
-	if err := validate.Struct(user); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"Validation error": err.Error()})
-		return
-	}
 
 	// Check the user already exist in DB and save user if not
 	if err := u.userService.SignUp(c, user); err != nil {
@@ -75,7 +67,7 @@ func (u *UserHandler) UserSignup(c *gin.Context) {
 // @Router /login [post]
 // @Success 200 {object} response.Response{} "Login successful"
 // @Failure 400  {object} response.Response{} "Missing or invalid entry"
-// @Failure 500 {object} response.Response{}  "failed to send OTP"
+// @Failure 500 {object} response.Response{}  "Something went wrong !"
 func (u *UserHandler) LoginSubmit(c *gin.Context) {
 	var body request.LoginData
 	if err := c.ShouldBindJSON(&body); err != nil {
@@ -93,19 +85,14 @@ func (u *UserHandler) LoginSubmit(c *gin.Context) {
 	var user domain.Users
 	copier.Copy(&user, body)
 
-	usr, err := u.userService.Login(c, user)
+	dbUser, err := u.userService.Login(c, user)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-	// Proceed for OTP if no error
-	if _, err := verify.TwilioSendOTP("+91" + usr.Phone); err != nil {
-		response := response.ErrorResponse(500, "failed to send otp", err.Error(), nil)
-		c.JSON(http.StatusInternalServerError, response)
+		response := response.ErrorResponse(500, "Something went wrong !", err.Error(), nil)
+		c.JSON(http.StatusBadRequest, response)
 		return
 	}
 
-	response := gin.H{"Successfuly send OTP to registered mobile number": usr.ID}
+	response := gin.H{"Successfuly send OTP to registered mobile number": dbUser.ID}
 	c.JSON(http.StatusOK, response)
 }
 

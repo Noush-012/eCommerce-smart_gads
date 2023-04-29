@@ -18,5 +18,20 @@ type UpdateProductReq struct {
 }
 
 type DeleteProductReq struct {
-	ID uint `json:"Prod_id"`
+	ID uint `json:"Prod_id" binding:"required"`
+}
+
+type CategoryReq struct {
+	ID           uint   `json:"id"`
+	ParentID     uint   `json:"parent_id"`
+	CategoryName string `json:"brand_category_name"`
+}
+
+type ProductItemReq struct {
+	ProductID         uint     `json:"product_id" binding:"required"`
+	QtyInStock        uint     `json:"qty_in_stock" binding:"required"`
+	Price             uint     `json:"price"`
+	SKU               string   `json:"SKU" binding:"required"`
+	VariationOptionID uint     `json:"variation_option_id" binding:"required"`
+	Images            []string `json:"images" binding:"required"`
 }

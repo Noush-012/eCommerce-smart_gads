@@ -30,13 +30,13 @@ func (p *productUseCase) AddProduct(ctx context.Context, product domain.Product)
 	return p.ProductRepository.SaveProduct(ctx, product)
 
 }
-func (p *productUseCase) AddBrand(ctx context.Context, brand domain.Category) error {
+func (p *productUseCase) AddCategory(ctx context.Context, brand request.CategoryReq) error {
 	// check if req brand already exists in db
 	dbBrand, _ := p.ProductRepository.FindBrand(ctx, brand)
 	if dbBrand.ID != 0 {
 		return fmt.Errorf("brand already exist with %s name", brand.CategoryName)
 	}
-	if err := p.ProductRepository.SaveBrand(ctx, brand); err != nil {
+	if err := p.ProductRepository.AddCategory(ctx, brand); err != nil {
 		return err
 	}
 
@@ -87,4 +87,12 @@ func (p *productUseCase) DeleteProduct(ctx context.Context, productID uint) (dom
 		return domain.Product{}, err
 	}
 	return existingProduct, nil
+}
+
+// to add product item for a product
+func (p *productUseCase) AddProductItem(ctx context.Context, productItem request.ProductItemReq) error {
+	if err := p.ProductRepository.AddProductItem(ctx, productItem); err != nil {
+		return err
+	}
+	return nil
 }

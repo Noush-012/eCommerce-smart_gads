@@ -106,16 +106,16 @@ func (p *ProductHandler) AddProduct(c *gin.Context) {
 
 }
 
-// AddBrand Admin godoc
-// @summary api for admin to add a parent brand
-// @id AddBrand
-// @tags Admin Brand
-// @Param input body request.ReqProduct{} true "inputs"
+// AddCategory Admin godoc
+// @summary api for admin to add a parent category or child brand
+// @id AddCategory
+// @tags Admin Brand / Category
+// @Param input body request.{} true "inputs"
 // @Router /admin/products [post]
-// @Success 200 {object} response.Response{} "Successfuly added a new brand in database"
+// @Success 200 {object} response.Response{} "Successfuly added a new brand/Category in database"
 // @Failure 400 {object} response.Response{} "Missing or invalid entry"
-func (p *ProductHandler) AddBrand(c *gin.Context) {
-	var ProductBrand domain.Category
+func (p *ProductHandler) AddCategory(c *gin.Context) {
+	var ProductBrand request.CategoryReq
 
 	// Get json and bind
 	if err := c.ShouldBindJSON(&ProductBrand); err != nil {
@@ -125,7 +125,7 @@ func (p *ProductHandler) AddBrand(c *gin.Context) {
 	}
 
 	// Call add brand usecase
-	err := p.ProductService.AddBrand(c, ProductBrand)
+	err := p.ProductService.AddCategory(c, ProductBrand)
 	if err != nil {
 		response := response.ErrorResponse(400, "Failed to add brand", err.Error(), ProductBrand)
 		c.JSON(http.StatusBadRequest, response)
@@ -133,7 +133,7 @@ func (p *ProductHandler) AddBrand(c *gin.Context) {
 	}
 
 	// Success response
-	response := response.SuccessResponse(200, "Successfuly added a new brand in database", ProductBrand)
+	response := response.SuccessResponse(200, "Successfuly added a new brand / category in database", ProductBrand)
 	c.JSON(200, response)
 
 }
@@ -219,4 +219,33 @@ func (p *ProductHandler) DeleteProduct(c *gin.Context) {
 	}
 	response := response.SuccessResponse(http.StatusOK, "Successfuly deleted product", deletedProduct)
 	c.JSON(200, response)
+}
+
+// AddProductItem godoc
+// @summary api for admin to add product item for particular product
+// @id AddProductItem
+// @tags Admin Product
+// @Param input body request.ProductItemReq{} true "inputs"
+// @Router /admin/products/product-item [post]
+// @Success 200 {object} response.Response{} "Product item added successful"
+// @Failure 400 {object} response.Response{} "Missing or invalid input"
+// @Failure 500 {object} response.Response{} "failed to add product item"
+func (p *ProductHandler) AddProductItem(c *gin.Context) {
+	var body request.ProductItemReq
+
+	if err := c.ShouldBindJSON(&body); err != nil {
+		response := response.ErrorResponse(400, "Missing or invalid input", err.Error(), body)
+		c.JSON(http.StatusBadRequest, response)
+		return
+	}
+
+	err := p.ProductService.AddProductItem(c, body)
+	if err != nil {
+		response := response.ErrorResponse(500, "failed to add product item", err.Error(), body)
+		c.JSON(500, response)
+		return
+	}
+	response := response.SuccessResponse(200, "Product item added successful", body)
+	c.JSON(200, response)
+	c.Abort()
 }

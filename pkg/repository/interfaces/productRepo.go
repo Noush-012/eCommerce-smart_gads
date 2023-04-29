@@ -17,8 +17,10 @@ type ProductRepository interface {
 	UpdateProduct(ctx context.Context, product domain.Product) error
 	DeleteProduct(ctx context.Context, productID uint) (domain.Product, error)
 
+	AddProductItem(ctx context.Context, productItem request.ProductItemReq) error
+
 	// Brand CRUD section
-	FindBrand(ctx context.Context, brand domain.Category) (domain.Category, error)
-	SaveBrand(ctx context.Context, brand domain.Category) (err error)
+	FindBrand(ctx context.Context, brand request.CategoryReq) (request.CategoryReq, error)
+	AddCategory(ctx context.Context, brand request.CategoryReq) (err error)
 	GetAllBrand(ctx context.Context) (brand []response.Brand, err error)
 }
