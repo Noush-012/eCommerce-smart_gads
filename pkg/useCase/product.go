@@ -96,3 +96,21 @@ func (p *productUseCase) AddProductItem(ctx context.Context, productItem request
 	}
 	return nil
 }
+
+// to get a product variant
+func (p *productUseCase) GetProductItem(ctx context.Context, productId uint) (ProductItems []response.ProductItemResp, err error) {
+	productItems, err := p.ProductRepository.GetProductItems(ctx, productId)
+	if err != nil {
+		return productItems, err
+	}
+
+	return productItems, nil
+}
+
+func (p *productUseCase) SKUhelper(ctx context.Context, productId uint) (interface{}, error) {
+	dbProduct, err := p.ProductRepository.FindProductByID(ctx, productId)
+	if err != nil {
+		return "", err
+	}
+	return dbProduct.CategoryID, nil
+}

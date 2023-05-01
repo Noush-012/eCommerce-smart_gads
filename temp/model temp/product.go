@@ -129,3 +129,66 @@ type UserRole struct {
 	Description string `json:"description"`
 	Users       []User `json:"users" gorm:"many2many:user_roles;"`
 }
+
+// to add product item of a existing product
+// func (p *productDatabase) AddProductItem(ctx context.Context, productItem request.ProductItemReq) error {
+
+// 	tnx := p.DB.Begin()
+
+// 	var Prod_Item_ID uint
+
+// 	// To check whether requesting product exist or not
+// 	existingProduct, err := p.FindProductByID(ctx, productItem.ProductID)
+// 	if err != nil {
+// 		return err
+// 	}
+// 	if existingProduct.ID != productItem.ProductID {
+// 		tnx.Rollback()
+// 		return errors.New("product not exists belongs to requested product item")
+// 	}
+
+// 	query := `SELECT DISTINCT pi.id AS product_item_id FROM product_items pi INNER JOIN product_configs pc ON pi.id = pc.product_item_id
+// 	WHERE pi.product_id = $1 AND pc.variation_option_id = $2`
+// 	if err := tnx.Raw(query, productItem.ProductID, productItem.VariationOptionID).Scan(&Prod_Item_ID).Error; err != nil {
+// 		tnx.Rollback()
+// 		return fmt.Errorf("product item already exist in with given product configuration %v", err)
+// 	}
+// 	fmt.Println(Prod_Item_ID)
+// 	query = `INSERT INTO product_items (product_id, qty_in_stock, price, sku, created_at) VALUES ($1, $2, $3, $4, $5)`
+// 	createdAt := time.Now()
+// 	productItem.Price = existingProduct.Price
+// 	if err := p.DB.Exec(query, productItem.ProductID, productItem.QtyInStock, productItem.Price, productItem.SKU, createdAt).Error; err != nil {
+// 		return fmt.Errorf("failed to add product item %v", err)
+// 	}
+// 	query = `INSERT INTO product_images (product_item_id, image) VALUES ($1 ,$2)`
+
+// 	for _, img := range productItem.Images {
+// 		err := tnx.Exec(query, Prod_Item_ID, img)
+// 		if err != nil {
+// 			tnx.Rollback()
+// 			return fmt.Errorf("failed to add image for product item of product : %v", productItem.ProductID)
+// 		}
+
+// 	}
+// 	query = `INSERT INTO product_configs (product_item_id, variation_option_id) VALUES ($1, $2)`
+// 	err = tnx.Exec(query, Prod_Item_ID, productItem.VariationOptionID).Error
+// 	if err != nil {
+// 		tnx.Rollback()
+// 		return fmt.Errorf("failed to save the product item for product with product_id %v", productItem.ProductID)
+// 	}
+// 	err = tnx.Commit().Error
+// 	if err != nil {
+// 		tnx.Rollback()
+// 		return fmt.Errorf("failed to commit the transaction %v", err)
+// 	}
+
+// 	// query = `INSERT INTO product_configs (product_item_id, variation_option_id) VALUES ($1, $2)`
+// 	// for _, varOpt := range productItem.VariationOptions {
+// 	// 	err := tnx.Exec(query, Prod_Item_ID, varOpt)
+// 	// 	if err != nil {
+// 	// 		tnx.Rollback()
+// 	// 		return fmt.Errorf("failed to add variation option for product item of product : %v", productItem.ProductID)
+// 	// 	}
+
+// 	return nil
+// }

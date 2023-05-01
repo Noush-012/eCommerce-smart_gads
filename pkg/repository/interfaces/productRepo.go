@@ -18,6 +18,7 @@ type ProductRepository interface {
 	DeleteProduct(ctx context.Context, productID uint) (domain.Product, error)
 
 	AddProductItem(ctx context.Context, productItem request.ProductItemReq) error
+	GetProductItems(ctx context.Context, productId uint) ([]response.ProductItemResp, error)
 
 	// Brand CRUD section
 	FindBrand(ctx context.Context, brand request.CategoryReq) (request.CategoryReq, error)

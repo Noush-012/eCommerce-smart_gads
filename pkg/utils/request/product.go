@@ -27,11 +27,25 @@ type CategoryReq struct {
 	CategoryName string `json:"brand_category_name"`
 }
 
+//	type ProductItemReq struct {
+//		ProductID         uint     `json:"product_id" binding:"required"`
+//		ModelName         string   `json:"model_name" binding:"required"`
+//		QtyInStock        uint     `json:"qty_in_stock" binding:"required"`
+//		Price             uint     `json:"price"`
+//		DiscountPrice     uint     `json:"discount_price,omitempty"`
+//		SKU               string   `json:"SKU" binding:"required"`
+//		VariationOptionID []uint   `json:"variation_option_id" binding:"required"`
+//		Images            []string `json:"images" binding:"required"`
+//	}
 type ProductItemReq struct {
-	ProductID         uint     `json:"product_id" binding:"required"`
-	QtyInStock        uint     `json:"qty_in_stock" binding:"required"`
-	Price             uint     `json:"price"`
-	SKU               string   `json:"SKU" binding:"required"`
-	VariationOptionID uint     `json:"variation_option_id" binding:"required"`
-	Images            []string `json:"images" binding:"required"`
+	ProductID      uint                 `json:"product_id" binding:"required"`
+	QtyInStock     uint                 `json:"qty_in_stock" binding:"required"`
+	DiscountPrice  uint                 `json:"discount_price,omitempty"`
+	SKU            string               `json:"SKU" binding:"required"`
+	Configurations map[string]Variation `json:"configurations" binding:"required"`
+	Images         []string             `json:"images" binding:"required"`
+}
+
+type Variation struct {
+	VariationOptionID uint `json:"variation_option_id"`
 }

@@ -8,6 +8,7 @@ import (
 	"github.com/Noush-012/Project-eCommerce-smart_gads/pkg/api/auth"
 	"github.com/Noush-012/Project-eCommerce-smart_gads/pkg/domain"
 	"github.com/Noush-012/Project-eCommerce-smart_gads/pkg/useCase/interfaces"
+	"github.com/Noush-012/Project-eCommerce-smart_gads/pkg/utils"
 	request "github.com/Noush-012/Project-eCommerce-smart_gads/pkg/utils/request"
 
 	"github.com/Noush-012/Project-eCommerce-smart_gads/pkg/utils/response"
@@ -170,4 +171,16 @@ func (u *UserHandler) LogoutUser(c *gin.Context) {
 	c.SetCookie("user-auth", "", -1, "", "", false, true)
 	response := response.SuccessResponse(http.StatusOK, "Log out successful", nil)
 	c.JSON(http.StatusOK, response)
+}
+
+func (u *UserHandler) AddToCart(c *gin.Context) {
+	var body request.AddToCartReq
+	// get userId from context
+	body.UserID = utils.GetUserIdFromContext(c)
+	if err := c.ShouldBindJSON(&body.ProductItemID); err != nil {
+		response := response.ErrorResponse(400, "invalid input", err.Error(), body.ProductItemID)
+		c.JSON(http.StatusBadRequest, response)
+		return
+	}
+
 }

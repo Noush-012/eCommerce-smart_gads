@@ -169,75 +169,129 @@ func (p *productDatabase) DeleteProduct(ctx context.Context, productID uint) (do
 func (p *productDatabase) AddProductItem(ctx context.Context, productItem request.ProductItemReq) error {
 	tnx := p.DB.Begin()
 
-	query := `INSERT INTO product_items (product_id, qty_in_stock, price, sku, created_at) VALUES ($1, $2, $3, $4, $5)`
-	createdAt := time.Now()
-	if p.DB.Exec(query, productItem.ProductID, productItem.QtyInStock, productItem.Price, productItem.SKU, createdAt).Error != nil {
+	var Prod_Item_ID uint
+	// to check whether product and its variant already exists.
+	existingProduct, err := p.FindProductByID(ctx, productItem.ProductID)
+	if err != nil {
+		return err
+	}
+	if existingProduct.ID != productItem.ProductID {
 		tnx.Rollback()
-		return errors.New("failed to add product item")
+		return errors.New("product not exists belongs to requested product item")
+	}
+
+	query := `SELECT DISTINCT pi.id AS product_item_id FROM product_items pi INNER JOIN product_configs pc on pi.id = pc.product_item_id
+	WHERE pi.id = $1 AND pc.variation_option_id = $2`
+
+	for _, vOptionID := range productItem.Configurations {
+		if vOptionID.VariationOptionID == 0 {
+			tnx.Rollback()
+			return errors.New("invalid or missing product configuration")
+		}
+		if err := tnx.Raw(query, productItem.ProductID, vOptionID.VariationOptionID).Scan(&Prod_Item_ID).Error; err != nil {
+			tnx.Rollback()
+			return fmt.Errorf("%v product item already exist in with VariationOptionID: %v", err, vOptionID.VariationOptionID)
+		}
+
+	}
+	// to save product item to database
+	query = `INSERT INTO product_items (product_id,qty_in_stock,price,sku,created_at) VALUES ($1, $2, $3, $4, $5)`
+	createdAt := time.Now()
+	if err := p.DB.Exec(query, productItem.ProductID, productItem.QtyInStock, existingProduct.Price, productItem.SKU, createdAt).Error; err != nil {
+		tnx.Rollback()
+		return fmt.Errorf("failed to add product item %v", err)
+	}
+
+	// to save product configuration
+	// query = `INSERT INTO product_configs (product_item_id,variation_option_id) VALUES ($1, $2)`
+	query = `INSERT INTO product_configs (product_item_id, variation_option_id)
+	VALUES ((SELECT id FROM product_items WHERE product_id = $1), $2)`
+	for _, vOption := range productItem.Configurations {
+		if err := p.DB.Exec(query, productItem.ProductID, vOption.VariationOptionID).Error; err != nil {
+			tnx.Rollback()
+			return fmt.Errorf("failed to add product configuration %v, VariationOptionID : %v", err, vOption.VariationOptionID)
+		}
+	}
+
+	// to save images seperatly for each color variant
+
+	query = `INSERT INTO product_images  (product_item_id,image) 
+	VALUES ((SELECT id FROM product_items WHERE product_id = $1), $2)`
+	for _, image := range productItem.Images {
+		if err := p.DB.Exec(query, productItem.ProductID, image).Error; err != nil {
+			tnx.Rollback()
+			return fmt.Errorf("failed to add product images %v", err)
+		}
+	}
+	if err := tnx.Commit().Error; err != nil {
+		tnx.Rollback()
+		return fmt.Errorf("failed to commit the transaction %v", err)
 	}
 	return nil
-
 }
 
-// to add product item of a existing product
-// func (p *productDatabase) AddProductItem(ctx context.Context, productItem request.ProductItemReq) error {
+// to list product item
+func (p *productDatabase) GetProductItems(ctx context.Context, productId uint) ([]response.ProductItemResp, error) {
+	// Check product id exist or not
+	var ProductItems []response.ProductItemResp
+	var Prod_Item_ID uint
 
-// 	tnx := p.DB.Begin()
+	dbProd, err := p.FindProductByID(ctx, productId)
+	if err != nil {
+		return ProductItems, err
+	}
+	if dbProd.ID == 0 {
+		return ProductItems, errors.New("invalid product id")
+	}
+	// to fetch product item id
+	query := `SELECT id FROM product_items WHERE product_id = $1`
+	if err := p.DB.Raw(query, productId).Scan(&Prod_Item_ID).Error; err != nil {
+		return ProductItems, fmt.Errorf("failed to get product item id %v", err)
+	}
 
-// 	var Prod_Item_ID uint
+	// get product items from database
+	query = `SELECT 
+	p.id AS product_id,
+	pi.id AS product_item_id,
+	pi.qty_in_stock AS stock_available,
+    p.name AS product_name, 
+    c.category_name AS brand,
+	p.description,
+	vo1.option_value AS color,
+    vo2.option_value AS storage,
+    p.price,
+	pi.discount_price AS offer_price 
+FROM 
+    products p 
+    JOIN categories c ON c.id = p.category_id 
+    JOIN product_items pi ON pi.product_id = p.id 
+    JOIN variations v1 ON v1.category_id = c.parent_id AND v1.id = 1 
+    JOIN product_configs pc1 ON pi.id = pc1.product_item_id 
+    JOIN variation_options vo1 ON vo1.variation_id = v1.id AND vo1.id = pc1.variation_option_id 
+    JOIN variations v2 ON v2.category_id = c.parent_id AND v2.id = 2 
+    JOIN product_configs pc2 ON pi.id = pc2.product_item_id 
+    JOIN variation_options vo2 ON vo2.variation_id = v2.id AND vo2.id = pc2.variation_option_id
+WHERE 
+    p.id = $1
+    AND pc1.variation_option_id IN (SELECT id FROM variation_options WHERE variation_id = 1)
+    AND pc2.variation_option_id IN (SELECT id FROM variation_options WHERE variation_id = 2);`
+	if err := p.DB.Raw(query, productId).Scan(&ProductItems).Error; err != nil {
+		return ProductItems, fmt.Errorf("failed to get product items %v", err)
+	}
 
-// 	// To check whether requesting product exist or not
-// 	existingProduct, err := p.FindProductByID(ctx, productItem.ProductID)
-// 	if err != nil {
-// 		return err
-// 	}
-// 	if existingProduct.ID != productItem.ProductID {
-// 		tnx.Rollback()
-// 		return errors.New("product not exists belongs to requested product item")
-// 	}
-
-// 	query := `SELECT DISTINCT pi.id AS product_item_id FROM product_items pi INNER JOIN product_configs pc ON pi.id = pc.product_item_id
-// 	WHERE pi.product_id = $1 AND pc.variation_option_id = $2`
-// 	if err := tnx.Raw(query, productItem.ProductID, productItem.VariationOptionID).Scan(&Prod_Item_ID).Error; err != nil {
-// 		tnx.Rollback()
-// 		return fmt.Errorf("product item already exist in with given product configuration %v", err)
-// 	}
-// 	fmt.Println(Prod_Item_ID)
-// 	query = `INSERT INTO product_items (product_id, qty_in_stock, price, sku, created_at) VALUES ($1, $2, $3, $4, $5)`
-// 	createdAt := time.Now()
-// 	productItem.Price = existingProduct.Price
-// 	if err := p.DB.Exec(query, productItem.ProductID, productItem.QtyInStock, productItem.Price, productItem.SKU, createdAt).Error; err != nil {
-// 		return fmt.Errorf("failed to add product item %v", err)
-// 	}
-// 	query = `INSERT INTO product_images (product_item_id, image) VALUES ($1 ,$2)`
-
-// 	for _, img := range productItem.Images {
-// 		err := tnx.Exec(query, Prod_Item_ID, img)
-// 		if err != nil {
-// 			tnx.Rollback()
-// 			return fmt.Errorf("failed to add image for product item of product : %v", productItem.ProductID)
-// 		}
-
-// 	}
-// 	query = `INSERT INTO product_configs (product_item_id, variation_option_id) VALUES ($1, $2)`
-// 	err = tnx.Exec(query, Prod_Item_ID, productItem.VariationOptionID).Error
-// 	if err != nil {
-// 		tnx.Rollback()
-// 		return fmt.Errorf("failed to save the product item for product with product_id %v", productItem.ProductID)
-// 	}
-// 	err = tnx.Commit().Error
-// 	if err != nil {
-// 		tnx.Rollback()
-// 		return fmt.Errorf("failed to commit the transaction %v", err)
-// 	}
-
-// 	// query = `INSERT INTO product_configs (product_item_id, variation_option_id) VALUES ($1, $2)`
-// 	// for _, varOpt := range productItem.VariationOptions {
-// 	// 	err := tnx.Exec(query, Prod_Item_ID, varOpt)
-// 	// 	if err != nil {
-// 	// 		tnx.Rollback()
-// 	// 		return fmt.Errorf("failed to add variation option for product item of product : %v", productItem.ProductID)
-// 	// 	}
-
-// 	return nil
-// }
+	// fetch product item images
+	query = `SELECT
+	pimg.image
+	FROM
+	product_images pimg
+	WHERE product_item_id = $1`
+	for i, _ := range ProductItems {
+		ProductItems[i].Images = []string{}
+		p.DB.Raw(query, Prod_Item_ID).Scan(&ProductItems[i].Images)
+	}
+	// // append images to product items
+	// for i, _ := range ProductItems {
+	// 	ProductItems[i].Images = append(ProductItems[i].Images, dbProd.Image)
+	// }
+	return ProductItems, nil
+}

@@ -8,6 +8,7 @@ import (
 
 	"github.com/Noush-012/Project-eCommerce-smart_gads/pkg/domain"
 	repo "github.com/Noush-012/Project-eCommerce-smart_gads/pkg/repository/interfaces"
+	"github.com/Noush-012/Project-eCommerce-smart_gads/pkg/utils/request"
 	"gorm.io/gorm"
 )
 
@@ -37,5 +38,9 @@ func (i *userDatabase) SaveUser(ctx context.Context, user domain.Users) error {
 	if err != nil {
 		return fmt.Errorf("failed to save user %s", user.UserName)
 	}
+	return nil
+}
+
+func (i *userDatabase) SavetoCart(ctx context.Context, addToCart request.AddToCartReq) error {
 	return nil
 }

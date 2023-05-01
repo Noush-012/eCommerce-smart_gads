@@ -61,8 +61,9 @@ type VariationOption struct {
 
 // ProductConfig struct
 type ProductConfig struct {
-	ProductItemID     uint             `json:"product_id" gorm:"primaryKey;not null;autoIncrement"`
-	VariationOptionID uint             `json:"variation_option_id" gorm:"primaryKey;not null"`
+	ID                uint             `json:"id" gorm:"primaryKey;not null;autoIncrement"`
+	ProductItemID     uint             `json:"product_id" gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;not null"`
+	VariationOptionID uint             `json:"variation_option_id" gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;not null"`
 	ProductItem       *ProductItem     `json:"-" gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
 	VariationOption   *VariationOption `json:"-" gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
 }
