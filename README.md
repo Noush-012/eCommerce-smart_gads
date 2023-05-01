@@ -1,8 +1,10 @@
 # eCommerce-smart_gads
 Smart Gads
+==========
 Smart Gads is an eCommerce web application built using Go Gin, PostgreSQL, and RESTful API architecture. It aims to provide an easy and enjoyable shopping experience for customers, as well as a convenient way for merchants to manage their products and orders.
 
 Features
+========
 User authentication: Users can create an account, log in, and update their profile information. Passwords are hashed and salted for security.
 Product management: Merchants can add, edit, and delete their products, including images, descriptions, prices, and categories. Customers can browse and search for products, filter by category and price range, and add them to their cart.
 Order management: Merchants can view and fulfill orders, mark them as shipped, and update their status. Customers can view their order history and track their shipments.
@@ -15,6 +17,7 @@ Makefile: The project includes a Makefile that allows you to easily build and ru
 
 
 Technologies
+============
 Go Gin: A lightweight and fast web framework for Go.
 PostgreSQL: A powerful and open-source relational database.
 RESTful API: A standard architecture for building web APIs.
@@ -24,6 +27,7 @@ GitHub Actions: A tool for automating workflows and continuous integration/deplo
 
 
 Getting started
+===============
 To run the Smart Gads web app locally using the Makefile, you can follow these steps:
 
 1. Clone the repository and navigate to the project directory.
