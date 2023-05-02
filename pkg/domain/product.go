@@ -32,6 +32,7 @@ type ProductItem struct {
 	ID             uint             `json:"id" gorm:"primaryKey;not null;autoIncrement"`
 	ProductID      uint             `json:"product_id" gorm:"index;not null"`
 	QtyInStock     uint             `json:"qty_in_stock" gorm:"not null"`
+	StockStatus    bool             `json:"stock_status" gorm:"not null;default:true;type:boolean;"`
 	Price          uint             `json:"price" gorm:"not null"`
 	SKU            string           `json:"sku" gorm:"unique;not null"`
 	DiscountPrice  uint             `json:"discount_price" gorm:"default:null"`

@@ -17,6 +17,7 @@ func GetUserIdFromContext(ctx *gin.Context) uint {
 	userIdInt, _ := strconv.Atoi(userIdStr)
 	return uint(userIdInt)
 }
+
 func GenerateSKU(prod request.ProductItemReq) (string, error) {
 	// var sku string
 

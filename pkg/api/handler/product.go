@@ -82,7 +82,7 @@ func (p *ProductHandler) ListProducts(c *gin.Context) {
 // @summary api for admin to update a product
 // @id AddProducts
 // @tags Admin Product
-// @Param input body request.ReqProduct{} true "inputs"
+// @Param input body  request.ProductReq{} true "inputs"
 // @Router /admin/products [post]
 // @Success 200 {object} response.Response{} "Product added successful"
 // @Failure 400 {object} response.Response{} "Missing or invalid entry"
@@ -110,7 +110,7 @@ func (p *ProductHandler) AddProduct(c *gin.Context) {
 // @summary api for admin to add a parent category or child brand
 // @id AddCategory
 // @tags Admin Brand / Category
-// @Param input body request.{} true "inputs"
+// @Param input body request.CategoryReq{} true "inputs"
 // @Router /admin/products [post]
 // @Success 200 {object} response.Response{} "Successfuly added a new brand/Category in database"
 // @Failure 400 {object} response.Response{} "Missing or invalid entry"

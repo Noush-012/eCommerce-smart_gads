@@ -5,27 +5,27 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/Noush-012/Project-eCommerce-smart_gads/pkg/config"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt"
-	"github.com/spf13/viper"
 )
 
 // ========================== JWT Token and cookie session  ========================== //
 
-func JwtCookieSetup(c *gin.Context, name string, userId interface{}) bool {
+func JwtCookieSetup(c *gin.Context, name string, userId uint) bool {
 	//time = 10 mins
-	cookieTime := time.Now().Add(30 * time.Minute).Unix()
+	cookieTime := time.Now().Add(10 * time.Hour).Unix()
 
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"userId": userId, // Store logged user info in token
-		"exp":    cookieTime,
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.StandardClaims{
+		Id:        fmt.Sprint(userId),
+		ExpiresAt: cookieTime,
 	})
 
 	// Generate signed JWT token using env var of secret key
-	if tokenString, err := token.SignedString([]byte(viper.GetString("SECRET_KEY"))); err == nil {
+	if tokenString, err := token.SignedString([]byte(config.GetJWTConfig())); err == nil {
 
-		// Set cookie with signed string if no error time = 10 mins
-		c.SetCookie(name, tokenString, 30*60, "", "", false, true)
+		// Set cookie with signed string if no error time = 10 hours
+		c.SetCookie(name, tokenString, 10*3600, "", "", false, true)
 
 		fmt.Println("JWT sign & set Cookie successful")
 		return true
@@ -44,7 +44,7 @@ func ValidateToken(tokenString string) (jwt.StandardClaims, error) {
 				return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 			}
 
-			return []byte(viper.GetString("SECRET_KEY")), nil
+			return []byte(config.GetJWTConfig()), nil
 		},
 	)
 	if err != nil || !token.Valid {
@@ -58,6 +58,7 @@ func ValidateToken(tokenString string) (jwt.StandardClaims, error) {
 		fmt.Println("can't parse the claims")
 		return jwt.StandardClaims{}, errors.New("can't parse the claims")
 	}
+	fmt.Println("claim:", claims)
 
 	return *claims, nil
 }

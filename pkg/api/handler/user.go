@@ -173,13 +173,77 @@ func (u *UserHandler) LogoutUser(c *gin.Context) {
 	c.JSON(http.StatusOK, response)
 }
 
+func (u *UserHandler) GetcartItems(c *gin.Context) {
+	var page request.ReqPagination
+	count, err0 := utils.StringToUint(c.Query("count"))
+	page_number, err1 := utils.StringToUint(c.Query("page_number"))
+	err0 = errors.Join(err0, err1)
+	if err0 != nil {
+		response := response.ErrorResponse(400, "Missing or invalid inputs", err0.Error(), nil)
+		c.JSON(http.StatusBadRequest, response)
+		return
+	}
+	page.PageNumber = page_number
+	page.Count = count
+
+	userId := utils.GetUserIdFromContext(c)
+	cartItems, err := u.userService.GetCartItemsbyCartId(c, page, userId)
+	if err != nil {
+		response := response.ErrorResponse(500, "Something went wrong!", err.Error(), nil)
+		c.JSON(http.StatusBadRequest, response)
+		return
+	}
+	response := response.SuccessResponse(200, "Get Cart Items successful", cartItems)
+	c.JSON(http.StatusOK, response)
+}
+
+// AddToCart godoc
+// @summary api for add product item to user cart
+// @description user can add a stock in product to cart
+// @security ApiKeyAuth
+// @id AddToCart
+// @tags User Cart
+// @Param input body request.AddToCartReq{} true "Input Field"
+// @Router /cart [post]
+// @Success 200 "Successfuly added product item to cart "
+// @Failure 400 "Failed to add product item in cart"
 func (u *UserHandler) AddToCart(c *gin.Context) {
 	var body request.AddToCartReq
-	// get userId from context
-	body.UserID = utils.GetUserIdFromContext(c)
-	if err := c.ShouldBindJSON(&body.ProductItemID); err != nil {
+
+	if err := c.ShouldBindJSON(&body); err != nil {
 		response := response.ErrorResponse(400, "invalid input", err.Error(), body.ProductItemID)
 		c.JSON(http.StatusBadRequest, response)
+		return
+	}
+	// get userId from context
+	body.UserID = utils.GetUserIdFromContext(c)
+	if body.UserID == 0 {
+		c.JSON(400, "No user id on context")
+		return
+	}
+	if err := u.userService.SaveCartItem(c, body); err != nil {
+		response := response.ErrorResponse(500, "Failed to add product item in cart", err.Error(), body)
+		c.JSON(500, response)
+		return
+	}
+	response := response.SuccessResponse(200, "Successfuly added product item to cart ", body)
+	c.JSON(200, response)
+
+}
+
+func (u *UserHandler) UpdateCart(c *gin.Context) {
+	var body request.UpdateCartReq
+
+	if err := c.ShouldBindJSON(&body); err != nil {
+		response := response.ErrorResponse(400, "invalid input", err.Error(), body)
+		c.JSON(400, response)
+		return
+	}
+	// get userId from context
+	body.UserID = utils.GetUserIdFromContext(c)
+	if body.UserID == 0 {
+		response := response.ErrorResponse(400, "No user id on context", "", nil)
+		c.JSON(400, response)
 		return
 	}
 

@@ -62,7 +62,7 @@ const docTemplate = `{
                 "operationId": "AdminLogin",
                 "parameters": [
                     {
-                        "description": "inputs",
+                        "description": "Credentials",
                         "name": "input",
                         "in": "body",
                         "required": true,
@@ -134,10 +134,10 @@ const docTemplate = `{
             },
             "post": {
                 "tags": [
-                    "Admin Brand"
+                    "Admin Brand / Category"
                 ],
-                "summary": "api for admin to add a parent brand",
-                "operationId": "AddBrand",
+                "summary": "api for admin to add a parent category or child brand",
+                "operationId": "AddCategory",
                 "parameters": [
                     {
                         "description": "inputs",
@@ -145,19 +145,59 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/request.ReqProduct"
+                            "$ref": "#/definitions/request.CategoryReq"
                         }
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "Successfuly added a new brand in database",
+                        "description": "Successfuly added a new brand/Category in database",
                         "schema": {
                             "$ref": "#/definitions/response.Response"
                         }
                     },
                     "400": {
                         "description": "Missing or invalid entry",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/products/product-item": {
+            "post": {
+                "tags": [
+                    "Admin Product"
+                ],
+                "summary": "api for admin to add product item for particular product",
+                "operationId": "AddProductItem",
+                "parameters": [
+                    {
+                        "description": "inputs",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.ProductItemReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Product item added successful",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Missing or invalid input",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "failed to add product item",
                         "schema": {
                             "$ref": "#/definitions/response.Response"
                         }
@@ -230,6 +270,40 @@ const docTemplate = `{
                 }
             }
         },
+        "/cart": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "user can add a stock in product to cart",
+                "tags": [
+                    "User Cart"
+                ],
+                "summary": "api for add product item to user cart",
+                "operationId": "AddToCart",
+                "parameters": [
+                    {
+                        "description": "Input Field",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.AddToCartReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfuly added product item to cart "
+                    },
+                    "400": {
+                        "description": "Failed to add product item in cart"
+                    }
+                }
+            }
+        },
         "/login": {
             "post": {
                 "security": [
@@ -267,7 +341,7 @@ const docTemplate = `{
                         }
                     },
                     "500": {
-                        "description": "failed to send OTP",
+                        "description": "Something went wrong !",
                         "schema": {
                             "$ref": "#/definitions/response.Response"
                         }
@@ -447,8 +521,43 @@ const docTemplate = `{
                 }
             }
         },
+        "request.AddToCartReq": {
+            "type": "object",
+            "required": [
+                "product_item_id",
+                "quantity"
+            ],
+            "properties": {
+                "product_item_id": {
+                    "type": "integer"
+                },
+                "quantity": {
+                    "type": "integer"
+                },
+                "user_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "request.CategoryReq": {
+            "type": "object",
+            "properties": {
+                "brand_category_name": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "parent_id": {
+                    "type": "integer"
+                }
+            }
+        },
         "request.DeleteProductReq": {
             "type": "object",
+            "required": [
+                "Prod_id"
+            ],
             "properties": {
                 "Prod_id": {
                     "type": "integer"
@@ -493,7 +602,46 @@ const docTemplate = `{
                 }
             }
         },
-        "request.ReqProduct": {
+        "request.ProductItemReq": {
+            "type": "object",
+            "required": [
+                "SKU",
+                "configurations",
+                "images",
+                "product_id",
+                "qty_in_stock"
+            ],
+            "properties": {
+                "SKU": {
+                    "type": "string"
+                },
+                "configurations": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "$ref": "#/definitions/request.Variation"
+                    }
+                },
+                "discount_price": {
+                    "type": "integer"
+                },
+                "images": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "price": {
+                    "type": "integer"
+                },
+                "product_id": {
+                    "type": "integer"
+                },
+                "qty_in_stock": {
+                    "type": "integer"
+                }
+            }
+        },
+        "request.ProductReq": {
             "type": "object",
             "required": [
                 "brand_id",
@@ -591,6 +739,14 @@ const docTemplate = `{
                 },
                 "product_name": {
                     "type": "string"
+                }
+            }
+        },
+        "request.Variation": {
+            "type": "object",
+            "properties": {
+                "variation_option_id": {
+                    "type": "integer"
                 }
             }
         },

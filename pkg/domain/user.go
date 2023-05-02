@@ -1,6 +1,10 @@
 package domain
 
-import "time"
+import (
+	"time"
+
+	"gorm.io/gorm"
+)
 
 // User model
 type Users struct {
@@ -15,4 +19,24 @@ type Users struct {
 	BlockStatus bool      `json:"block_status" gorm:"not null;default:false"`
 	CreatedAt   time.Time `json:"created_at" gorm:"not null"`
 	UpdatedAt   time.Time `json:"updated_at"`
+}
+
+// cart model
+type CartItem struct {
+	ID            uint      `gorm:"primaryKey"`
+	CartID        uint      `gorm:"not null"`
+	ProductItemID uint      `gorm:"not null"`
+	Quantity      uint      `gorm:"not null"`
+	StockStatus   bool      `gorm:"not null;default:true"`
+	Price         float64   `gorm:"not null"`
+	CreatedAt     time.Time `gorm:"not null"`
+	UpdatedAt     time.Time
+	DeletedAt     gorm.DeletedAt `gorm:"index"`
+}
+
+type Cart struct {
+	ID     uint       `gorm:"primaryKey"`
+	UserID uint       `gorm:"not null"`
+	Items  []CartItem `gorm:"foreignKey:CartID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL"`
+	Total  float64    `gorm:"default:0"`
 }

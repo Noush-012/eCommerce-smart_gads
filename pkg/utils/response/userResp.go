@@ -20,3 +20,22 @@ type ResUserHome struct {
 	// Products []ResponseProduct `json:"products"`
 	User UserRespStrcut `json:"user"`
 }
+
+// cart item reponse
+type CartItemResp struct {
+	ProductItemID uint   `json:"id"`
+	ProductName   string `json:"product_name"`
+	Price         uint   `json:"price"`
+	DiscountPrice uint   `json:"discount_price"`
+	Quantity      uint   `json:"quantity"`
+	QtyLeft       uint   `json:"quantity_left"`
+	StockStatus   bool   `json:"stock_status"`
+	SubTotal      uint   `json:"sub_total"`
+}
+
+type CartResp struct {
+	CartItems       []CartItemResp
+	AppliedCouponID uint `json:"applied_coupon_id"`
+	TotalPrice      uint `json:"total_price"`
+	DiscountAmount  uint `json:"discount_amount"`
+}

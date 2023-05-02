@@ -38,8 +38,9 @@ func UserRoutes(api *gin.RouterGroup, userHandler *handler.UserHandler, productH
 	// cart routes
 	cart := api.Group("/cart")
 	{
-		cart.GET("/")
+		cart.GET("/", userHandler.GetcartItems)
 		cart.POST("/", userHandler.AddToCart)
+		cart.PUT("/", userHandler.UpdateCart)
 
 	}
 
