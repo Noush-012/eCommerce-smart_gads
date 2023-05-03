@@ -24,7 +24,7 @@ type ResUserHome struct {
 // cart item reponse
 type CartItemResp struct {
 	ProductItemID uint   `json:"id"`
-	ProductName   string `json:"product_name"`
+	Name          string `json:"product_name"`
 	Price         uint   `json:"price"`
 	DiscountPrice uint   `json:"discount_price"`
 	Quantity      uint   `json:"quantity"`

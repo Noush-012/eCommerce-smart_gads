@@ -33,6 +33,8 @@ func ConnToDB(cfg config.Config) (*gorm.DB, error) {
 		// Users
 		domain.Users{},
 		domain.Admin{},
+		domain.Address{},
+		domain.UserAddress{},
 
 		// Product tables
 		domain.Category{},

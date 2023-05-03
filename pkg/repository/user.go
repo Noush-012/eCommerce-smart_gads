@@ -30,6 +30,15 @@ func (i *userDatabase) FindUser(ctx context.Context, user domain.Users) (domain.
 	return user, nil
 }
 
+func (i *userDatabase) GetUserbyID(ctx context.Context, userId uint) (domain.Users, error) {
+	var user domain.Users
+	query := `SELECT * FROM users WHERE id = ?`
+	if err := i.DB.Raw(query, userId).Scan(&user).Error; err != nil {
+		return user, err
+	}
+	return user, nil
+}
+
 func (i *userDatabase) SaveUser(ctx context.Context, user domain.Users) error {
 	query := `INSERT INTO users (user_name, first_name, last_name, age, email, phone, password,created_at) 
 			  VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`
@@ -38,6 +47,16 @@ func (i *userDatabase) SaveUser(ctx context.Context, user domain.Users) error {
 		user.Email, user.Phone, user.Password, createdAt).Error
 	if err != nil {
 		return fmt.Errorf("failed to save user %s", user.UserName)
+	}
+	return nil
+}
+
+func (i *userDatabase) SaveAddress(ctx context.Context, userAddress domain.Address) error {
+	query := `INSERT INTO address (user_id ,house,address_line_1,address_line_2,city,state,zip_code,country) 
+	VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`
+	if err := i.DB.Exec(query, userAddress.UserID, userAddress.House, userAddress.AddressLine1,
+		userAddress.AddressLine2, userAddress.City, userAddress.State, userAddress.Country, userAddress.ZipCode).Error; err != nil {
+		return err
 	}
 	return nil
 }
@@ -106,4 +125,38 @@ func (i *userDatabase) GetCartItemsbyCartId(ctx context.Context, page request.Re
 		return CartItems, err
 	}
 	return CartItems, nil
+}
+
+func (i *userDatabase) UpdateCart(ctx context.Context, cartUpadates request.UpdateCartReq) error {
+	// get cartID by user id
+	var cartID uint
+	query := `SELECT id FROM carts WHERE user_id = $1`
+	if err := i.DB.Raw(query, cartUpadates.UserID).Scan(&cartID).Error; err != nil {
+		return err
+	}
+	// update cart
+	query = `UPDATE carts SET
+    product_item_id = COALESCE($1, product_item_id),
+    quantity = COALESCE($2, quantity)
+	WHERE id = $3`
+	if err := i.DB.Exec(query, cartUpadates.ProductItemID, cartUpadates.Quantity, cartID).Error; err != nil {
+		return err
+	}
+	return nil
+}
+
+func (i *userDatabase) RemoveCartItem(ctx context.Context, DelCartItem request.DeleteCartItemReq) error {
+	// get cartID by user id
+	var cartID uint
+	query := `SELECT id FROM carts WHERE user_id = $1`
+	if err := i.DB.Raw(query, DelCartItem.UserID).Scan(&cartID).Error; err != nil {
+		return err
+	}
+	// delete cartItems
+	query = `DELETE FROM cart_items WHERE cart_id = $1 AND product_item_id = $2`
+	if err := i.DB.Exec(query, cartID, DelCartItem.ProductItemID).Error; err != nil {
+		return err
+	}
+	return nil
+
 }

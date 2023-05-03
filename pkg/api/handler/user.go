@@ -173,6 +173,16 @@ func (u *UserHandler) LogoutUser(c *gin.Context) {
 	c.JSON(http.StatusOK, response)
 }
 
+// GetCartItems godoc
+// @summary api for user to get cart items
+// @description user can get cart items
+// @security ApiKeyAuth
+// @id UserGetCartItems
+// @Param page_number query int false "Page Number"
+// @Param count query int false "Count Of Order"
+// @tags User GetCartItems
+// @Router /cart [get]
+// @Success 200 "Successfuly get cart items"
 func (u *UserHandler) GetcartItems(c *gin.Context) {
 	var page request.ReqPagination
 	count, err0 := utils.StringToUint(c.Query("count"))
@@ -231,6 +241,16 @@ func (u *UserHandler) AddToCart(c *gin.Context) {
 
 }
 
+// UpdateCart godoc
+// @summary api for update user cart
+// @description user can update a stock in product to cart
+// @security ApiKeyAuth
+// @id UpdateCart
+// @tags User Cart
+// @Param input body request.UpdateCartReq{} true "Input Field"
+// @Router /cart [post]
+// @Success 200 "Successfuly updated product item in cart"
+// @Failure 500 "Something went wrong!"
 func (u *UserHandler) UpdateCart(c *gin.Context) {
 	var body request.UpdateCartReq
 
@@ -246,5 +266,53 @@ func (u *UserHandler) UpdateCart(c *gin.Context) {
 		c.JSON(400, response)
 		return
 	}
+	if err := u.userService.UpdateCart(c, body); err != nil {
+		response := response.ErrorResponse(500, "Something went wrong!", err.Error(), body)
+		c.JSON(500, response)
+		return
+	}
+	response := response.SuccessResponse(200, "Successfuly updated cart", body)
+	c.JSON(200, response)
+
+}
+
+// DeleteCartItem godoc
+// @summary api for delete product item from cart
+// @description user can delete a stock in product to cart
+// @security ApiKeyAuth
+// @id DeleteCartItem
+// @tags User Cart
+// @Param input body request.DeleteCartItemReq{} true "Input Field"
+// @Router /cart [delete]
+// @Success 200 "Successfuly deleted product item from cart"
+// @Failure 500 "Something went wrong!"
+func (u *UserHandler) DeleteCartItem(c *gin.Context) {
+	var body request.DeleteCartItemReq
+	if err := c.ShouldBindJSON(&body); err != nil {
+		response := response.ErrorResponse(400, "invalid input", err.Error(), body)
+		c.JSON(400, response)
+		return
+	}
+	// get userId from context
+	body.UserID = utils.GetUserIdFromContext(c)
+	if err := u.userService.RemoveCartItem(c, body); err != nil {
+		response := response.ErrorResponse(500, "Something went wrong!", err.Error(), body)
+		c.JSON(500, response)
+		return
+	}
+	response := response.SuccessResponse(200, "Successfuly removed item from cart", body)
+	c.JSON(200, response)
+}
+
+func (u *UserHandler) Profile(c *gin.Context) {
+	userId := utils.GetUserIdFromContext(c)
+
+	user, err := u.userService.Profile(c, userId)
+	if err != nil {
+		response := response.ErrorResponse(500, "Something went wrong!", err.Error(), nil)
+		c.JSON(500, response)
+	}
+	response := response.SuccessResponse(200, "Successfuly got profile", user)
+	c.JSON(200, response)
 
 }

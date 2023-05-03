@@ -41,7 +41,11 @@ func UserRoutes(api *gin.RouterGroup, userHandler *handler.UserHandler, productH
 		cart.GET("/", userHandler.GetcartItems)
 		cart.POST("/", userHandler.AddToCart)
 		cart.PUT("/", userHandler.UpdateCart)
-
+		cart.DELETE("/", userHandler.DeleteCartItem)
+	}
+	profile := api.Group("/profile")
+	{
+		profile.GET("/", userHandler.Profile)
 	}
 
 }

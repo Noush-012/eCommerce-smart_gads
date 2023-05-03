@@ -195,9 +195,12 @@ func (p *productDatabase) AddProductItem(ctx context.Context, productItem reques
 
 	}
 	// to save product item to database
-	query = `INSERT INTO product_items (product_id,qty_in_stock,price,discount_price,sku,created_at) VALUES ($1, $2, $3, $4, $5)`
+	query = `INSERT INTO product_items (product_id,qty_in_stock,price,discount_price,sku,created_at) 
+	VALUES ($1, $2, $3, $4, $5, $6)
+	RETURNING id`
 	createdAt := time.Now()
-	if err := p.DB.Exec(query, productItem.ProductID, productItem.QtyInStock, productItem.Price, productItem.DiscountPrice, productItem.SKU, createdAt).Error; err != nil {
+	if err := tnx.Raw(query, productItem.ProductID, productItem.QtyInStock, productItem.Price,
+		productItem.DiscountPrice, productItem.SKU, createdAt).Scan(&productItem.ProductItemId).Error; err != nil {
 		tnx.Rollback()
 		return fmt.Errorf("failed to add product item %v", err)
 	}
@@ -205,9 +208,9 @@ func (p *productDatabase) AddProductItem(ctx context.Context, productItem reques
 	// to save product configuration
 	// query = `INSERT INTO product_configs (product_item_id,variation_option_id) VALUES ($1, $2)`
 	query = `INSERT INTO product_configs (product_item_id, variation_option_id)
-	VALUES ((SELECT id FROM product_items WHERE product_id = $1), $2)`
+	VALUES ($1, $2)`
 	for _, vOption := range productItem.Configurations {
-		if err := p.DB.Exec(query, productItem.ProductID, vOption.VariationOptionID).Error; err != nil {
+		if err := tnx.Exec(query, productItem.ProductItemId, vOption.VariationOptionID).Error; err != nil {
 			tnx.Rollback()
 			return fmt.Errorf("failed to add product configuration %v, VariationOptionID : %v", err, vOption.VariationOptionID)
 		}
@@ -216,9 +219,9 @@ func (p *productDatabase) AddProductItem(ctx context.Context, productItem reques
 	// to save images seperatly for each color variant
 
 	query = `INSERT INTO product_images  (product_item_id,image) 
-	VALUES ((SELECT id FROM product_items WHERE product_id = $1), $2)`
+	VALUES ($1, $2)`
 	for _, image := range productItem.Images {
-		if err := p.DB.Exec(query, productItem.ProductID, image).Error; err != nil {
+		if err := tnx.Exec(query, productItem.ProductItemId, image).Error; err != nil {
 			tnx.Rollback()
 			return fmt.Errorf("failed to add product images %v", err)
 		}
@@ -251,30 +254,26 @@ func (p *productDatabase) GetProductItems(ctx context.Context, productId uint) (
 
 	// get product items from database
 	query = `SELECT 
-	p.id AS product_id,
-	pi.id AS product_item_id,
-	pi.qty_in_stock AS stock_available,
+    p.id AS product_id,
+    pi.id AS product_item_id,
+    pi.qty_in_stock AS stock_available,
     p.name AS product_name, 
     c.category_name AS brand,
-	p.description,
-	vo1.option_value AS color,
+    p.description,
+    vo1.option_value AS color,
     vo2.option_value AS storage,
     p.price,
-	pi.discount_price AS offer_price 
+    pi.discount_price AS offer_price 
 FROM 
     products p 
     JOIN categories c ON c.id = p.category_id 
     JOIN product_items pi ON pi.product_id = p.id 
-    JOIN variations v1 ON v1.category_id = c.parent_id AND v1.id = 1 
-    JOIN product_configs pc1 ON pi.id = pc1.product_item_id 
-    JOIN variation_options vo1 ON vo1.variation_id = v1.id AND vo1.id = pc1.variation_option_id 
-    JOIN variations v2 ON v2.category_id = c.parent_id AND v2.id = 2 
-    JOIN product_configs pc2 ON pi.id = pc2.product_item_id 
-    JOIN variation_options vo2 ON vo2.variation_id = v2.id AND vo2.id = pc2.variation_option_id
+    JOIN product_configs pc1 ON pi.id = pc1.product_item_id AND pc1.variation_option_id IN (SELECT id FROM variation_options WHERE variation_id = 1)
+    JOIN variation_options vo1 ON vo1.id = pc1.variation_option_id 
+    JOIN product_configs pc2 ON pi.id = pc2.product_item_id AND pc2.variation_option_id IN (SELECT id FROM variation_options WHERE variation_id = 2)
+    JOIN variation_options vo2 ON vo2.id = pc2.variation_option_id
 WHERE 
-    p.id = $1
-    AND pc1.variation_option_id IN (SELECT id FROM variation_options WHERE variation_id = 1)
-    AND pc2.variation_option_id IN (SELECT id FROM variation_options WHERE variation_id = 2);`
+    p.id = $1;`
 	if err := p.DB.Raw(query, productId).Scan(&ProductItems).Error; err != nil {
 		return ProductItems, fmt.Errorf("failed to get product items %v", err)
 	}
@@ -285,7 +284,7 @@ WHERE
 	FROM
 	product_images pimg
 	WHERE product_item_id = $1`
-	for i, _ := range ProductItems {
+	for i := range ProductItems {
 		ProductItems[i].Images = []string{}
 		p.DB.Raw(query, Prod_Item_ID).Scan(&ProductItems[i].Images)
 	}

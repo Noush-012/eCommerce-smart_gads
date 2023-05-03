@@ -11,8 +11,11 @@ import (
 type UserRepository interface {
 	SaveUser(ctx context.Context, user domain.Users) error
 	FindUser(ctx context.Context, user domain.Users) (domain.Users, error)
+	GetUserbyID(ctx context.Context, userId uint) (domain.Users, error)
 
 	SavetoCart(ctx context.Context, addToCart request.AddToCartReq) error
 
 	GetCartItemsbyCartId(ctx context.Context, page request.ReqPagination, userID uint) (CartItems []response.CartItemResp, err error)
+	UpdateCart(ctx context.Context, cartUpadates request.UpdateCartReq) error
+	RemoveCartItem(ctx context.Context, DelCartItem request.DeleteCartItemReq) error
 }

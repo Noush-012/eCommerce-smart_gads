@@ -102,3 +102,25 @@ func (u *UserUseCase) GetCartItemsbyCartId(ctx context.Context, page request.Req
 	}
 	return cartItems, nil
 }
+
+func (u *UserUseCase) UpdateCart(ctx context.Context, cartUpadates request.UpdateCartReq) error {
+	if err := u.userRepository.UpdateCart(ctx, cartUpadates); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (u *UserUseCase) RemoveCartItem(ctx context.Context, DelCartItem request.DeleteCartItemReq) error {
+	if err := u.userRepository.RemoveCartItem(ctx, DelCartItem); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (u *UserUseCase) Profile(ctx context.Context, userId uint) (domain.Users, error) {
+	user, err := u.userRepository.GetUserbyID(ctx, userId)
+	if err != nil {
+		return user, err
+	}
+	return user, nil
+}

@@ -39,6 +39,7 @@ type CategoryReq struct {
 //	}
 type ProductItemReq struct {
 	ProductID      uint                 `json:"product_id" binding:"required"`
+	ProductItemId  uint                 `json:"-"`
 	QtyInStock     uint                 `json:"qty_in_stock" binding:"required"`
 	Price          uint                 `json:"price"`
 	DiscountPrice  uint                 `json:"discount_price,omitempty"`

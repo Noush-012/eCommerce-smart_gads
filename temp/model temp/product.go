@@ -192,3 +192,29 @@ type UserRole struct {
 
 // 	return nil
 // }
+
+var a = `SELECT 
+	p.id AS product_id,
+	pi.id AS product_item_id,
+	pi.qty_in_stock AS stock_available,
+    p.name AS product_name, 
+    c.category_name AS brand,
+	p.description,
+	vo1.option_value AS color,
+    vo2.option_value AS storage,
+    p.price,
+	pi.discount_price AS offer_price 
+FROM 
+    products p 
+    JOIN categories c ON c.id = p.category_id 
+    JOIN product_items pi ON pi.product_id = p.id 
+    JOIN variations v1 ON v1.category_id = c.parent_id AND v1.id = 1 
+    JOIN product_configs pc1 ON pi.id = pc1.product_item_id 
+    JOIN variation_options vo1 ON vo1.variation_id = v1.id AND vo1.id = pc1.variation_option_id 
+    JOIN variations v2 ON v2.category_id = c.parent_id AND v2.id = 2 
+    JOIN product_configs pc2 ON pi.id = pc2.product_item_id 
+    JOIN variation_options vo2 ON vo2.variation_id = v2.id AND vo2.id = pc2.variation_option_id
+WHERE 
+    p.id = $1
+    AND pc1.variation_option_id IN (SELECT id FROM variation_options WHERE variation_id = 1)
+    AND pc2.variation_option_id IN (SELECT id FROM variation_options WHERE variation_id = 2);`
