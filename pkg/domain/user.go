@@ -17,14 +17,19 @@ type Users struct {
 	Phone       string    `json:"phone" gorm:"unique;not null" binding:"required,min=10,max=10"`
 	Password    string    `json:"password" gorm:"not null" binding:"required"`
 	BlockStatus bool      `json:"block_status" gorm:"not null;default:false"`
-	Address     []Address `gorm:"foreignKey:AddressID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL"`
 	CreatedAt   time.Time `json:"created_at" gorm:"not null"`
 	UpdatedAt   time.Time `json:"updated_at"`
 }
 
+type UserAddress struct {
+	UserID    uint    `gorm:"not null;unique"`
+	AddressID uint    `gorm:"not null;unique"`
+	IsDefault bool    `gorm:"not null"`
+	Address   Address `gorm:"foreignKey:AddressID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL"`
+}
 type Address struct {
 	ID           uint   `json:"id" gorm:"primaryKey;unique;autoIncrement"`
-	UserID       uint   `json:"user_id"`
+	UserID       uint   `json:"-"`
 	House        string `json:"house" gorm:"not null"`
 	AddressLine1 string `json:"address_line_1" gorm:"not null" binding:"required,min=2,max=40"`
 	AddressLine2 string `json:"address_line_2" gorm:"not null" binding:"required,min=2,max=40"`
@@ -32,12 +37,6 @@ type Address struct {
 	State        string `json:"state" gorm:"not null" binding:"required,min=2,max=20"`
 	ZipCode      string `json:"zip_code" gorm:"not null" binding:"required,min=2,max=10"`
 	Country      string `json:"country" gorm:"not null" binding:"required,min=2,max=20"`
-}
-type UserAddress struct {
-	UserID    uint    `gorm:"not null"`
-	Address   Address `gorm:"foreignKey:AddressID"`
-	AddressID uint    `gorm:"not null"`
-	IsDefault bool    `gorm:"not null"`
 }
 
 // cart model

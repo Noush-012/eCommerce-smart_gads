@@ -1,6 +1,10 @@
 package response
 
-import "time"
+import (
+	"time"
+
+	"github.com/Noush-012/Project-eCommerce-smart_gads/pkg/domain"
+)
 
 type UserRespStrcut struct {
 	ID          uint      `json:"id" copier:"must"`
@@ -34,8 +38,31 @@ type CartItemResp struct {
 }
 
 type CartResp struct {
-	CartItems       []CartItemResp
-	AppliedCouponID uint `json:"applied_coupon_id"`
-	TotalPrice      uint `json:"total_price"`
-	DiscountAmount  uint `json:"discount_amount"`
+	CartItems         []CartItemResp `json:"-"`
+	AppliedCouponID   uint           `json:"applied_coupon_id"`
+	TotalProductItems uint           `json:"total_product_items"`
+	TotalQty          uint           `json:"total_qty"`
+	TotalPrice        uint           `json:"total_price"`
+	DiscountAmount    uint           `json:"discount_amount"`
+	DefaultShipping   Address        `json:"default_shipping"`
+}
+type Address struct {
+	ID           uint   `json:"-"`
+	UserID       uint   `json:"-"`
+	House        string `json:"house"`
+	AddressLine1 string `json:"address_line_1"`
+	AddressLine2 string `json:"address_line_2"`
+	City         string `json:"city"`
+	State        string `json:"state"`
+	ZipCode      string `json:"zip_code"`
+	Country      string `json:"country"`
+}
+
+type CheckoutOrder struct {
+	UserID         uint           `json:"-"`
+	CartItemResp   []CartItemResp `json:"cart_items"`
+	TotalQty       uint           `json:"total_qty"`
+	TotalPrice     uint           `json:"total_price"`
+	Discount       uint           `json:"discount"`
+	DefaultAddress domain.Address `json:"address"`
 }

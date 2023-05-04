@@ -316,3 +316,37 @@ func (u *UserHandler) Profile(c *gin.Context) {
 	c.JSON(200, response)
 
 }
+
+func (u *UserHandler) AddAddress(c *gin.Context) {
+	var body domain.Address
+	userId := utils.GetUserIdFromContext(c)
+
+	body.UserID = userId
+
+	if err := c.ShouldBindJSON(&body); err != nil {
+		response := response.ErrorResponse(400, "Missing or invalid entry", err.Error(), body)
+		c.JSON(400, response)
+		return
+	}
+	if err := u.userService.Addaddress(c, body); err != nil {
+		response := response.ErrorResponse(500, "Something went wrong!", err.Error(), body)
+		c.JSON(500, response)
+	}
+	response := response.SuccessResponse(200, "Save address successful", body)
+	c.JSON(200, response)
+
+}
+
+func (u *UserHandler) CheckOut(c *gin.Context) {
+
+	userId := utils.GetUserIdFromContext(c)
+	CheckOut, err := u.userService.CheckoutOrder(c, userId)
+	if err != nil {
+		response := response.ErrorResponse(500, "Something went wrong!", err.Error(), nil)
+		c.JSON(500, response)
+		return
+	}
+	response := response.SuccessResponse(200, "Successfuly checked out", CheckOut)
+	c.JSON(200, response)
+
+}

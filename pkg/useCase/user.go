@@ -96,7 +96,7 @@ func (u *UserUseCase) SaveCartItem(ctx context.Context, addToCart request.AddToC
 	return nil
 }
 func (u *UserUseCase) GetCartItemsbyCartId(ctx context.Context, page request.ReqPagination, userID uint) (CartItems []response.CartItemResp, err error) {
-	cartItems, err := u.userRepository.GetCartItemsbyCartId(ctx, page, userID)
+	cartItems, err := u.userRepository.GetCartItemsbyUserId(ctx, page, userID)
 	if err != nil {
 		return nil, err
 	}
@@ -123,4 +123,19 @@ func (u *UserUseCase) Profile(ctx context.Context, userId uint) (domain.Users, e
 		return user, err
 	}
 	return user, nil
+}
+
+func (u *UserUseCase) Addaddress(ctx context.Context, address domain.Address) error {
+	if err := u.userRepository.SaveAddress(ctx, address); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (u *UserUseCase) CheckoutOrder(ctx context.Context, userId uint) (checkOut response.CartResp, err error) {
+	checkOut, err = u.userRepository.CheckoutOrder(ctx, userId)
+	if err != nil {
+		return checkOut, err
+	}
+	return checkOut, nil
 }

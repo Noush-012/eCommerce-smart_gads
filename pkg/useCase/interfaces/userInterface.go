@@ -13,10 +13,12 @@ type UserService interface {
 	Login(ctx context.Context, user domain.Users) (domain.Users, error)
 	OTPLogin(ctx context.Context, user domain.Users) (domain.Users, error)
 	Profile(ctx context.Context, userId uint) (domain.Users, error)
+	Addaddress(ctx context.Context, address domain.Address) error
 
 	SaveCartItem(ctx context.Context, addToCart request.AddToCartReq) error
 
 	GetCartItemsbyCartId(ctx context.Context, page request.ReqPagination, userID uint) (CartItems []response.CartItemResp, err error)
 	UpdateCart(ctx context.Context, cartUpadates request.UpdateCartReq) error
 	RemoveCartItem(ctx context.Context, DelCartItem request.DeleteCartItemReq) error
+	CheckoutOrder(ctx context.Context, userId uint) (checkOut response.CartResp, err error)
 }

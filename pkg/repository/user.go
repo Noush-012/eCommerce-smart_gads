@@ -52,7 +52,7 @@ func (i *userDatabase) SaveUser(ctx context.Context, user domain.Users) error {
 }
 
 func (i *userDatabase) SaveAddress(ctx context.Context, userAddress domain.Address) error {
-	query := `INSERT INTO address (user_id ,house,address_line_1,address_line_2,city,state,zip_code,country) 
+	query := `INSERT INTO addresses (user_id ,house,address_line1,address_line2,city,state,zip_code,country) 
 	VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`
 	if err := i.DB.Exec(query, userAddress.UserID, userAddress.House, userAddress.AddressLine1,
 		userAddress.AddressLine2, userAddress.City, userAddress.State, userAddress.Country, userAddress.ZipCode).Error; err != nil {
@@ -104,17 +104,25 @@ func (i *userDatabase) SavetoCart(ctx context.Context, addToCart request.AddToCa
 	return nil
 }
 
-func (i *userDatabase) GetCartItemsbyCartId(ctx context.Context, page request.ReqPagination, userID uint) (CartItems []response.CartItemResp, err error) {
-	var cartID uint
+func (i *userDatabase) GetCartIdByUserId(ctx context.Context, userId uint) (cartId uint, err error) {
+	query := `SELECT id FROM carts WHERE user_id = $1`
+	if err := i.DB.Raw(query, userId).Scan(&cartId).Error; err != nil {
+		return cartId, err
+	}
+	return cartId, nil
+}
+
+func (i *userDatabase) GetCartItemsbyUserId(ctx context.Context, page request.ReqPagination, userID uint) (CartItems []response.CartItemResp, err error) {
+
 	limit := page.Count
 	offset := (page.PageNumber - 1) * limit
-	// get cart id with user id
-	query := `SELECT id FROM carts WHERE user_id = $1`
-	if err := i.DB.Raw(query, userID).Scan(&cartID).Error; err != nil {
+	// get cartID by user id
+	cartID, err := i.GetCartIdByUserId(ctx, userID)
+	if err != nil {
 		return CartItems, err
 	}
 	// get cartItems with cartID
-	query = `SELECT ci.product_item_id, p.name,p.price,ci.price AS discount_price, 
+	query := `SELECT ci.product_item_id, p.name,p.price,ci.price AS discount_price, 
 	ci.quantity,pi.qty_in_stock AS qty_left, ci.price * ci.quantity AS sub_total
 	FROM cart_items ci
 	JOIN product_items pi ON ci.product_item_id = pi.id
@@ -128,14 +136,14 @@ func (i *userDatabase) GetCartItemsbyCartId(ctx context.Context, page request.Re
 }
 
 func (i *userDatabase) UpdateCart(ctx context.Context, cartUpadates request.UpdateCartReq) error {
+
 	// get cartID by user id
-	var cartID uint
-	query := `SELECT id FROM carts WHERE user_id = $1`
-	if err := i.DB.Raw(query, cartUpadates.UserID).Scan(&cartID).Error; err != nil {
+	cartID, err := i.GetCartIdByUserId(ctx, cartUpadates.UserID)
+	if err != nil {
 		return err
 	}
 	// update cart
-	query = `UPDATE carts SET
+	query := `UPDATE carts SET
     product_item_id = COALESCE($1, product_item_id),
     quantity = COALESCE($2, quantity)
 	WHERE id = $3`
@@ -147,16 +155,55 @@ func (i *userDatabase) UpdateCart(ctx context.Context, cartUpadates request.Upda
 
 func (i *userDatabase) RemoveCartItem(ctx context.Context, DelCartItem request.DeleteCartItemReq) error {
 	// get cartID by user id
-	var cartID uint
-	query := `SELECT id FROM carts WHERE user_id = $1`
-	if err := i.DB.Raw(query, DelCartItem.UserID).Scan(&cartID).Error; err != nil {
+	cartID, err := i.GetCartIdByUserId(ctx, DelCartItem.UserID)
+	if err != nil {
 		return err
 	}
 	// delete cartItems
-	query = `DELETE FROM cart_items WHERE cart_id = $1 AND product_item_id = $2`
+	query := `DELETE FROM cart_items WHERE cart_id = $1 AND product_item_id = $2`
 	if err := i.DB.Exec(query, cartID, DelCartItem.ProductItemID).Error; err != nil {
 		return err
 	}
 	return nil
+
+}
+
+func (i *userDatabase) CheckoutOrder(ctx context.Context, userId uint) (checkOut response.CartResp, err error) {
+	// // get cartID by user id
+	// cartId, err := i.GetCartIdByUserId(ctx, userId)
+	if err != nil {
+		return checkOut, err
+	}
+	var page request.ReqPagination
+	page.PageNumber = 1
+	page.Count = 5
+	// get cartItems
+
+	cartItems, err := i.GetCartItemsbyUserId(ctx, page, userId)
+	fmt.Println(cartItems)
+	if err != nil {
+		return checkOut, err
+	}
+	count := 0
+	for _, v := range cartItems {
+		if v.ProductItemID != 0 {
+			count++
+		}
+		checkOut.TotalPrice += v.SubTotal
+		checkOut.TotalQty += v.Quantity
+		checkOut.DiscountAmount += v.Price - v.DiscountPrice
+	}
+	checkOut.TotalProductItems = uint(count)
+	// get default address
+	query := `SELECT a.house,a.address_line1,a.address_line2,a.city,a.state,a.zip_code,a.country  
+	FROM addresses a
+	JOIN user_addresses ua on ua.address_id = a.id
+	WHERE ua.is_default = true AND ua.user_id = $1;`
+	var address response.Address
+	if err := i.DB.Raw(query, userId).Scan(&address).Error; err != nil {
+		return checkOut, err
+	}
+	checkOut.DefaultShipping = address
+	return checkOut, nil
 
 }
