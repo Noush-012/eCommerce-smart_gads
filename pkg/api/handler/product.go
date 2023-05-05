@@ -24,17 +24,6 @@ func NewProductHandler(prodUseCase service.ProductService) *ProductHandler {
 	}
 }
 
-// ListProducts-Admin godoc
-// @summary api for admin to list all products
-// @security ApiKeyAuth
-// @tags Admin view Products
-// @id ListProducts-Admin
-// @Param page_number query int false "Page Number"
-// @Param count query int false "Count Of Order"
-// @Router /admin/products [get]
-// @Success 200 {object} response.Response{} "s"Product listed successfuly""
-// @Failure 500 {object} responsee.Response{}  "failed to get all products"
-
 // ListProducts-User godoc
 // @summary api for user to list all products
 // @security ApiKeyAuth
@@ -250,6 +239,19 @@ func (p *ProductHandler) AddProductItem(c *gin.Context) {
 	c.Abort()
 }
 
+/*
+*
+GetProductItem godoc
+@Summary Handler to get the product item for a given product ID.
+@Description This handler receives a GET request with a product ID as a parameter
+and returns the corresponding product item. If the product ID is invalid or if
+there are no product items for the given ID, it returns an error response.
+@Tags Product
+@Param product_id path uint true "Product ID"
+@Success 200 {object} response.SuccessResponse "Successful response with product items"
+@Failure 400 {object} response.ErrorResponse "Invalid input or error fetching product item"
+@Router /products/{product_id} [get]
+*/
 func (p *ProductHandler) GetProductItem(c *gin.Context) {
 	productID, err := utils.StringToUint(c.Param("product_id"))
 	if err != nil {

@@ -67,7 +67,7 @@ func (i *userDatabase) SavetoCart(ctx context.Context, addToCart request.AddToCa
 	if err := i.DB.Raw(query, addToCart.ProductItemID).Scan(&addToCart.Discount_price).Error; err != nil {
 		return err
 	}
-	fmt.Println(addToCart.Discount_price)
+
 	// get cart id with user id
 	query = `SELECT id FROM carts WHERE user_id = $1`
 	var cartID int
@@ -165,45 +165,5 @@ func (i *userDatabase) RemoveCartItem(ctx context.Context, DelCartItem request.D
 		return err
 	}
 	return nil
-
-}
-
-func (i *userDatabase) CheckoutOrder(ctx context.Context, userId uint) (checkOut response.CartResp, err error) {
-	// // get cartID by user id
-	// cartId, err := i.GetCartIdByUserId(ctx, userId)
-	if err != nil {
-		return checkOut, err
-	}
-	var page request.ReqPagination
-	page.PageNumber = 1
-	page.Count = 5
-	// get cartItems
-
-	cartItems, err := i.GetCartItemsbyUserId(ctx, page, userId)
-	fmt.Println(cartItems)
-	if err != nil {
-		return checkOut, err
-	}
-	count := 0
-	for _, v := range cartItems {
-		if v.ProductItemID != 0 {
-			count++
-		}
-		checkOut.TotalPrice += v.SubTotal
-		checkOut.TotalQty += v.Quantity
-		checkOut.DiscountAmount += v.Price - v.DiscountPrice
-	}
-	checkOut.TotalProductItems = uint(count)
-	// get default address
-	query := `SELECT a.house,a.address_line1,a.address_line2,a.city,a.state,a.zip_code,a.country  
-	FROM addresses a
-	JOIN user_addresses ua on ua.address_id = a.id
-	WHERE ua.is_default = true AND ua.user_id = $1;`
-	var address response.Address
-	if err := i.DB.Raw(query, userId).Scan(&address).Error; err != nil {
-		return checkOut, err
-	}
-	checkOut.DefaultShipping = address
-	return checkOut, nil
 
 }

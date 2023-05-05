@@ -104,8 +104,14 @@ func (a *AdminHandler) AdminHome(c *gin.Context) {
 	})
 }
 
-// logout
-
+// Logout godoc
+// @summary api for admin to logout
+// @description admin can logout
+// @security ApiKeyAuth
+// @id AdminLogout
+// @tags Admin Logout
+// @Router /logout [post]
+// @Success 200 "Log out successful"
 func (a *AdminHandler) LogoutAdmin(c *gin.Context) {
 	c.SetCookie("admin-auth", "", -1, "", "", false, true)
 	response := response.SuccessResponse(http.StatusOK, "Log out successful", nil)
@@ -157,6 +163,14 @@ func (a *AdminHandler) ListUsers(c *gin.Context) {
 
 }
 
+// BlockUser godoc
+// @summary api for admin to block or unblock user
+// @id BlockUser
+// @tags Admin User
+// @Param input body request.Block{} true "inputs"
+// @Router /admin/users/block [patch]
+// @Success 200 {object} response.Response{} "Successfully changed user block_status"
+// @Failure 400 {object} response.Response{} "invalid input"
 func (a *AdminHandler) BlockUser(ctx *gin.Context) {
 
 	var body request.Block

@@ -20,5 +20,4 @@ type UserService interface {
 	GetCartItemsbyCartId(ctx context.Context, page request.ReqPagination, userID uint) (CartItems []response.CartItemResp, err error)
 	UpdateCart(ctx context.Context, cartUpadates request.UpdateCartReq) error
 	RemoveCartItem(ctx context.Context, DelCartItem request.DeleteCartItemReq) error
-	CheckoutOrder(ctx context.Context, userId uint) (checkOut response.CartResp, err error)
 }

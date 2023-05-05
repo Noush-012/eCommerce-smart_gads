@@ -16,6 +16,13 @@ func NewPaymentHandler(payUseCase service.PaymentService) *PaymentHandler {
 	}
 }
 
+// GetAllPaymentOptions godoc
+// @summary api for user to get all options for payment
+// @security ApiKeyAuth
+// @tags User Payment
+// @id AllPayment
+// @Success 200 {object} response.Response{} "Payment option successfull"
+// @Failure 500 {object} response.Response{}  "Something went wrong!"
 func (p *PaymentHandler) GetAllPaymentOptions(c *gin.Context) {
 	payOptions, err := p.PaymentService.GetAllPaymentOptions(c)
 	if err != nil {

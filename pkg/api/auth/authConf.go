@@ -58,7 +58,6 @@ func ValidateToken(tokenString string) (jwt.StandardClaims, error) {
 		fmt.Println("can't parse the claims")
 		return jwt.StandardClaims{}, errors.New("can't parse the claims")
 	}
-	fmt.Println("claim:", claims)
 
 	return *claims, nil
 }

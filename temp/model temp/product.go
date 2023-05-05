@@ -218,3 +218,37 @@ WHERE
     p.id = $1
     AND pc1.variation_option_id IN (SELECT id FROM variation_options WHERE variation_id = 1)
     AND pc2.variation_option_id IN (SELECT id FROM variation_options WHERE variation_id = 2);`
+
+// Order model
+// type ShopOrder struct {
+// 	Id             uint      `json:"id" gorm:"primaryKey"`
+// 	UserID         uint      `json:"-" gorm:"not null"`
+// 	OrderDate      time.Time `json:"order_date" gorm:"not null"`
+// 	OrderTotal     float64   `json:"order_total" gorm:"not null"`
+// 	ShippingID     uint      `json:"shipping_id" gorm:"not null"`
+// 	OrderStatusID  uint      `json:"order_status_id" gorm:"not null"`
+// 	PaymentDetails Payment   `Json:"-"`
+// }
+
+//	type Payment struct {
+//		gorm.Model
+//		OrderID         uint      `json:"order_id" gorm:"not null;unique"`
+//		PaymentMethodID uint      `json:"payment_type_id" gorm:"not null"`
+//		TransactionID   string    `json:"transaction_id" `
+//		PaymentDate     time.Time `json:"payment_date" `
+//	}
+//
+//	type PaymentOption struct {
+//		Id   uint   `json:"id" gorm:"primaryKey"`
+//		Name string `json:"name" gorm:"not null"`
+//	}
+//
+//	type PaymentMethod struct {
+//		Id   uint   `json:"id" gorm:"primaryKey"`
+//		Name string `json:"name" gorm:"not null"`
+//	}
+//
+//	type OrderStatus struct {
+//		Id     uint   `json:"id" gorm:"primaryKey"`
+//		Status string `json:"name" gorm:"not null"`
+//	}

@@ -131,11 +131,3 @@ func (u *UserUseCase) Addaddress(ctx context.Context, address domain.Address) er
 	}
 	return nil
 }
-
-func (u *UserUseCase) CheckoutOrder(ctx context.Context, userId uint) (checkOut response.CartResp, err error) {
-	checkOut, err = u.userRepository.CheckoutOrder(ctx, userId)
-	if err != nil {
-		return checkOut, err
-	}
-	return checkOut, nil
-}

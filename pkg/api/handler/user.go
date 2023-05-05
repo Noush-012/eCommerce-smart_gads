@@ -304,6 +304,15 @@ func (u *UserHandler) DeleteCartItem(c *gin.Context) {
 	c.JSON(200, response)
 }
 
+// ! ***** for user profile ***** //
+// Profile godoc
+// @summary api for see user details
+// @security ApiKeyAuth
+// @id Account
+// @tags User Account
+// @Router /account [get]
+// @Success 200 "Successfully user account details found"
+// @Failure 500 {object} response.Response{} "faild to show user details"
 func (u *UserHandler) Profile(c *gin.Context) {
 	userId := utils.GetUserIdFromContext(c)
 
@@ -317,6 +326,16 @@ func (u *UserHandler) Profile(c *gin.Context) {
 
 }
 
+// AddAddress godoc
+// @summary api for adding a new address for user
+// @description get a new address from user to store the the database
+// @security ApiKeyAuth
+// @id AddAddress
+// @tags User Address
+// @Param inputs body request.AddressReq{} true "Input Field"
+// @Router /account/address [post]
+// @Success 200 {object} response.Response{} "Successfully address added"
+// @Failure 400 {object} response.Response{} "inavlid input"
 func (u *UserHandler) AddAddress(c *gin.Context) {
 	var body domain.Address
 	userId := utils.GetUserIdFromContext(c)
@@ -333,20 +352,6 @@ func (u *UserHandler) AddAddress(c *gin.Context) {
 		c.JSON(500, response)
 	}
 	response := response.SuccessResponse(200, "Save address successful", body)
-	c.JSON(200, response)
-
-}
-
-func (u *UserHandler) CheckOut(c *gin.Context) {
-
-	userId := utils.GetUserIdFromContext(c)
-	CheckOut, err := u.userService.CheckoutOrder(c, userId)
-	if err != nil {
-		response := response.ErrorResponse(500, "Something went wrong!", err.Error(), nil)
-		c.JSON(500, response)
-		return
-	}
-	response := response.SuccessResponse(200, "Successfuly checked out", CheckOut)
 	c.JSON(200, response)
 
 }
