@@ -24,7 +24,7 @@ build : ${BINARY_DIR}
 	GOARCH=amd64 $(GOCMD) build -v -o $(BINARY_DIR)/api-linux-amd64 ./cmd/api
  # to start the application
 run:
-	@echo "Welcome To My Ecommerce Project  -Smart Gads"
+	@echo "Smart_Gads Server running...."
 #air
 	$(GOCMD) run ./cmd/api
 

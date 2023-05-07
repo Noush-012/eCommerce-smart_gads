@@ -47,6 +47,10 @@ func UserRoutes(api *gin.RouterGroup, userHandler *handler.UserHandler, productH
 		cart.GET("/payment-option", paymentHandler.GetAllPaymentOptions)
 		cart.GET("checkout/:id", orderHandler.PlaceCODOrder)
 	}
+	order := api.Group("/orders")
+	{
+		order.GET("/")
+	}
 	profile := api.Group("/profile")
 	{
 		profile.GET("/", userHandler.Profile)

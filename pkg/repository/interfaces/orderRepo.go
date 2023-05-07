@@ -13,4 +13,7 @@ type OrderRepository interface {
 	GetCartItemsbyUserId(ctx context.Context, page request.ReqPagination, userID uint) (CartItems []response.CartItemResp, err error)
 	PlaceCODOrder(ctx context.Context, userId uint) (shopOrder response.ShopOrder, err error)
 	ClearUserCart(ctx context.Context, userId uint) error
+
+	// Order
+	OrderStatus(ctx context.Context, id uint) (status string, err error)
 }

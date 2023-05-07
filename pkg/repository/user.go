@@ -55,7 +55,7 @@ func (i *userDatabase) SaveAddress(ctx context.Context, userAddress domain.Addre
 	query := `INSERT INTO addresses (user_id ,house,address_line1,address_line2,city,state,zip_code,country) 
 	VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`
 	if err := i.DB.Exec(query, userAddress.UserID, userAddress.House, userAddress.AddressLine1,
-		userAddress.AddressLine2, userAddress.City, userAddress.State, userAddress.Country, userAddress.ZipCode).Error; err != nil {
+		userAddress.AddressLine2, userAddress.City, userAddress.State, userAddress.ZipCode, userAddress.Country).Error; err != nil {
 		return err
 	}
 	return nil
@@ -81,18 +81,31 @@ func (i *userDatabase) SavetoCart(ctx context.Context, addToCart request.AddToCa
 			return err
 		}
 	}
-	// insert product items to cart items
-	query = `INSERT INTO cart_items (cart_id,product_item_id,quantity,price,created_at)
+	// Check if the product item already exist in cart
+	query = `SELECT id FROM cart_items WHERE product_item_id = $1 AND cart_id = $2`
+	var cartItemID int
+	if err := i.DB.Raw(query, addToCart.ProductItemID, cartID).Scan(&cartItemID).Error; err != nil {
+		return err
+	}
+	if cartItemID != 0 {
+		query = `UPDATE cart_items SET quantity = quantity + $1, updated_at = $2 WHERE id = $3`
+		UpdatedAt := time.Now()
+		if err := i.DB.Exec(query, addToCart.Quantity, UpdatedAt, cartItemID).Error; err != nil {
+			return fmt.Errorf("failed to save cart item %v", addToCart.ProductItemID)
+		}
+	} else {
+		// insert product items to cart items
+		query = `INSERT INTO cart_items (cart_id,product_item_id,quantity,price,created_at)
 	VALUES ($1,$2, $3, $4, $5)`
-	CreatedAt := time.Now()
-	if err := i.DB.Exec(query, cartID, addToCart.ProductItemID, addToCart.Quantity, addToCart.Discount_price, CreatedAt).Error; err != nil {
-		return fmt.Errorf("failed to save cart item %v", addToCart.ProductItemID)
+		CreatedAt := time.Now()
+		if err := i.DB.Exec(query, cartID, addToCart.ProductItemID, addToCart.Quantity, addToCart.Discount_price, CreatedAt).Error; err != nil {
+			return fmt.Errorf("failed to save cart item %v", addToCart.ProductItemID)
+		}
 	}
 	var cartItems []domain.CartItem
 	if err := i.DB.Where("cart_id = ?", cartID).Find(&cartItems).Error; err != nil {
 		return err
 	}
-
 	// Calculate the new total based on the updated cart items
 	var total float64
 	for _, item := range cartItems {

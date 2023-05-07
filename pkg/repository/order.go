@@ -18,6 +18,14 @@ type OrderDatabase struct {
 func NewOrderRepository(db *gorm.DB) interfaces.OrderRepository {
 	return &OrderDatabase{DB: db}
 }
+
+func (o *OrderDatabase) OrderStatus(ctx context.Context, id uint) (status string, err error) {
+	query := `SELECT status AS order_status FROM order_statuses WHERE id = $1`
+	if err := o.DB.Raw(query, id).Scan(&status).Error; err != nil {
+		return status, err
+	}
+	return status, nil
+}
 func (o *OrderDatabase) GetCartIdByUserId(ctx context.Context, userId uint) (cartId uint, err error) {
 	query := `SELECT id FROM carts WHERE user_id = $1`
 	if err := o.DB.Raw(query, userId).Scan(&cartId).Error; err != nil {
@@ -25,6 +33,7 @@ func (o *OrderDatabase) GetCartIdByUserId(ctx context.Context, userId uint) (car
 	}
 	return cartId, nil
 }
+
 func (o *OrderDatabase) GetCartItemsbyUserId(ctx context.Context, page request.ReqPagination, userID uint) (CartItems []response.CartItemResp, err error) {
 
 	limit := page.Count
@@ -36,7 +45,7 @@ func (o *OrderDatabase) GetCartItemsbyUserId(ctx context.Context, page request.R
 	}
 	// get cartItems with cartID
 	query := `SELECT ci.product_item_id, p.name,p.price,ci.price AS discount_price, 
-	ci.quantity,pi.qty_in_stock AS qty_left, ci.price * ci.quantity AS sub_total
+	ci.quantity,pi.qty_in_stock AS qty_left, pi.stock_status AS stock_status, ci.price * ci.quantity AS sub_total
 	FROM cart_items ci
 	JOIN product_items pi ON ci.product_item_id = pi.id
 	JOIN products p ON pi.product_id = p.id
@@ -47,6 +56,7 @@ func (o *OrderDatabase) GetCartItemsbyUserId(ctx context.Context, page request.R
 	}
 	return CartItems, nil
 }
+
 func (o *OrderDatabase) CheckoutOrder(ctx context.Context, userId uint) (checkOut response.CartResp, err error) {
 	// // get cartID by user id
 	// cartId, err := i.GetCartIdByUserId(ctx, userId)
@@ -99,22 +109,33 @@ func (o *OrderDatabase) PlaceCODOrder(ctx context.Context, userId uint) (shopOrd
 	shopOrder.OrderTotal = float64(checkOut.TotalPrice)
 
 	// save shop order data
+	type OrderData struct {
+		OrderID       uint
+		OrderStatusID uint
+	}
+	var orderData OrderData
 	query := `INSERT INTO shop_orders (user_id,order_date,order_total,shipping_id,
-		order_status_id, payment_option_id,payment_method_id) 
+		order_status_id, payment_option_id,payment_method_id,payment_status_id) 
 	VALUES ($1, $2, $3, $4, 
-		(SELECT id FROM order_statuses WHERE status = 'Placed'),
+		(SELECT id AS order_status_id FROM order_statuses WHERE status = 'Placed'),
 		(SELECT id FROM payment_options WHERE name = 'COD'),
-		(SELECT id FROM payment_methods WHERE name = 'Cash on delivery')) RETURNING id`
+		(SELECT id FROM payment_methods WHERE name = 'Cash on delivery'),
+		(SELECT id FROM payment_statuses WHERE status = 'Payment peding')) RETURNING id, order_status_id`
 	if err := tnx.Raw(query, userId, shopOrder.OrderDate, shopOrder.OrderTotal,
-		shopOrder.ShippingAddress.ID).Scan(&shopOrder.OrderID).Error; err != nil {
+		shopOrder.ShippingAddress.ID).Scan(&orderData).Error; err != nil {
 		tnx.Rollback()
 		return shopOrder, err
 	}
-	query = `SELECT status AS order_status FROM order_statuses WHERE id = $1`
-	if err := tnx.Raw(query, 2).Scan(&shopOrder.OrderStatus).Error; err != nil {
+	shopOrder.OrderID = orderData.OrderID
+	shopOrder.OrderStatusID = orderData.OrderStatusID
+	shopOrder.TransactionID = ""
+	shopOrder.PaymentMethod = "Cash on delivery"
+	shopOrder.PaymentStatus = "Payment pending"
+
+	shopOrder.OrderStatus, err = o.OrderStatus(ctx, shopOrder.OrderStatusID)
+	if err != nil {
 		return shopOrder, err
 	}
-
 	// // save payment details
 	// query = `INSERT INTO payments (order_id,payment_method_id)
 	// VALUES($1, (SELECT id FROM payment_methods WHERE name = 'cash on delivery'))`
@@ -142,4 +163,8 @@ func (o *OrderDatabase) ClearUserCart(ctx context.Context, userId uint) error {
 		return err
 	}
 	return nil
+}
+
+func (o *OrderDatabase) GetOrderHistory(ctx context.Context, page request.ReqPagination) {
+
 }
