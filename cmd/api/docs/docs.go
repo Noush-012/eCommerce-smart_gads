@@ -36,6 +36,71 @@ const docTemplate = `{
                 }
             }
         },
+        "/account": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "tags": [
+                    "User Account"
+                ],
+                "summary": "api for see user details",
+                "operationId": "Account",
+                "responses": {
+                    "200": {
+                        "description": "Successfully user account details found"
+                    },
+                    "500": {
+                        "description": "faild to show user details",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/account/address": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "get a new address from user to store the the database",
+                "tags": [
+                    "User Address"
+                ],
+                "summary": "api for adding a new address for user",
+                "operationId": "AddAddress",
+                "parameters": [
+                    {
+                        "description": "Input Field",
+                        "name": "inputs",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.AddressReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully address added",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "inavlid input",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
         "/admin": {
             "get": {
                 "tags": [
@@ -62,7 +127,7 @@ const docTemplate = `{
                 "operationId": "AdminLogin",
                 "parameters": [
                     {
-                        "description": "inputs",
+                        "description": "Credentials",
                         "name": "input",
                         "in": "body",
                         "required": true,
@@ -134,10 +199,10 @@ const docTemplate = `{
             },
             "post": {
                 "tags": [
-                    "Admin Brand"
+                    "Admin Brand / Category"
                 ],
-                "summary": "api for admin to add a parent brand",
-                "operationId": "AddBrand",
+                "summary": "api for admin to add a parent category or child brand",
+                "operationId": "AddCategory",
                 "parameters": [
                     {
                         "description": "inputs",
@@ -145,19 +210,59 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/request.ReqProduct"
+                            "$ref": "#/definitions/request.CategoryReq"
                         }
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "Successfuly added a new brand in database",
+                        "description": "Successfuly added a new brand/Category in database",
                         "schema": {
                             "$ref": "#/definitions/response.Response"
                         }
                     },
                     "400": {
                         "description": "Missing or invalid entry",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/products/product-item": {
+            "post": {
+                "tags": [
+                    "Admin Product"
+                ],
+                "summary": "api for admin to add product item for particular product",
+                "operationId": "AddProductItem",
+                "parameters": [
+                    {
+                        "description": "inputs",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.ProductItemReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Product item added successful",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Missing or invalid input",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "failed to add product item",
                         "schema": {
                             "$ref": "#/definitions/response.Response"
                         }
@@ -202,6 +307,209 @@ const docTemplate = `{
                 }
             }
         },
+        "/admin/users/block": {
+            "patch": {
+                "tags": [
+                    "Admin User"
+                ],
+                "summary": "api for admin to block or unblock user",
+                "operationId": "BlockUser",
+                "parameters": [
+                    {
+                        "description": "inputs",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.Block"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully changed user block_status",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "invalid input",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/brands": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "tags": [
+                    "Product brands"
+                ],
+                "summary": "api for admin to list all brands",
+                "operationId": "ListBrands-admin",
+                "responses": {
+                    "200": {
+                        "description": "Successfuly listed all brands",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Failed to get brands",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/cart": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "user can get cart items",
+                "tags": [
+                    "User GetCartItems"
+                ],
+                "summary": "api for user to get cart items",
+                "operationId": "UserGetCartItems",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Page Number",
+                        "name": "page_number",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Count Of Order",
+                        "name": "count",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfuly get cart items"
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "user can update a stock in product to cart",
+                "tags": [
+                    "User Cart"
+                ],
+                "summary": "api for update user cart",
+                "operationId": "UpdateCart",
+                "parameters": [
+                    {
+                        "description": "Input Field",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.UpdateCartReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfuly updated product item in cart"
+                    },
+                    "500": {
+                        "description": "Something went wrong!"
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "user can delete a stock in product to cart",
+                "tags": [
+                    "User Cart"
+                ],
+                "summary": "api for delete product item from cart",
+                "operationId": "DeleteCartItem",
+                "parameters": [
+                    {
+                        "description": "Input Field",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.DeleteCartItemReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfuly deleted product item from cart"
+                    },
+                    "500": {
+                        "description": "Something went wrong!"
+                    }
+                }
+            }
+        },
+        "/carts/place-order/cod": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "tags": [
+                    "User Cart"
+                ],
+                "summary": "api for user to place an order on cart with COD",
+                "operationId": "PlaceCODOrder",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Payment option ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successfully order placed in COD",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "invalid input",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "failed to save shop order",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
         "/login": {
             "post": {
                 "security": [
@@ -239,7 +547,7 @@ const docTemplate = `{
                         }
                     },
                     "500": {
-                        "description": "failed to send OTP",
+                        "description": "Something went wrong !",
                         "schema": {
                             "$ref": "#/definitions/response.Response"
                         }
@@ -419,8 +727,68 @@ const docTemplate = `{
                 }
             }
         },
+        "request.AddToCartReq": {
+            "type": "object",
+            "required": [
+                "product_item_id",
+                "quantity"
+            ],
+            "properties": {
+                "product_item_id": {
+                    "type": "integer"
+                },
+                "quantity": {
+                    "type": "integer"
+                },
+                "user_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "request.AddressReq": {
+            "type": "object"
+        },
+        "request.Block": {
+            "type": "object",
+            "required": [
+                "user_id"
+            ],
+            "properties": {
+                "user_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "request.CategoryReq": {
+            "type": "object",
+            "properties": {
+                "brand_category_name": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "parent_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "request.DeleteCartItemReq": {
+            "type": "object",
+            "required": [
+                "product_item_id"
+            ],
+            "properties": {
+                "product_item_id": {
+                    "type": "integer"
+                }
+            }
+        },
         "request.DeleteProductReq": {
             "type": "object",
+            "required": [
+                "Prod_id"
+            ],
             "properties": {
                 "Prod_id": {
                     "type": "integer"
@@ -465,7 +833,46 @@ const docTemplate = `{
                 }
             }
         },
-        "request.ReqProduct": {
+        "request.ProductItemReq": {
+            "type": "object",
+            "required": [
+                "SKU",
+                "configurations",
+                "images",
+                "product_id",
+                "qty_in_stock"
+            ],
+            "properties": {
+                "SKU": {
+                    "type": "string"
+                },
+                "configurations": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "$ref": "#/definitions/request.Variation"
+                    }
+                },
+                "discount_price": {
+                    "type": "integer"
+                },
+                "images": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "price": {
+                    "type": "integer"
+                },
+                "product_id": {
+                    "type": "integer"
+                },
+                "qty_in_stock": {
+                    "type": "integer"
+                }
+            }
+        },
+        "request.ProductReq": {
             "type": "object",
             "required": [
                 "brand_id",
@@ -543,6 +950,21 @@ const docTemplate = `{
                 }
             }
         },
+        "request.UpdateCartReq": {
+            "type": "object",
+            "required": [
+                "product_item_id",
+                "quantity"
+            ],
+            "properties": {
+                "product_item_id": {
+                    "type": "integer"
+                },
+                "quantity": {
+                    "type": "integer"
+                }
+            }
+        },
         "request.UpdateProductReq": {
             "type": "object",
             "properties": {
@@ -563,6 +985,14 @@ const docTemplate = `{
                 },
                 "product_name": {
                     "type": "string"
+                }
+            }
+        },
+        "request.Variation": {
+            "type": "object",
+            "properties": {
+                "variation_option_id": {
+                    "type": "integer"
                 }
             }
         },

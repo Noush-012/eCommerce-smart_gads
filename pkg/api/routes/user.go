@@ -6,7 +6,8 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func UserRoutes(api *gin.RouterGroup, userHandler *handler.UserHandler, productHandler *handler.ProductHandler) {
+func UserRoutes(api *gin.RouterGroup, userHandler *handler.UserHandler, productHandler *handler.ProductHandler, paymentHandler *handler.PaymentHandler,
+	orderHandler *handler.OrderHandler) {
 
 	// Signup
 	signup := api.Group("/signup")
@@ -32,8 +33,28 @@ func UserRoutes(api *gin.RouterGroup, userHandler *handler.UserHandler, productH
 	// products routes
 	products := api.Group("/products")
 	{
-		products.GET("/", productHandler.ListProducts) // show products
-		// products.GET("/product-item/:product_id")      // show product items of a product
+		products.GET("/", productHandler.ListProducts)                           // show products
+		products.GET("/product-item/:product_id", productHandler.GetProductItem) // show product items of a product
+	}
+	// cart routes
+	cart := api.Group("/cart")
+	{
+		cart.GET("/", userHandler.GetcartItems)
+		cart.POST("/", userHandler.AddToCart)
+		cart.PUT("/", userHandler.UpdateCart)
+		cart.DELETE("/", userHandler.DeleteCartItem)
+		cart.GET("/checkout", orderHandler.CheckOut)
+		cart.GET("/payment-option", paymentHandler.GetAllPaymentOptions)
+		cart.GET("checkout/:id", orderHandler.PlaceCODOrder)
+	}
+	order := api.Group("/orders")
+	{
+		order.GET("/")
+	}
+	profile := api.Group("/profile")
+	{
+		profile.GET("/", userHandler.Profile)
+		profile.POST("/address", userHandler.AddAddress)
 	}
 
 }

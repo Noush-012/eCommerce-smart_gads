@@ -53,3 +53,9 @@ func LoadConfig() (Config, error) {
 func GetConfig() Config {
 	return config
 }
+
+// to get the secret code for JWT
+func GetJWTConfig() string {
+
+	return config.JWT
+}

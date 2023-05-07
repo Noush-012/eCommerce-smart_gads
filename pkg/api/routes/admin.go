@@ -38,8 +38,8 @@ func AdminRoutes(api *gin.RouterGroup, adminHandler *handler.AdminHandler, produ
 		// Brand
 		brand := api.Group("/brands")
 		{
-			brand.GET("/")
-			brand.POST("/", productHandler.AddBrand)
+			brand.GET("/", productHandler.GetAllBrands)
+			brand.POST("/", productHandler.AddCategory)
 		}
 
 		// Product
@@ -53,8 +53,8 @@ func AdminRoutes(api *gin.RouterGroup, adminHandler *handler.AdminHandler, produ
 			product.PUT("/", productHandler.UpdateProduct)
 			// To delete product
 			product.DELETE("/", productHandler.DeleteProduct)
-			// Get product item
 			// Add product item
+			product.POST("/product-item", productHandler.AddProductItem)
 
 			// Order
 

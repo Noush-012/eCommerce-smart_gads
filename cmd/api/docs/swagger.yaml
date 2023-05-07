@@ -20,10 +20,49 @@ definitions:
     required:
     - password
     type: object
+  request.AddToCartReq:
+    properties:
+      product_item_id:
+        type: integer
+      quantity:
+        type: integer
+      user_id:
+        type: integer
+    required:
+    - product_item_id
+    - quantity
+    type: object
+  request.AddressReq:
+    type: object
+  request.Block:
+    properties:
+      user_id:
+        type: integer
+    required:
+    - user_id
+    type: object
+  request.CategoryReq:
+    properties:
+      brand_category_name:
+        type: string
+      id:
+        type: integer
+      parent_id:
+        type: integer
+    type: object
+  request.DeleteCartItemReq:
+    properties:
+      product_item_id:
+        type: integer
+    required:
+    - product_item_id
+    type: object
   request.DeleteProductReq:
     properties:
       Prod_id:
         type: integer
+    required:
+    - Prod_id
     type: object
   request.LoginData:
     properties:
@@ -52,7 +91,34 @@ definitions:
     - otp
     - user_id
     type: object
-  request.ReqProduct:
+  request.ProductItemReq:
+    properties:
+      SKU:
+        type: string
+      configurations:
+        additionalProperties:
+          $ref: '#/definitions/request.Variation'
+        type: object
+      discount_price:
+        type: integer
+      images:
+        items:
+          type: string
+        type: array
+      price:
+        type: integer
+      product_id:
+        type: integer
+      qty_in_stock:
+        type: integer
+    required:
+    - SKU
+    - configurations
+    - images
+    - product_id
+    - qty_in_stock
+    type: object
+  request.ProductReq:
     properties:
       brand_id:
         type: integer
@@ -111,6 +177,16 @@ definitions:
     - phone
     - user_name
     type: object
+  request.UpdateCartReq:
+    properties:
+      product_item_id:
+        type: integer
+      quantity:
+        type: integer
+    required:
+    - product_item_id
+    - quantity
+    type: object
   request.UpdateProductReq:
     properties:
       brand_id:
@@ -125,6 +201,11 @@ definitions:
         type: integer
       product_name:
         type: string
+    type: object
+  request.Variation:
+    properties:
+      variation_option_id:
+        type: integer
     type: object
   response.Response:
     properties:
@@ -150,6 +231,46 @@ paths:
       summary: api for user home page
       tags:
       - Home
+  /account:
+    get:
+      operationId: Account
+      responses:
+        "200":
+          description: Successfully user account details found
+        "500":
+          description: faild to show user details
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: api for see user details
+      tags:
+      - User Account
+  /account/address:
+    post:
+      description: get a new address from user to store the the database
+      operationId: AddAddress
+      parameters:
+      - description: Input Field
+        in: body
+        name: inputs
+        required: true
+        schema:
+          $ref: '#/definitions/request.AddressReq'
+      responses:
+        "200":
+          description: Successfully address added
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: inavlid input
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: api for adding a new address for user
+      tags:
+      - User Address
   /admin:
     get:
       operationId: AdminHome
@@ -165,7 +286,7 @@ paths:
     post:
       operationId: AdminLogin
       parameters:
-      - description: inputs
+      - description: Credentials
         in: body
         name: input
         required: true
@@ -189,26 +310,26 @@ paths:
       - Admin Login
   /admin/products:
     post:
-      operationId: AddBrand
+      operationId: AddCategory
       parameters:
       - description: inputs
         in: body
         name: input
         required: true
         schema:
-          $ref: '#/definitions/request.ReqProduct'
+          $ref: '#/definitions/request.CategoryReq'
       responses:
         "200":
-          description: Successfuly added a new brand in database
+          description: Successfuly added a new brand/Category in database
           schema:
             $ref: '#/definitions/response.Response'
         "400":
           description: Missing or invalid entry
           schema:
             $ref: '#/definitions/response.Response'
-      summary: api for admin to add a parent brand
+      summary: api for admin to add a parent category or child brand
       tags:
-      - Admin Brand
+      - Admin Brand / Category
     put:
       operationId: UpdateProduct
       parameters:
@@ -232,6 +353,32 @@ paths:
           schema:
             $ref: '#/definitions/response.Response'
       summary: api for admin to delete a product
+      tags:
+      - Admin Product
+  /admin/products/product-item:
+    post:
+      operationId: AddProductItem
+      parameters:
+      - description: inputs
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/request.ProductItemReq'
+      responses:
+        "200":
+          description: Product item added successful
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Missing or invalid input
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: failed to add product item
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: api for admin to add product item for particular product
       tags:
       - Admin Product
   /admin/users:
@@ -258,6 +405,133 @@ paths:
       summary: api for admin to list users
       tags:
       - Admin User
+  /admin/users/block:
+    patch:
+      operationId: BlockUser
+      parameters:
+      - description: inputs
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/request.Block'
+      responses:
+        "200":
+          description: Successfully changed user block_status
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: invalid input
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: api for admin to block or unblock user
+      tags:
+      - Admin User
+  /brands:
+    get:
+      operationId: ListBrands-admin
+      responses:
+        "200":
+          description: Successfuly listed all brands
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Failed to get brands
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: api for admin to list all brands
+      tags:
+      - Product brands
+  /cart:
+    delete:
+      description: user can delete a stock in product to cart
+      operationId: DeleteCartItem
+      parameters:
+      - description: Input Field
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/request.DeleteCartItemReq'
+      responses:
+        "200":
+          description: Successfuly deleted product item from cart
+        "500":
+          description: Something went wrong!
+      security:
+      - ApiKeyAuth: []
+      summary: api for delete product item from cart
+      tags:
+      - User Cart
+    get:
+      description: user can get cart items
+      operationId: UserGetCartItems
+      parameters:
+      - description: Page Number
+        in: query
+        name: page_number
+        type: integer
+      - description: Count Of Order
+        in: query
+        name: count
+        type: integer
+      responses:
+        "200":
+          description: Successfuly get cart items
+      security:
+      - ApiKeyAuth: []
+      summary: api for user to get cart items
+      tags:
+      - User GetCartItems
+    post:
+      description: user can update a stock in product to cart
+      operationId: UpdateCart
+      parameters:
+      - description: Input Field
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/request.UpdateCartReq'
+      responses:
+        "200":
+          description: Successfuly updated product item in cart
+        "500":
+          description: Something went wrong!
+      security:
+      - ApiKeyAuth: []
+      summary: api for update user cart
+      tags:
+      - User Cart
+  /carts/place-order/cod:
+    post:
+      operationId: PlaceCODOrder
+      parameters:
+      - description: Payment option ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: successfully order placed in COD
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: invalid input
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: failed to save shop order
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: api for user to place an order on cart with COD
+      tags:
+      - User Cart
   /login:
     post:
       operationId: UserLogin
@@ -278,7 +552,7 @@ paths:
           schema:
             $ref: '#/definitions/response.Response'
         "500":
-          description: failed to send OTP
+          description: Something went wrong !
           schema:
             $ref: '#/definitions/response.Response'
       security:

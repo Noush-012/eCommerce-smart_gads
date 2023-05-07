@@ -33,11 +33,29 @@ func ConnToDB(cfg config.Config) (*gorm.DB, error) {
 		// Users
 		domain.Users{},
 		domain.Admin{},
+		domain.Address{},
+		domain.UserAddress{},
 
 		// Product tables
+		domain.Category{},
 		domain.Product{},
-		domain.ProductVarient{},
-		domain.Brand{},
+		domain.ProductItem{},
+		domain.ProductConfig{},
+		domain.Variation{},
+		domain.VariationOption{},
+		domain.ProductImage{},
+
+		// cart tables
+		domain.Cart{},
+		domain.CartItem{},
+
+		// payment tables
+		domain.PaymentOption{},
+		domain.PaymentMethod{},
+
+		// Order tables
+		domain.ShopOrder{},
+		domain.OrderStatus{},
 	)
 	if err != nil {
 		log.Fatal("Migration failed")

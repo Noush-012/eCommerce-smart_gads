@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"fmt"
 	"net/http"
 	"time"
 
@@ -48,7 +49,7 @@ func authHelper(ctx *gin.Context, user string) {
 		})
 		return
 	}
+	// claim the" userId and set it on context
+	ctx.Set("userId", fmt.Sprint(claims.Id))
 
-	// claim the userId and set it on context
-	ctx.Set("userId", claims.Id)
 }

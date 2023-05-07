@@ -8,6 +8,9 @@ import (
 	"github.com/Noush-012/Project-eCommerce-smart_gads/pkg/domain"
 	"github.com/Noush-012/Project-eCommerce-smart_gads/pkg/repository/interfaces"
 	service "github.com/Noush-012/Project-eCommerce-smart_gads/pkg/useCase/interfaces"
+	"github.com/Noush-012/Project-eCommerce-smart_gads/pkg/utils/request"
+	"github.com/Noush-012/Project-eCommerce-smart_gads/pkg/utils/response"
+	"github.com/Noush-012/Project-eCommerce-smart_gads/pkg/verify"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -56,6 +59,17 @@ func (u *UserUseCase) Login(ctx context.Context, user domain.Users) (domain.User
 	} else if DBUser.ID == 0 {
 		return user, errors.New("user not exist")
 	}
+	// Check if the user blocked by admin
+	if DBUser.BlockStatus {
+		return user, errors.New("user blocked by admin")
+	}
+
+	if _, err := verify.TwilioSendOTP("+91" + DBUser.Phone); err != nil {
+		// response := response.ErrorResponse(500, "failed to send otp", err.Error(), nil)
+		// c.JSON(http.StatusInternalServerError, response)
+		return user, fmt.Errorf("failed to send otp %v",
+			err)
+	}
 	// check password with hashed pass
 	if bcrypt.CompareHashAndPassword([]byte(DBUser.Password), []byte(user.Password)) != nil {
 		return user, errors.New("password incorrect")
@@ -73,4 +87,47 @@ func (u *UserUseCase) OTPLogin(ctx context.Context, user domain.Users) (domain.U
 		return user, errors.New("user not exist")
 	}
 	return DBUser, nil
+}
+
+func (u *UserUseCase) SaveCartItem(ctx context.Context, addToCart request.AddToCartReq) error {
+	if err := u.userRepository.SavetoCart(ctx, addToCart); err != nil {
+		return err
+	}
+	return nil
+}
+func (u *UserUseCase) GetCartItemsbyCartId(ctx context.Context, page request.ReqPagination, userID uint) (CartItems []response.CartItemResp, err error) {
+	cartItems, err := u.userRepository.GetCartItemsbyUserId(ctx, page, userID)
+	if err != nil {
+		return nil, err
+	}
+	return cartItems, nil
+}
+
+func (u *UserUseCase) UpdateCart(ctx context.Context, cartUpadates request.UpdateCartReq) error {
+	if err := u.userRepository.UpdateCart(ctx, cartUpadates); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (u *UserUseCase) RemoveCartItem(ctx context.Context, DelCartItem request.DeleteCartItemReq) error {
+	if err := u.userRepository.RemoveCartItem(ctx, DelCartItem); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (u *UserUseCase) Profile(ctx context.Context, userId uint) (domain.Users, error) {
+	user, err := u.userRepository.GetUserbyID(ctx, userId)
+	if err != nil {
+		return user, err
+	}
+	return user, nil
+}
+
+func (u *UserUseCase) Addaddress(ctx context.Context, address domain.Address) error {
+	if err := u.userRepository.SaveAddress(ctx, address); err != nil {
+		return err
+	}
+	return nil
 }

@@ -13,13 +13,15 @@ type ProductRepository interface {
 	GetAllProducts(ctx context.Context, page request.ReqPagination) (products []response.ResponseProduct, err error)
 	FindProduct(ctx context.Context, product domain.Product) (domain.Product, error)
 	SaveProduct(ctx context.Context, product domain.Product) error
-
-	// Brand CRUD section
-	FindBrand(ctx context.Context, brand domain.Brand) (domain.Brand, error)
-	SaveBrand(ctx context.Context, brand domain.Brand) (err error)
-	GetAllBrand(ctx context.Context) ([]response.Brand, error)
-
 	FindProductByID(ctx context.Context, productID uint) (product domain.Product, err error)
 	UpdateProduct(ctx context.Context, product domain.Product) error
 	DeleteProduct(ctx context.Context, productID uint) (domain.Product, error)
+
+	AddProductItem(ctx context.Context, productItem request.ProductItemReq) error
+	GetProductItems(ctx context.Context, productId uint) ([]response.ProductItemResp, error)
+
+	// Brand CRUD section
+	FindBrand(ctx context.Context, brand request.CategoryReq) (request.CategoryReq, error)
+	AddCategory(ctx context.Context, brand request.CategoryReq) (err error)
+	GetAllBrand(ctx context.Context) (brand []response.Brand, err error)
 }
