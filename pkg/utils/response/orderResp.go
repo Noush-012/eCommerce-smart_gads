@@ -18,13 +18,13 @@ type ShopOrder struct {
 }
 
 type OrderHistory struct {
-	OrderID      uint      `json:"order_id"`
-	OrderDate    time.Time `json:"order_date"`
-	OrderStatus  string    `json:"order_status"`
-	DeliveryDate time.Time `json:"delivery_date"`
-	OrderTotal   float64   `json:"order_total"`
-	Rating       uint      `json:"rating"`
-	Actions      Actions   `json:"actions"`
+	OrderID        uint      `json:"order_id"`
+	OrderDate      time.Time `json:"order_date"`
+	OrderStatus    string    `json:"order_status"`
+	DeliveryStatus string    `json:"delivery_status"`
+	OrderTotal     float64   `json:"order_total"`
+	Rating         uint      `json:"rating"`
+	Actions        Actions   `json:"actions"`
 }
 type Actions struct {
 	Id   uint   `json:"-" `

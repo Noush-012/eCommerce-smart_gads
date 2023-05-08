@@ -131,3 +131,10 @@ func (u *UserUseCase) Addaddress(ctx context.Context, address domain.Address) er
 	}
 	return nil
 }
+func (u *UserUseCase) GetAllAddress(ctx context.Context, userId uint) (address []response.Address, err error) {
+	address, err = u.userRepository.GetAllAddress(ctx, userId)
+	if err != nil {
+		return address, err
+	}
+	return address, nil
+}

@@ -54,7 +54,9 @@ func UserRoutes(api *gin.RouterGroup, userHandler *handler.UserHandler, productH
 	profile := api.Group("/profile")
 	{
 		profile.GET("/", userHandler.Profile)
+		profile.GET("/address", userHandler.GetAllAddress)
 		profile.POST("/address", userHandler.AddAddress)
+
 	}
 
 }

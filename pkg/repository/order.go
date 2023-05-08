@@ -166,5 +166,8 @@ func (o *OrderDatabase) ClearUserCart(ctx context.Context, userId uint) error {
 }
 
 func (o *OrderDatabase) GetOrderHistory(ctx context.Context, page request.ReqPagination) {
-
+	//	query := `SELECT so.id, so.order_date,os.status,
+	//
+	// FROM shop_orders so
+	// JOIN order_statuses os ON os.id = so.order_status_id`
 }

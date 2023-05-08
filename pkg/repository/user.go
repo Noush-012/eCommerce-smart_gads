@@ -52,13 +52,31 @@ func (i *userDatabase) SaveUser(ctx context.Context, user domain.Users) error {
 }
 
 func (i *userDatabase) SaveAddress(ctx context.Context, userAddress domain.Address) error {
+	var defaultAddressID uint
 	query := `INSERT INTO addresses (user_id ,house,address_line1,address_line2,city,state,zip_code,country) 
-	VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`
-	if err := i.DB.Exec(query, userAddress.UserID, userAddress.House, userAddress.AddressLine1,
-		userAddress.AddressLine2, userAddress.City, userAddress.State, userAddress.ZipCode, userAddress.Country).Error; err != nil {
+	VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id`
+	if err := i.DB.Raw(query, userAddress.UserID, userAddress.House, userAddress.AddressLine1,
+		userAddress.AddressLine2, userAddress.City, userAddress.State, userAddress.ZipCode, userAddress.Country).Scan(&defaultAddressID).Error; err != nil {
+		return err
+	}
+
+	// set default if no existing default address
+	query = `INSERT INTO user_addresses (user_id,address_id,is_default)
+	SELECT $1, $2, true
+	WHERE NOT EXISTS (
+  	SELECT 1 FROM user_addresses WHERE user_id = $1 AND is_default = true)`
+	if err := i.DB.Exec(query, userAddress.UserID, defaultAddressID).Error; err != nil {
 		return err
 	}
 	return nil
+}
+
+func (u *userDatabase) GetAllAddress(ctx context.Context, userId uint) (address []response.Address, err error) {
+	query := `SELECT * FROM addresses WHERE user_id = ?`
+	if err := u.DB.Raw(query, userId).Scan(&address).Error; err != nil {
+		return address, err
+	}
+	return address, nil
 }
 
 func (i *userDatabase) SavetoCart(ctx context.Context, addToCart request.AddToCartReq) error {

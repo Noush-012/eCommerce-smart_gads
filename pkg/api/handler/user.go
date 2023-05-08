@@ -320,6 +320,7 @@ func (u *UserHandler) Profile(c *gin.Context) {
 	if err != nil {
 		response := response.ErrorResponse(500, "Something went wrong!", err.Error(), nil)
 		c.JSON(500, response)
+		return
 	}
 	response := response.SuccessResponse(200, "Successfuly got profile", user)
 	c.JSON(200, response)
@@ -350,8 +351,27 @@ func (u *UserHandler) AddAddress(c *gin.Context) {
 	if err := u.userService.Addaddress(c, body); err != nil {
 		response := response.ErrorResponse(500, "Something went wrong!", err.Error(), body)
 		c.JSON(500, response)
+		return
 	}
 	response := response.SuccessResponse(200, "Save address successful", body)
 	c.JSON(200, response)
 
+}
+
+func (u *UserHandler) GetAllAddress(c *gin.Context) {
+	// Get user id from context
+	userId := utils.GetUserIdFromContext(c)
+	if userId == 0 {
+		response := response.ErrorResponse(500, "No user detected!", "", nil)
+		c.IndentedJSON(400, response)
+		return
+	}
+	address, err := u.userService.GetAllAddress(c, userId)
+	if err != nil {
+		response := response.ErrorResponse(500, "Something went wrong!", err.Error(), nil)
+		c.IndentedJSON(500, response)
+		return
+	}
+	response := response.SuccessResponse(200, "Get all address successful", address)
+	c.IndentedJSON(200, response)
 }

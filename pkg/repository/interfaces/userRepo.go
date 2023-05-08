@@ -13,6 +13,7 @@ type UserRepository interface {
 	FindUser(ctx context.Context, user domain.Users) (domain.Users, error)
 	GetUserbyID(ctx context.Context, userId uint) (domain.Users, error)
 	SaveAddress(ctx context.Context, userAddress domain.Address) error
+	GetAllAddress(ctx context.Context, userId uint) (address []response.Address, err error)
 
 	SavetoCart(ctx context.Context, addToCart request.AddToCartReq) error
 	GetCartIdByUserId(ctx context.Context, userId uint) (cartId uint, err error)
