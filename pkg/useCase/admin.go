@@ -71,3 +71,20 @@ func (a *adminService) BlockUser(c context.Context, userID uint) error {
 
 	return a.adminRepository.BlockUser(c, userID)
 }
+
+// Get user order history
+func (a *adminService) GetUserOrderHistory(c context.Context, userId uint) (orderHistory []domain.ShopOrder, err error) {
+	orderHistory, err = a.adminRepository.GetUserOrderHistory(c, userId)
+	if err != nil {
+		return orderHistory, err
+	}
+	return orderHistory, err
+}
+
+func (a *adminService) UpdateOrderStatus(c context.Context, UpdateData request.UpdateOrderStatus) (UpdatedOrder response.ShopOrder, err error) {
+	UpdatedOrder, err = a.adminRepository.ChangeOrderStatus(c, UpdateData)
+	if err != nil {
+		return UpdatedOrder, err
+	}
+	return UpdatedOrder, nil
+}

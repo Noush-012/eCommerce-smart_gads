@@ -171,23 +171,50 @@ func (a *AdminHandler) ListUsers(c *gin.Context) {
 // @Router /admin/users/block [patch]
 // @Success 200 {object} response.Response{} "Successfully changed user block_status"
 // @Failure 400 {object} response.Response{} "invalid input"
-func (a *AdminHandler) BlockUser(ctx *gin.Context) {
+func (a *AdminHandler) BlockUser(c *gin.Context) {
 
-	var body request.Block
+	var body request.UserID
 
-	if err := ctx.ShouldBindJSON(&body); err != nil {
+	if err := c.ShouldBindJSON(&body); err != nil {
 		response := response.ErrorResponse(400, "invalid input", err.Error(), body)
-		ctx.JSON(http.StatusBadRequest, response)
+		c.JSON(http.StatusBadRequest, response)
 		return
 	}
-	err := a.adminService.BlockUser(ctx, body.UserID)
+	err := a.adminService.BlockUser(c, body.UserID)
 	if err != nil {
 		response := response.ErrorResponse(400, "faild to change user block_status", err.Error(), nil)
-		ctx.JSON(http.StatusBadRequest, response)
+		c.JSON(http.StatusBadRequest, response)
 		return
 	}
 
 	response := response.SuccessResponse(200, "Successfully changed user block_status", body.UserID)
 	// if successfully blocked or unblock user then response 200
-	ctx.JSON(http.StatusOK, response)
+	c.JSON(http.StatusOK, response)
+}
+
+func (a *AdminHandler) UserOrderHistory(c *gin.Context) {
+
+	var body request.UserID
+	c.ShouldBindJSON(&body)
+
+}
+
+func (a *AdminHandler) ChangeOrderStatus(c *gin.Context) {
+	// take order status id from url
+	var body request.UpdateOrderStatus
+	err := c.ShouldBindJSON(&body)
+	if err != nil {
+		response := response.ErrorResponse(400, "Missing inputs", err.Error(), body)
+		c.JSON(400, response)
+		return
+	}
+	UpdatedOrder, err := a.adminService.UpdateOrderStatus(c, body)
+	if err != nil {
+		response := response.ErrorResponse(500, "Something went wrong!", err.Error(), nil)
+		c.JSON(500, response)
+		return
+	}
+	response := response.SuccessResponse(200, "Order status updated successfully!", UpdatedOrder)
+	c.JSON(200, response)
+
 }

@@ -25,3 +25,10 @@ func (p *PaymentDatabase) GetAllPaymentOptions(ctx context.Context) (PaymentOpti
 	return PaymentOptions, nil
 
 }
+func (p *PaymentDatabase) GetPaymentOptionByID(ctx context.Context, id uint) (PayOption string, err error) {
+	query := `SELECT name FROM payment_options WHERE id = $1`
+	if err := p.DB.Raw(query, id).Scan(&PayOption).Error; err != nil {
+		return PayOption, err
+	}
+	return PayOption, nil
+}

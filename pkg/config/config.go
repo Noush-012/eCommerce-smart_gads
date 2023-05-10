@@ -18,10 +18,14 @@ type Config struct {
 	AUTHTOKEN  string `mapstructure:"TWILIO_AUTH_TOKEN"`
 	ACCOUNTSID string `mapstructure:"TWILIO_ACCOUNT_SID"`
 	SERVICESID string `mapstructure:"TWILIO_SERVICES_ID"`
+
+	RazorPayKey    string `mapstructure:"RAZOR_PAY_KEY"`
+	RazorPaySecret string `mapstructure:"RAZOR_PAY_SECRET"`
 }
 
 var envVariables = []string{
-	"DATABASE", "SECRET_KEY", "TWILIO_AUTH_TOKEN", "TWILIO_ACCOUNT_SID", "TWILIO_SERVICES_ID",
+	"DATABASE", "SECRET_KEY", "TWILIO_AUTH_TOKEN", "TWILIO_ACCOUNT_SID",
+	"TWILIO_SERVICES_ID", "RAZOR_PAY_KEY", "RAZOR_PAY_SECRET",
 }
 
 var config Config

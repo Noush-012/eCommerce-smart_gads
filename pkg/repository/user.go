@@ -198,3 +198,22 @@ func (i *userDatabase) RemoveCartItem(ctx context.Context, DelCartItem request.D
 	return nil
 
 }
+func (i *userDatabase) GetEmailPhoneByUserId(ctx context.Context, userID uint) (contact response.UserContact, err error) {
+	// find data
+	query := `SELECT email, phone FROM users WHERE id = ?`
+	if err := i.DB.Raw(query, userID).Scan(&contact).Error; err != nil {
+		return contact, err
+	}
+	return contact, nil
+}
+
+func (i *userDatabase) GetDefaultAddress(ctx context.Context, userId uint) (address response.Address, err error) {
+	query := `SELECT a.house, a.address_line1, a.address_line2, a.city, a.state, a.zip_code, a.country
+FROM addresses a
+JOIN user_addresses ua ON ua.address_id  = a.id
+WHERE ua.user_id = ? AND ua.is_default = true`
+	if err := i.DB.Raw(query, userId).Scan(&address).Error; err != nil {
+		return address, err
+	}
+	return address, nil
+}

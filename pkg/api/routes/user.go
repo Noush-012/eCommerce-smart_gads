@@ -49,7 +49,7 @@ func UserRoutes(api *gin.RouterGroup, userHandler *handler.UserHandler, productH
 	}
 	order := api.Group("/orders")
 	{
-		order.GET("/")
+		order.GET("/", orderHandler.GetAllOrderHistory)
 	}
 	profile := api.Group("/profile")
 	{

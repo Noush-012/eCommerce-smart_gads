@@ -107,6 +107,9 @@ func (o *OrderDatabase) PlaceCODOrder(ctx context.Context, userId uint) (shopOrd
 	shopOrder.ShippingAddress.ID = checkOut.DefaultShipping.ID
 	shopOrder.ShippingAddress = checkOut.DefaultShipping
 	shopOrder.OrderTotal = float64(checkOut.TotalPrice)
+	shopOrder.PaymentMethod = "Cash on delivery"
+	shopOrder.PaymentStatus = "Payment pending"
+	shopOrder.TransactionID = ""
 
 	// save shop order data
 	type OrderData struct {
@@ -120,7 +123,7 @@ func (o *OrderDatabase) PlaceCODOrder(ctx context.Context, userId uint) (shopOrd
 		(SELECT id AS order_status_id FROM order_statuses WHERE status = 'Placed'),
 		(SELECT id FROM payment_options WHERE name = 'COD'),
 		(SELECT id FROM payment_methods WHERE name = 'Cash on delivery'),
-		(SELECT id FROM payment_statuses WHERE status = 'Payment peding')) RETURNING id, order_status_id`
+		(SELECT id FROM payment_statuses WHERE status = 'Payment pending')) RETURNING id, order_status_id`
 	if err := tnx.Raw(query, userId, shopOrder.OrderDate, shopOrder.OrderTotal,
 		shopOrder.ShippingAddress.ID).Scan(&orderData).Error; err != nil {
 		tnx.Rollback()
@@ -128,9 +131,6 @@ func (o *OrderDatabase) PlaceCODOrder(ctx context.Context, userId uint) (shopOrd
 	}
 	shopOrder.OrderID = orderData.OrderID
 	shopOrder.OrderStatusID = orderData.OrderStatusID
-	shopOrder.TransactionID = ""
-	shopOrder.PaymentMethod = "Cash on delivery"
-	shopOrder.PaymentStatus = "Payment pending"
 
 	shopOrder.OrderStatus, err = o.OrderStatus(ctx, shopOrder.OrderStatusID)
 	if err != nil {
@@ -165,9 +165,20 @@ func (o *OrderDatabase) ClearUserCart(ctx context.Context, userId uint) error {
 	return nil
 }
 
-func (o *OrderDatabase) GetOrderHistory(ctx context.Context, page request.ReqPagination) {
-	//	query := `SELECT so.id, so.order_date,os.status,
-	//
-	// FROM shop_orders so
-	// JOIN order_statuses os ON os.id = so.order_status_id`
+func (o *OrderDatabase) GetOrderHistory(ctx context.Context, page request.ReqPagination, userId uint) (orderHisory []response.OrderHistory, err error) {
+	limit := page.Count
+	offset := (page.PageNumber - 1) * limit
+
+	query := `SELECT so.id, so.order_date,os.status, so.order_total, po.name AS payment_type, pm.name AS payment_method, ps.status AS payment_status
+	FROM shop_orders so
+	JOIN order_statuses os ON os.id = so.order_status_id
+	JOIN payment_options po ON so.payment_option_id = po.id
+	JOIN payment_methods pm ON pm.id = so.payment_method_id 
+	JOIN payment_statuses ps on ps.id = so.payment_status_id
+	WHERE so.user_id = $1 ORDER BY so.order_date DESC LIMIT $2 OFFSET $3;`
+	if err := o.DB.Raw(query, userId, limit, offset).Scan(&orderHisory).Error; err != nil {
+		return orderHisory, err
+	}
+	return orderHisory, nil
+
 }

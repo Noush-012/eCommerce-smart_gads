@@ -1,8 +1,13 @@
 package handler
 
 import (
+	"errors"
+	"fmt"
+	"net/http"
+
 	service "github.com/Noush-012/Project-eCommerce-smart_gads/pkg/useCase/interfaces"
 	"github.com/Noush-012/Project-eCommerce-smart_gads/pkg/utils"
+	"github.com/Noush-012/Project-eCommerce-smart_gads/pkg/utils/request"
 	"github.com/Noush-012/Project-eCommerce-smart_gads/pkg/utils/response"
 	"github.com/gin-gonic/gin"
 )
@@ -64,5 +69,63 @@ func (o *OrderHandler) CheckOut(c *gin.Context) {
 	}
 	response := response.SuccessResponse(200, "Successfuly checked out", CheckOut)
 	c.JSON(200, response)
+
+}
+
+func (o *OrderHandler) GetAllOrderHistory(c *gin.Context) {
+	var userId uint
+	var err error
+	// if url path is admin/users/orders
+	if c.Request.URL.Path == "/admin/users/orders" {
+		userId, err = utils.StringToUint(c.Query("userId"))
+		fmt.Println(userId)
+		if err != nil {
+			response := response.ErrorResponse(400, "Missing user id", err.Error(), nil)
+			c.JSON(http.StatusBadRequest, response)
+			return
+		}
+	} else {
+		// get user from context
+		userId = utils.GetUserIdFromContext(c)
+	}
+
+	count, err1 := utils.StringToUint(c.Query("count"))
+	pageNumber, err2 := utils.StringToUint(c.Query("page_number"))
+
+	err1 = errors.Join(err1, err2)
+	if err1 != nil {
+		response := response.ErrorResponse(400, "Missing or invalid inputs", err1.Error(), nil)
+		c.JSON(http.StatusBadRequest, response)
+		return
+	}
+
+	pagination := request.ReqPagination{
+		PageNumber: pageNumber,
+		Count:      count,
+	}
+
+	orderHistory, err := o.OrderService.GetOrderHistory(c, pagination, userId)
+	if err != nil {
+		response := response.ErrorResponse(500, "Something went wrong!", err.Error(), orderHistory)
+		c.JSON(500, response)
+		return
+	}
+	response := response.SuccessResponse(200, "Order history successful", orderHistory)
+	c.JSON(200, response)
+
+}
+
+func (o *OrderHandler) RazorPayCheckout(c *gin.Context) {
+	// get user from context
+	userId := utils.GetUserIdFromContext(c)
+
+	// Verify payment request id is razorpay
+	var body request.RazorpayReq
+	if err := c.BindJSON(&body); err != nil {
+		response := "invalid input"
+		c.JSON(http.StatusBadRequest, response)
+		return
+	}
+	body.UserID = userId
 
 }

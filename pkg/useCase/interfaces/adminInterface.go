@@ -13,4 +13,6 @@ type AdminService interface {
 	Login(c context.Context, admin domain.Admin) (domain.Admin, error)
 	GetAllUser(c context.Context, page request.ReqPagination) (users []response.UserRespStrcut, err error)
 	BlockUser(c context.Context, userID uint) error
+	GetUserOrderHistory(c context.Context, userId uint) (orderHistory []domain.ShopOrder, err error)
+	UpdateOrderStatus(c context.Context, UpdateData request.UpdateOrderStatus) (UpdatedOrder response.ShopOrder, err error)
 }

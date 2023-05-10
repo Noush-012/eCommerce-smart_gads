@@ -66,3 +66,8 @@ type CheckoutOrder struct {
 	Discount       uint           `json:"discount"`
 	DefaultAddress domain.Address `json:"address"`
 }
+
+type UserContact struct {
+	Email string
+	Phone string
+}
