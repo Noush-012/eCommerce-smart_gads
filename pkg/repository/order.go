@@ -182,3 +182,18 @@ func (o *OrderDatabase) GetOrderHistory(ctx context.Context, page request.ReqPag
 	return orderHisory, nil
 
 }
+
+func (o *OrderDatabase) GetOrderByOrderId(ctx context.Context, userId, OrderId uint) (orderData response.ShopOrder, err error) {
+	query := `SELECT so.id, so.order_date,os.status, so.order_total, po.name AS payment_type, pm.name AS payment_method, ps.status AS payment_status
+FROM shop_orders so
+JOIN order_statuses os ON os.id = so.order_status_id
+JOIN payment_options po ON so.payment_option_id = po.id
+JOIN payment_methods pm ON pm.id = so.payment_method_id 
+JOIN payment_statuses ps on ps.id = so.payment_status_id
+WHERE so.user_id = $1 AND so.id = $2`
+	if err := o.DB.Raw(query, userId, OrderId).Scan(&orderData).Error; err != nil {
+		return orderData, err
+
+	}
+	return orderData, nil
+}

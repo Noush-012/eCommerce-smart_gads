@@ -21,22 +21,25 @@ type Users struct {
 	UpdatedAt   time.Time `json:"updated_at"`
 }
 
-type UserAddress struct {
-	UserID    uint    `gorm:"not null;unique"`
-	AddressID uint    `gorm:"not null;unique"`
-	IsDefault bool    `gorm:"not null"`
-	Address   Address `gorm:"foreignKey:AddressID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL"`
-}
+//	type UserAddress struct {
+//		UserID    uint    `gorm:"not null;unique"`
+//		AddressID uint    `gorm:"not null;unique"`
+//		IsDefault bool    `gorm:"not null"`
+//		Address   Address `gorm:"foreignKey:AddressID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL"`
+//	}
 type Address struct {
-	ID           uint   `json:"id" gorm:"primaryKey;unique;autoIncrement"`
-	UserID       uint   `json:"-"`
-	House        string `json:"house" gorm:"not null"`
-	AddressLine1 string `json:"address_line_1" gorm:"not null" binding:"required,min=2,max=40"`
-	AddressLine2 string `json:"address_line_2" gorm:"not null" binding:"required,min=2,max=40"`
-	City         string `json:"city" gorm:"not null" binding:"required,min=2,max=20"`
-	State        string `json:"state" gorm:"not null" binding:"required,min=2,max=20"`
-	ZipCode      string `json:"zip_code" gorm:"not null" binding:"required,min=2,max=10"`
-	Country      string `json:"country" gorm:"not null" binding:"required,min=2,max=20"`
+	ID           uint      `json:"id" gorm:"primaryKey;unique;autoIncrement"`
+	UserID       uint      `json:"-"`
+	House        string    `json:"house" gorm:"not null"`
+	AddressLine1 string    `json:"address_line_1" gorm:"not null" binding:"required,min=2,max=40"`
+	AddressLine2 string    `json:"address_line_2" gorm:"not null" binding:"required,min=2,max=40"`
+	City         string    `json:"city" gorm:"not null" binding:"required,min=2,max=20"`
+	State        string    `json:"state" gorm:"not null" binding:"required,min=2,max=20"`
+	ZipCode      string    `json:"zip_code" gorm:"not null" binding:"required,min=2,max=10"`
+	Country      string    `json:"country" gorm:"not null" binding:"required,min=2,max=20"`
+	IsDefault    bool      `json:"-" gorm:"not null;default:false"`
+	CreatedAt    time.Time `gorm:"not null"`
+	UpdatedAt    time.Time
 }
 
 // cart model

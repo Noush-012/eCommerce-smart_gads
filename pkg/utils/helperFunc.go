@@ -49,7 +49,7 @@ func GenerateRazorPayOrder(amount uint, ReceiptId string) (razorpayOrderID inter
 	// Create razorpay client instance
 	rPayClient := razorpay.NewClient(razorPayKey, razorPaySecret)
 	data := map[string]interface{}{
-		"amount":   amount,
+		"amount":   amount * 100,
 		"currency": "INR",
 		"receipt":  ReceiptId,
 	}

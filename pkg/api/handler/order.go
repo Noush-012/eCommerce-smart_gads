@@ -127,5 +127,27 @@ func (o *OrderHandler) RazorPayCheckout(c *gin.Context) {
 		return
 	}
 	body.UserID = userId
+	razorpayOrder, err := o.OrderService.RazorPayCheckout(c, body)
+	if err != nil {
+		response := response.ErrorResponse(500, "Something went wrong!", err.Error(), nil)
+		c.JSON(500, response)
+		return
+	}
+	response := response.SuccessResponse(200, "Razorpay chekout successful", razorpayOrder)
+	c.JSON(200, response)
+
+}
+
+func (o *OrderHandler) RazorpayVerify(c *gin.Context) {
+	// get user from context
+	// userId := utils.GetUserIdFromContext(c)
+	// var body request.RazorpayVerifyReq
+	// if err := c.BindJSON(&body); err != nil {
+	// 	response := "invalid input"
+	// 	c.JSON(http.StatusBadRequest, response)
+	// 	return
+	// }
+
+	// utils.VerifyRazorPayPayment(body.RazorpayOrderId, body.RazorpayPaymentId)
 
 }

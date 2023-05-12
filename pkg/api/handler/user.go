@@ -353,7 +353,28 @@ func (u *UserHandler) AddAddress(c *gin.Context) {
 		c.JSON(500, response)
 		return
 	}
-	response := response.SuccessResponse(200, "Save address successful", body)
+	response := response.SuccessResponse(200, "Save address successful", nil)
+	c.JSON(200, response)
+
+}
+
+func (u *UserHandler) UpdateAddress(c *gin.Context) {
+	// Get user id from context
+	userId := utils.GetUserIdFromContext(c)
+
+	var body request.AddressPatchReq
+	body.UserID = userId
+	if err := c.ShouldBindJSON(&body); err != nil {
+		response := response.ErrorResponse(400, "Missing or invalid entry", err.Error(), body)
+		c.JSON(400, response)
+		return
+	}
+	if err := u.userService.UpdateAddress(c, body); err != nil {
+		response := response.ErrorResponse(500, "Something went wrong!", err.Error(), body)
+		c.JSON(500, response)
+		return
+	}
+	response := response.SuccessResponse(200, "Address updated successfuly", nil)
 	c.JSON(200, response)
 
 }

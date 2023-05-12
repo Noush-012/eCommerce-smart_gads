@@ -131,6 +131,13 @@ func (u *UserUseCase) Addaddress(ctx context.Context, address domain.Address) er
 	}
 	return nil
 }
+func (u *UserUseCase) UpdateAddress(ctx context.Context, address request.AddressPatchReq) error {
+	if err := u.userRepository.UpdateAddress(ctx, address); err != nil {
+		return err
+	}
+	return nil
+
+}
 
 func (u *UserUseCase) GetAllAddress(ctx context.Context, userId uint) (address []response.Address, err error) {
 	address, err = u.userRepository.GetAllAddress(ctx, userId)

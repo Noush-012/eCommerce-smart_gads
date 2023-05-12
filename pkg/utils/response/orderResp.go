@@ -41,8 +41,8 @@ type RazorPayOrderResp struct {
 	AmountToPay     uint        `json:"amount_to_pay"`
 	RazorpayAmount  uint        `json:"razorpay_amount"`
 	RazorpayOrderID interface{} `json:"razorpay_order_id"`
-	Email           string      `json:"email"`
-	Phone           string      `json:"phone"`
-	ShopOrderID     uint        `json:"shop_order_id"`
-	CouponID        uint        `json:"coupon_id"`
+	// Email           string      `json:"email"`
+	// Phone           string      `json:"phone"`
+	// ShopOrderID uint `json:"shop_order_id"`
+	CouponID uint `json:"coupon_id"`
 }

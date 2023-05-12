@@ -14,6 +14,7 @@ type UserService interface {
 	OTPLogin(ctx context.Context, user domain.Users) (domain.Users, error)
 	Profile(ctx context.Context, userId uint) (domain.Users, error)
 	Addaddress(ctx context.Context, address domain.Address) error
+	UpdateAddress(ctx context.Context, address request.AddressPatchReq) error
 	GetAllAddress(ctx context.Context, userId uint) (address []response.Address, err error)
 
 	SaveCartItem(ctx context.Context, addToCart request.AddToCartReq) error

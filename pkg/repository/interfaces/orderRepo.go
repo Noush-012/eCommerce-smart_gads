@@ -16,5 +16,6 @@ type OrderRepository interface {
 
 	// Order
 	OrderStatus(ctx context.Context, id uint) (status string, err error)
+	GetOrderByOrderId(ctx context.Context, userId, OrderId uint) (orderData response.ShopOrder, err error)
 	GetOrderHistory(ctx context.Context, page request.ReqPagination, userId uint) (orderHisory []response.OrderHistory, err error)
 }

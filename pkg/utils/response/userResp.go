@@ -47,7 +47,7 @@ type CartResp struct {
 	DefaultShipping   Address        `json:"default_shipping"`
 }
 type Address struct {
-	ID           uint   `json:"-"`
+	ID           uint   `json:"address_id"`
 	UserID       uint   `json:"-"`
 	House        string `json:"house"`
 	AddressLine1 string `json:"address_line_1"`
@@ -56,6 +56,7 @@ type Address struct {
 	State        string `json:"state"`
 	ZipCode      string `json:"zip_code"`
 	Country      string `json:"country"`
+	IsDefault    bool   `json:"is_default"`
 }
 
 type CheckoutOrder struct {

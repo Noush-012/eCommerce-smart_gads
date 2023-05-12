@@ -15,10 +15,12 @@ import (
 
 type adminService struct {
 	adminRepository interfaces.AdminRepository
+	orderRepositoty interfaces.OrderRepository
 }
 
-func NewAdminService(repo interfaces.AdminRepository) service.AdminService {
-	return &adminService{adminRepository: repo}
+func NewAdminService(repo interfaces.AdminRepository, orderRepo interfaces.OrderRepository) service.AdminService {
+	return &adminService{adminRepository: repo,
+		orderRepositoty: orderRepo}
 }
 func (a *adminService) Signup(c context.Context, admin domain.Admin) error {
 	if dbAdmin, err := a.adminRepository.GetAdmin(c, admin); err != nil {
@@ -86,5 +88,6 @@ func (a *adminService) UpdateOrderStatus(c context.Context, UpdateData request.U
 	if err != nil {
 		return UpdatedOrder, err
 	}
+
 	return UpdatedOrder, nil
 }

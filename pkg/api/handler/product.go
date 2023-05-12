@@ -259,18 +259,23 @@ func (p *ProductHandler) GetProductItem(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, response)
 		return
 	}
-	productItems, err := p.ProductService.GetProductItem(c, productID)
+	productItems, count, err := p.ProductService.GetProductItem(c, productID)
+	// Create a map to combine the count and productItems
+	data := map[string]interface{}{
+		"count":        count,
+		"productItems": productItems,
+	}
 	if err != nil {
-		response := response.ErrorResponse(400, "failed to get product item for given product id", err.Error(), productID)
+		response := response.ErrorResponse(400, "failed to get product item for given product id", err.Error(), data)
 		c.JSON(400, response)
 		return
 	}
 	if productItems == nil {
-		response := response.ErrorResponse(http.StatusBadRequest, "No product items for this product id", err.Error(), productID)
+		response := response.ErrorResponse(http.StatusBadRequest, "No product items for this product id", err.Error(), data)
 		c.JSON(http.StatusBadRequest, response)
 		return
 	}
-	response := response.SuccessResponse(200, "Fetching product item successful and listed below", productItems)
+	response := response.SuccessResponse(200, "Fetching product item successful and listed below", data)
 	c.JSON(200, response)
 
 }

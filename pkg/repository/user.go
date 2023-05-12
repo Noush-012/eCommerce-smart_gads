@@ -53,26 +53,74 @@ func (i *userDatabase) SaveUser(ctx context.Context, user domain.Users) error {
 
 func (i *userDatabase) SaveAddress(ctx context.Context, userAddress domain.Address) error {
 	var defaultAddressID uint
-	query := `INSERT INTO addresses (user_id ,house,address_line1,address_line2,city,state,zip_code,country) 
-	VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id`
+	userAddress.CreatedAt = time.Now()
+	query := `INSERT INTO addresses (user_id ,house,address_line1,address_line2,city,state,zip_code,country,created_at) 
+	VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING id`
 	if err := i.DB.Raw(query, userAddress.UserID, userAddress.House, userAddress.AddressLine1,
-		userAddress.AddressLine2, userAddress.City, userAddress.State, userAddress.ZipCode, userAddress.Country).Scan(&defaultAddressID).Error; err != nil {
+		userAddress.AddressLine2, userAddress.City, userAddress.State, userAddress.ZipCode, userAddress.Country, userAddress.CreatedAt).Scan(&defaultAddressID).Error; err != nil {
 		return err
 	}
 
-	// set default if no existing default address
-	query = `INSERT INTO user_addresses (user_id,address_id,is_default)
-	SELECT $1, $2, true
-	WHERE NOT EXISTS (
-  	SELECT 1 FROM user_addresses WHERE user_id = $1 AND is_default = true)`
+	// set as default if no existing default address
+	query = `UPDATE addresses
+	SET is_default = true
+	WHERE user_id = $1
+	AND is_default = false AND id = $2
+	AND NOT EXISTS (
+	  SELECT 1
+	  FROM addresses
+	  WHERE user_id = $1
+	  AND is_default = true
+	)`
 	if err := i.DB.Exec(query, userAddress.UserID, defaultAddressID).Error; err != nil {
 		return err
 	}
 	return nil
 }
 
+func (i *userDatabase) UpdateAddress(ctx context.Context, userAddress request.AddressPatchReq) error {
+	tnx := i.DB.Begin()
+	// Set all addresses of the user to false except for the new address if new address is default
+	if userAddress.IsDefault {
+		resetQuery := `UPDATE addresses
+				SET is_default = false
+				WHERE user_id = $1`
+		if err := tnx.Exec(resetQuery, userAddress.UserID).Error; err != nil {
+			tnx.Rollback()
+			return err
+		}
+	}
+	query := `UPDATE addresses
+	SET
+		house = COALESCE(NULLIF($1, ''), house),
+		address_line1 = COALESCE(NULLIF($2, ''), address_line1),
+		address_line2 = COALESCE(NULLIF($3, ''), address_line2),
+		city = COALESCE(NULLIF($4, ''), city),
+		state = COALESCE(NULLIF($5, ''), state),
+		zip_code = COALESCE(NULLIF($6, ''), zip_code),
+		country = COALESCE(NULLIF($7, ''), country),
+		is_default = COALESCE($8, is_default),
+		updated_at = $11
+	WHERE
+		user_id = $9
+		AND id = $10`
+	userAddress.UpdatedAt = time.Now()
+	if err := tnx.Exec(query, userAddress.House, userAddress.AddressLine1, userAddress.AddressLine2,
+		userAddress.City, userAddress.State, userAddress.ZipCode,
+		userAddress.Country, userAddress.IsDefault, userAddress.UserID, userAddress.ID, userAddress.UpdatedAt).Error; err != nil {
+		tnx.Rollback()
+		return err
+	}
+	err := tnx.Commit().Error
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func (u *userDatabase) GetAllAddress(ctx context.Context, userId uint) (address []response.Address, err error) {
-	query := `SELECT * FROM addresses WHERE user_id = ?`
+	query := `SELECT * FROM addresses WHERE user_id = ? ORDER BY is_default DESC, updated_at ASC`
+
 	if err := u.DB.Raw(query, userId).Scan(&address).Error; err != nil {
 		return address, err
 	}
@@ -210,8 +258,7 @@ func (i *userDatabase) GetEmailPhoneByUserId(ctx context.Context, userID uint) (
 func (i *userDatabase) GetDefaultAddress(ctx context.Context, userId uint) (address response.Address, err error) {
 	query := `SELECT a.house, a.address_line1, a.address_line2, a.city, a.state, a.zip_code, a.country
 FROM addresses a
-JOIN user_addresses ua ON ua.address_id  = a.id
-WHERE ua.user_id = ? AND ua.is_default = true`
+WHERE a.user_id = ? AND a.is_default = true`
 	if err := i.DB.Raw(query, userId).Scan(&address).Error; err != nil {
 		return address, err
 	}

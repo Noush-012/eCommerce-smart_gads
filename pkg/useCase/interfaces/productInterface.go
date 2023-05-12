@@ -17,7 +17,7 @@ type ProductService interface {
 	DeleteProduct(ctx context.Context, productID uint) (domain.Product, error)
 
 	AddProductItem(ctx context.Context, productItem request.ProductItemReq) error
-	GetProductItem(ctx context.Context, productId uint) (ProductItems []response.ProductItemResp, err error)
+	GetProductItem(ctx context.Context, productId uint) (ProductItems []response.ProductItemResp, count int, err error)
 
 	SKUhelper(ctx context.Context, productId uint) (interface{}, error)
 }
