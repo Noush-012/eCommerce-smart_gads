@@ -2,4 +2,7 @@
 .env
 
 # payload excluding
-/payload/
+payload/
+tmp/
+temp/
+.vscode

@@ -69,6 +69,7 @@ func (o *OrderHandler) CheckOut(c *gin.Context) {
 	}
 	response := response.SuccessResponse(200, "Successfuly checked out", CheckOut)
 	c.JSON(200, response)
+	c.HTML(http.StatusOK, "checkout.html", response)
 
 }
 

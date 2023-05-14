@@ -49,6 +49,7 @@ func ConnToDB(cfg config.Config) (*gorm.DB, error) {
 		domain.CartItem{},
 
 		// payment tables
+		domain.PaymentDetails{},
 		domain.PaymentOption{},
 		domain.PaymentMethod{},
 

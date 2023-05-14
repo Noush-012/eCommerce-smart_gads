@@ -24,6 +24,9 @@ type UserHandler struct {
 func NewUserHandler(userUsecase interfaces.UserService) *UserHandler {
 	return &UserHandler{userService: userUsecase}
 }
+func (u *UserHandler) LoginPage(c *gin.Context) {
+	c.HTML(200, "checkout.html", nil)
+}
 
 // UserSignUp godoc
 // @summary api for register user

@@ -17,6 +17,7 @@ func UserRoutes(api *gin.RouterGroup, userHandler *handler.UserHandler, productH
 	// Login
 	login := api.Group("/login")
 	{
+		login.GET("/", userHandler.LoginPage)
 		// Login with otp
 		login.POST("/", userHandler.LoginSubmit)
 		// OTP verfication
@@ -43,6 +44,7 @@ func UserRoutes(api *gin.RouterGroup, userHandler *handler.UserHandler, productH
 			cart.POST("/", userHandler.AddToCart)
 			cart.PUT("/", userHandler.UpdateCart)
 			cart.DELETE("/", userHandler.DeleteCartItem)
+			// checkout
 			cart.GET("/checkout", orderHandler.CheckOut)
 			cart.GET("/payment-option", paymentHandler.GetAllPaymentOptions)
 			cart.GET("/checkout/:id", orderHandler.PlaceCODOrder)

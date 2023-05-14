@@ -31,20 +31,6 @@ type OrderLine struct {
 	Price         uint      `json:"price" gorm:"not null"`
 }
 
-type PaymentOption struct {
-	Id   uint   `json:"id" gorm:"primaryKey"`
-	Name string `json:"name" gorm:"not null"`
-	// PaymentMethod PaymentMethod `json:"payment_method" gorm:"foreignKey:PaymentMethodID"`
-}
-type PaymentMethod struct {
-	Id              uint   `json:"id" gorm:"primaryKey"`
-	PaymentOptionID uint   `json:"payment_option_id" gorm:"not null"`
-	Name            string `json:"name" gorm:"not null"`
-}
-type PaymentStatus struct {
-	Id     uint   `json:"id" gorm:"primaryKey"`
-	Status string `json:"status" gorm:"not null"`
-}
 type OrderStatus struct {
 	Id     uint   `json:"id" gorm:"primaryKey"`
 	Status string `json:"name" gorm:"not null"`

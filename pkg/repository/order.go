@@ -86,8 +86,7 @@ func (o *OrderDatabase) CheckoutOrder(ctx context.Context, userId uint) (checkOu
 	// get default address
 	query := `SELECT a.house,a.address_line1,a.address_line2,a.city,a.state,a.zip_code,a.country  
 	FROM addresses a
-	JOIN user_addresses ua on ua.address_id = a.id
-	WHERE ua.is_default = true AND ua.user_id = $1;`
+	WHERE a.is_default = true AND a.user_id = $1;`
 	var address response.Address
 	if err := o.DB.Raw(query, userId).Scan(&address).Error; err != nil {
 		return checkOut, err

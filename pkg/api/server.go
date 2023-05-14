@@ -20,6 +20,10 @@ func NewServerHTTP(adminHandler *handler.AdminHandler, userHandler *handler.User
 	engine := gin.New()
 
 	// to load views
+	// engine.LoadHTMLGlob("views/static/*.html")
+	engine.Static("/static", "./views/static")
+	// engine.StaticFS("/static", http.Dir("./views/static"))
+
 	// engine.LoadHTMLGlob("views/*.html")
 	engine.Use(gin.Logger())
 
