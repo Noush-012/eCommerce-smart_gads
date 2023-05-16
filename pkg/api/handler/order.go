@@ -22,7 +22,7 @@ func NewOrderHandler(orderUseCase service.OrderService) *OrderHandler {
 	}
 }
 
-// PPlaceCODOrder godoc
+// PlaceCODOrder godoc
 // @summary api for user to place an order on cart with COD
 // @security ApiKeyAuth
 // @tags User Cart
@@ -31,24 +31,29 @@ func NewOrderHandler(orderUseCase service.OrderService) *OrderHandler {
 // @Router /carts/place-order/cod [post]
 // @Success 200 {object} response.Response{} "successfully order placed in COD"
 // @Failure 400 {object} response.Response{}  "invalid input"
-// @Failure 500 {object} response.Response{}  "failed to save shop order"
+// @Failure 500 {object} response.Response{}  "Something went wrong! "
 func (o *OrderHandler) PlaceCODOrder(c *gin.Context) {
-	PaymentOptionID, err := utils.StringToUint(c.Param("id"))
+	PaymentMethodID, err := utils.StringToUint(c.Param("id"))
 	if err != nil {
-		response := response.ErrorResponse(400, "Missing or invalid input", err.Error(), PaymentOptionID)
+		response := response.ErrorResponse(400, "Missing or invalid input", err.Error(), PaymentMethodID)
 		c.JSON(400, response)
 		return
 	}
 	// get user from context
 	userId := utils.GetUserIdFromContext(c)
-	// get final cart details
-	shopOrder, err := o.OrderService.PlaceOrderByCOD(c, userId)
+
+	// get final order details
+	shopOrder, err := o.OrderService.PlaceOrderByCOD(c, userId, PaymentMethodID)
 	if err != nil {
 		response := response.ErrorResponse(500, "Something went wrong! ", err.Error(), nil)
 		c.JSON(500, response)
 		return
 	}
-	response := response.SuccessResponse(200, "Order placed successfuly", shopOrder)
+	data := gin.H{
+		"Success": "success",
+		"OrderID": shopOrder,
+	}
+	response := response.SuccessResponse(200, "Order placed successfuly Order ID :", data)
 	c.JSON(200, response)
 
 }
@@ -69,7 +74,6 @@ func (o *OrderHandler) CheckOut(c *gin.Context) {
 	}
 	response := response.SuccessResponse(200, "Successfuly checked out", CheckOut)
 	c.JSON(200, response)
-	c.HTML(http.StatusOK, "checkout.html", response)
 
 }
 
@@ -134,21 +138,45 @@ func (o *OrderHandler) RazorPayCheckout(c *gin.Context) {
 		c.JSON(500, response)
 		return
 	}
-	response := response.SuccessResponse(200, "Razorpay chekout successful", razorpayOrder)
-	c.JSON(200, response)
+	// response := response.SuccessResponse(200, "Razorpay chekout successful", razorpayOrder)
+	fmt.Println("resp", razorpayOrder.RazorpayKey)
+	c.HTML(200, "app.html", razorpayOrder)
 
 }
 
 func (o *OrderHandler) RazorpayVerify(c *gin.Context) {
 	// get user from context
-	// userId := utils.GetUserIdFromContext(c)
-	// var body request.RazorpayVerifyReq
-	// if err := c.BindJSON(&body); err != nil {
-	// 	response := "invalid input"
-	// 	c.JSON(http.StatusBadRequest, response)
-	// 	return
-	// }
+	userId := utils.GetUserIdFromContext(c)
+	razorPayPaymentId := c.Request.PostFormValue("razorpay_payment_id")
+	razorPayOrderId := c.Request.PostFormValue("razorpay_order_id")
+	razorpay_signature := c.Request.PostFormValue("razorpay_signature")
+	Smart_gads_orderId, _ := utils.StringToUint(c.Request.PostFormValue("orderId"))
+	payMethodId, _ := utils.StringToUint(c.Request.PostFormValue("payment_id"))
 
-	// utils.VerifyRazorPayPayment(body.RazorpayOrderId, body.RazorpayPaymentId)
-
+	body := request.RazorpayVerifyReq{
+		UserID:             userId,
+		PaymentMethodID:    payMethodId,
+		PaymentID:          razorPayPaymentId,
+		RazorpayOrderId:    razorPayOrderId,
+		Razorpay_signature: razorpay_signature,
+	}
+	err := utils.VerifyRazorPayPayment(body)
+	if err != nil {
+		response := response.ErrorResponse(500, "Failed to verify razor pay order!", err.Error(), nil)
+		c.JSON(500, response)
+		return
+	}
+	// Update order status and clear cart
+	Updatebody := request.UpdateOrderStatus{
+		UserId:   userId,
+		StatusId: 2, // ID 2 is for satus "placed"
+		OrderId:  Smart_gads_orderId,
+	}
+	if err := o.OrderService.UpdateOrderStatus(c, Updatebody); err != nil {
+		response := response.ErrorResponse(500, "Failed to update order status!", err.Error(), nil)
+		c.JSON(500, response)
+		return
+	}
+	// calling payment handler to save payment details
+	c.Next()
 }

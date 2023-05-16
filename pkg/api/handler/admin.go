@@ -16,10 +16,13 @@ import (
 
 type AdminHandler struct {
 	adminService interfaces.AdminService
+	orderService interfaces.OrderService
 }
 
-func NewAdminHandler(adminService interfaces.AdminService) *AdminHandler {
-	return &AdminHandler{adminService: adminService}
+func NewAdminHandler(adminService interfaces.AdminService, orderUseCase interfaces.OrderService) *AdminHandler {
+	return &AdminHandler{adminService: adminService,
+		orderService: orderUseCase,
+	}
 }
 
 // AdminSignUp godoc
@@ -167,7 +170,7 @@ func (a *AdminHandler) ListUsers(c *gin.Context) {
 // @summary api for admin to block or unblock user
 // @id BlockUser
 // @tags Admin User
-// @Param input body request.Block{} true "inputs"
+// @Param input body request.UserID{} true "inputs"
 // @Router /admin/users/block [patch]
 // @Success 200 {object} response.Response{} "Successfully changed user block_status"
 // @Failure 400 {object} response.Response{} "invalid input"
@@ -208,13 +211,13 @@ func (a *AdminHandler) ChangeOrderStatus(c *gin.Context) {
 		c.JSON(400, response)
 		return
 	}
-	UpdatedOrder, err := a.adminService.UpdateOrderStatus(c, body)
+	err = a.orderService.UpdateOrderStatus(c, body)
 	if err != nil {
 		response := response.ErrorResponse(500, "Something went wrong!", err.Error(), nil)
 		c.JSON(500, response)
 		return
 	}
-	response := response.SuccessResponse(200, "Order status updated successfully!", UpdatedOrder)
+	response := response.SuccessResponse(200, "Order status updated successfully!", nil)
 	c.JSON(200, response)
 
 }

@@ -11,7 +11,7 @@ import (
 	"github.com/Noush-012/Project-eCommerce-smart_gads/pkg/config"
 	"github.com/Noush-012/Project-eCommerce-smart_gads/pkg/utils/request"
 	"github.com/gin-gonic/gin"
-	"github.com/razorpay/razorpay-go"
+	razorpay "github.com/razorpay/razorpay-go"
 )
 
 func StringToUint(str string) (uint, error) {
@@ -62,33 +62,33 @@ func GenerateRazorPayOrder(amount uint, ReceiptId string) (razorpayOrderID inter
 	return razorpayOrderID, nil
 }
 
-func VerifyRazorPayPayment(razorpayOrderID, razorPayPaymentId, razorPaySign string) error {
+func VerifyRazorPayPayment(razorPayBody request.RazorpayVerifyReq) error {
 	// Get razor pay api config
 	razorPayKey := config.GetConfig().RazorPayKey
 	razorPaySecret := config.GetConfig().RazorPaySecret
 
 	// Verify signature
-	data := razorpayOrderID + "|" + razorPayPaymentId
+	data := razorPayBody.RazorpayOrderId + "|" + razorPayBody.PaymentID
 	h := hmac.New(sha256.New, []byte(razorPaySecret))
 	_, err := h.Write([]byte(data))
 	if err != nil {
 		return err
 	}
 	sha := hex.EncodeToString(h.Sum(nil))
-	if subtle.ConstantTimeCompare([]byte(sha), []byte(razorPaySign)) != 1 {
+	if subtle.ConstantTimeCompare([]byte(sha), []byte(razorPayBody.Razorpay_signature)) != 1 {
 		return err
 	}
 	// verify payment
 	rPayClient := razorpay.NewClient(razorPayKey, razorPaySecret)
 
 	// fetch payment and verify
-	payment, err := rPayClient.Payment.Fetch(razorPayPaymentId, nil, nil)
+	payment, err := rPayClient.Payment.Fetch(razorPayBody.PaymentID, nil, nil)
 	if err != nil {
 		return err
 	}
 	// check payment status
 	if payment["status"] != "captured" {
-		return fmt.Errorf("failed to verify payment \n razor pay payment with payment_id %v", razorPayPaymentId)
+		return fmt.Errorf("failed to verify payment \n razor pay payment with payment_id %v", razorPayBody.PaymentID)
 	}
 	return nil
 }

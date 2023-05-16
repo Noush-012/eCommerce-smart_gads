@@ -20,11 +20,11 @@ func NewServerHTTP(adminHandler *handler.AdminHandler, userHandler *handler.User
 	engine := gin.New()
 
 	// to load views
-	// engine.LoadHTMLGlob("views/static/*.html")
-	engine.Static("/static", "./views/static")
-	// engine.StaticFS("/static", http.Dir("./views/static"))
+	// Serve static files
+	engine.Static("/assets", "./views/static/assets")
+	engine.LoadHTMLGlob("views/static/*.html")
 
-	// engine.LoadHTMLGlob("views/*.html")
+	// Add the Gin Logger middleware.
 	engine.Use(gin.Logger())
 
 	// Get swagger docs

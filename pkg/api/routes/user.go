@@ -45,10 +45,11 @@ func UserRoutes(api *gin.RouterGroup, userHandler *handler.UserHandler, productH
 			cart.PUT("/", userHandler.UpdateCart)
 			cart.DELETE("/", userHandler.DeleteCartItem)
 			// checkout
-			cart.GET("/checkout", orderHandler.CheckOut)
 			cart.GET("/payment-option", paymentHandler.GetAllPaymentOptions)
+			cart.GET("/checkout", orderHandler.CheckOut)
 			cart.GET("/checkout/:id", orderHandler.PlaceCODOrder)
 			cart.GET("/checkout/razorpay", orderHandler.RazorPayCheckout)
+			cart.GET("/checkout/razorpay/success", orderHandler.RazorpayVerify, paymentHandler.SavePaymentDetails)
 		}
 		order := api.Group("/orders")
 		{

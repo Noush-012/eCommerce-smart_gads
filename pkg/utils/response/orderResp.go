@@ -19,13 +19,13 @@ type ShopOrder struct {
 }
 
 type OrderHistory struct {
-	ID        uint      `json:"order_id"`
-	OrderDate time.Time `json:"order_date"`
-	Status    string    `json:"order_status"`
-	// DeliveryStatus string    `json:"delivery_status"`
-	OrderTotal    float64 `json:"order_total"`
-	PaymentType   string  `json:"payment_type"`
-	PaymentStatus string  `json:"payment_status"`
+	ID             uint      `json:"order_id"`
+	OrderDate      time.Time `json:"order_date"`
+	OrderStatus    string    `json:"order_status"`
+	DeliveryStatus string    `json:"delivery_status"`
+	OrderTotal     float64   `json:"order_total"`
+	PaymentMethod  string    `json:"payment_type"`
+	PaymentStatus  string    `json:"payment_status"`
 	// Rating         uint      `json:"rating"`
 	// Actions        Actions   `json:"actions"`
 }
@@ -41,8 +41,8 @@ type RazorPayOrderResp struct {
 	AmountToPay     uint        `json:"amount_to_pay"`
 	RazorpayAmount  uint        `json:"razorpay_amount"`
 	RazorpayOrderID interface{} `json:"razorpay_order_id"`
-	// Email           string      `json:"email"`
-	// Phone           string      `json:"phone"`
-	// ShopOrderID uint `json:"shop_order_id"`
-	CouponID uint `json:"coupon_id"`
+	Email           string      `json:"email"`
+	Phone           string      `json:"phone"`
+	OrderID         uint        `json:"order_id"`
+	// CouponID uint `json:"coupon_id"`
 }

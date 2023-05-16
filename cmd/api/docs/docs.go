@@ -81,7 +81,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/request.AddressReq"
+                            "$ref": "#/definitions/domain.Address"
                         }
                     }
                 ],
@@ -321,7 +321,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/request.Block"
+                            "$ref": "#/definitions/request.UserID"
                         }
                     }
                 ],
@@ -502,7 +502,7 @@ const docTemplate = `{
                         }
                     },
                     "500": {
-                        "description": "failed to save shop order",
+                        "description": "Something went wrong! ",
                         "schema": {
                             "$ref": "#/definitions/response.Response"
                         }
@@ -697,6 +697,61 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "domain.Address": {
+            "type": "object",
+            "required": [
+                "address_line_1",
+                "address_line_2",
+                "city",
+                "country",
+                "state",
+                "zip_code"
+            ],
+            "properties": {
+                "address_line_1": {
+                    "type": "string",
+                    "maxLength": 40,
+                    "minLength": 2
+                },
+                "address_line_2": {
+                    "type": "string",
+                    "maxLength": 40,
+                    "minLength": 2
+                },
+                "city": {
+                    "type": "string",
+                    "maxLength": 20,
+                    "minLength": 2
+                },
+                "country": {
+                    "type": "string",
+                    "maxLength": 20,
+                    "minLength": 2
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "house": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "state": {
+                    "type": "string",
+                    "maxLength": 20,
+                    "minLength": 2
+                },
+                "updatedAt": {
+                    "type": "string"
+                },
+                "zip_code": {
+                    "type": "string",
+                    "maxLength": 10,
+                    "minLength": 2
+                }
+            }
+        },
         "domain.Admin": {
             "type": "object",
             "required": [
@@ -740,20 +795,6 @@ const docTemplate = `{
                 "quantity": {
                     "type": "integer"
                 },
-                "user_id": {
-                    "type": "integer"
-                }
-            }
-        },
-        "request.AddressReq": {
-            "type": "object"
-        },
-        "request.Block": {
-            "type": "object",
-            "required": [
-                "user_id"
-            ],
-            "properties": {
                 "user_id": {
                     "type": "integer"
                 }
@@ -985,6 +1026,17 @@ const docTemplate = `{
                 },
                 "product_name": {
                     "type": "string"
+                }
+            }
+        },
+        "request.UserID": {
+            "type": "object",
+            "required": [
+                "user_id"
+            ],
+            "properties": {
+                "user_id": {
+                    "type": "integer"
                 }
             }
         },

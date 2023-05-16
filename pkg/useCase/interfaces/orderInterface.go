@@ -13,5 +13,7 @@ type OrderService interface {
 	// Checkouts
 	RazorPayCheckout(ctx context.Context, razorpay request.RazorpayReq) (razorpayOrder response.RazorPayOrderResp, err error)
 	CheckoutOrder(ctx context.Context, userId uint) (checkOut response.CartResp, err error)
-	PlaceOrderByCOD(ctx context.Context, userId uint) (shopOrder response.ShopOrder, err error)
+	PlaceOrderByCOD(ctx context.Context, userId uint, PaymentMethodID uint) (shopOrder uint, err error)
+
+	UpdateOrderStatus(c context.Context, UpdateData request.UpdateOrderStatus) error
 }

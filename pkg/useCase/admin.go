@@ -82,12 +82,3 @@ func (a *adminService) GetUserOrderHistory(c context.Context, userId uint) (orde
 	}
 	return orderHistory, err
 }
-
-func (a *adminService) UpdateOrderStatus(c context.Context, UpdateData request.UpdateOrderStatus) (UpdatedOrder response.ShopOrder, err error) {
-	UpdatedOrder, err = a.adminRepository.ChangeOrderStatus(c, UpdateData)
-	if err != nil {
-		return UpdatedOrder, err
-	}
-
-	return UpdatedOrder, nil
-}

@@ -1,4 +1,46 @@
 definitions:
+  domain.Address:
+    properties:
+      address_line_1:
+        maxLength: 40
+        minLength: 2
+        type: string
+      address_line_2:
+        maxLength: 40
+        minLength: 2
+        type: string
+      city:
+        maxLength: 20
+        minLength: 2
+        type: string
+      country:
+        maxLength: 20
+        minLength: 2
+        type: string
+      createdAt:
+        type: string
+      house:
+        type: string
+      id:
+        type: integer
+      state:
+        maxLength: 20
+        minLength: 2
+        type: string
+      updatedAt:
+        type: string
+      zip_code:
+        maxLength: 10
+        minLength: 2
+        type: string
+    required:
+    - address_line_1
+    - address_line_2
+    - city
+    - country
+    - state
+    - zip_code
+    type: object
   domain.Admin:
     properties:
       created_at:
@@ -31,15 +73,6 @@ definitions:
     required:
     - product_item_id
     - quantity
-    type: object
-  request.AddressReq:
-    type: object
-  request.Block:
-    properties:
-      user_id:
-        type: integer
-    required:
-    - user_id
     type: object
   request.CategoryReq:
     properties:
@@ -202,6 +235,13 @@ definitions:
       product_name:
         type: string
     type: object
+  request.UserID:
+    properties:
+      user_id:
+        type: integer
+    required:
+    - user_id
+    type: object
   request.Variation:
     properties:
       variation_option_id:
@@ -256,7 +296,7 @@ paths:
         name: inputs
         required: true
         schema:
-          $ref: '#/definitions/request.AddressReq'
+          $ref: '#/definitions/domain.Address'
       responses:
         "200":
           description: Successfully address added
@@ -414,7 +454,7 @@ paths:
         name: input
         required: true
         schema:
-          $ref: '#/definitions/request.Block'
+          $ref: '#/definitions/request.UserID'
       responses:
         "200":
           description: Successfully changed user block_status
@@ -524,7 +564,7 @@ paths:
           schema:
             $ref: '#/definitions/response.Response'
         "500":
-          description: failed to save shop order
+          description: 'Something went wrong! '
           schema:
             $ref: '#/definitions/response.Response'
       security:

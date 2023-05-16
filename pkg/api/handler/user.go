@@ -25,7 +25,7 @@ func NewUserHandler(userUsecase interfaces.UserService) *UserHandler {
 	return &UserHandler{userService: userUsecase}
 }
 func (u *UserHandler) LoginPage(c *gin.Context) {
-	c.HTML(200, "checkout.html", nil)
+	c.HTML(200, "index.html", nil)
 }
 
 // UserSignUp godoc
@@ -336,7 +336,7 @@ func (u *UserHandler) Profile(c *gin.Context) {
 // @security ApiKeyAuth
 // @id AddAddress
 // @tags User Address
-// @Param inputs body request.AddressReq{} true "Input Field"
+// @Param inputs body domain.Address{} true "Input Field"
 // @Router /account/address [post]
 // @Success 200 {object} response.Response{} "Successfully address added"
 // @Failure 400 {object} response.Response{} "inavlid input"

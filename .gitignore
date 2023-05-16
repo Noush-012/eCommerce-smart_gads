@@ -2,7 +2,15 @@
 .env
 
 # payload excluding
-payload/
+./payload/
 tmp/
-temp/
+./temp/
 .vscode
+
+# Executables
+bin/
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib

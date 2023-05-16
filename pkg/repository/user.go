@@ -202,7 +202,7 @@ func (i *userDatabase) GetCartItemsbyUserId(ctx context.Context, page request.Re
 	}
 	// get cartItems with cartID
 	query := `SELECT ci.product_item_id, p.name,p.price,ci.price AS discount_price, 
-	ci.quantity,pi.qty_in_stock AS qty_left, ci.price * ci.quantity AS sub_total
+	ci.quantity,pi.qty_in_stock AS qty_left,pi.stock_status, ci.price * ci.quantity AS sub_total
 	FROM cart_items ci
 	JOIN product_items pi ON ci.product_item_id = pi.id
 	JOIN products p ON pi.product_id = p.id
