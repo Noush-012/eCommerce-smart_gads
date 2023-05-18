@@ -101,7 +101,7 @@ func (o *OrderDatabase) PlaceCODOrder(ctx context.Context, userId uint, PaymentM
 		return OrderId, err
 	}
 	if checkOut.TotalProductItems == 0 {
-		return OrderId, errors.New("no product item in cart")
+		return OrderId, errors.New("cart is empty, please add products")
 	}
 
 	order := domain.ShopOrder{
@@ -194,6 +194,10 @@ func (o *OrderDatabase) SaveOrder(ctx context.Context, order domain.ShopOrder) (
 	payment_method_id,coupon_id,delivery_status_id,delivery_updated_at)
 	VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING ID`
 	order.OrderDate = time.Now()
+	if order.PaymentMethodID == 1 {
+
+		order.OrderStatusID = 1 // set default ID 1 is for placed for COD orders
+	}
 	order.OrderStatusID = 1    // set default ID 1 is for pending
 	order.DeliveryStatusID = 1 // set default ID 1 is for pending
 	if err := o.DB.Raw(query, order.UserID, order.OrderDate, order.OrderTotal, order.ShippingID, order.OrderStatusID,

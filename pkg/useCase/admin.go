@@ -82,3 +82,13 @@ func (a *adminService) GetUserOrderHistory(c context.Context, userId uint) (orde
 	}
 	return orderHistory, err
 }
+
+// Generate sales report
+func (a *adminService) SalesReport(c context.Context) (salesReport []domain.SalesReport, err error) {
+
+	salesReport, err = a.adminRepository.GenerateSalesReport(c)
+	if err != nil {
+		return salesReport, err
+	}
+	return salesReport, nil
+}

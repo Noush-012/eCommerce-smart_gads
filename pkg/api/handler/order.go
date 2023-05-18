@@ -177,6 +177,7 @@ func (o *OrderHandler) RazorpayVerify(c *gin.Context) {
 		c.JSON(500, response)
 		return
 	}
+
 	// calling payment handler to save payment details
 	c.Next()
 }

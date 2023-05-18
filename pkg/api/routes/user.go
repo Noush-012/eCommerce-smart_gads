@@ -48,8 +48,11 @@ func UserRoutes(api *gin.RouterGroup, userHandler *handler.UserHandler, productH
 			cart.GET("/payment-option", paymentHandler.GetAllPaymentOptions)
 			cart.GET("/checkout", orderHandler.CheckOut)
 			cart.GET("/checkout/:id", orderHandler.PlaceCODOrder)
-			cart.GET("/checkout/razorpay", orderHandler.RazorPayCheckout)
-			cart.GET("/checkout/razorpay/success", orderHandler.RazorpayVerify, paymentHandler.SavePaymentDetails)
+
+			// Razorpay
+			api.GET("/checkout/razorpay", orderHandler.RazorPayCheckout)
+			api.POST("/checkout/razorpay/success", orderHandler.RazorpayVerify, paymentHandler.SavePaymentDetails)
+
 		}
 		order := api.Group("/orders")
 		{

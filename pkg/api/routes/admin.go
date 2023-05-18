@@ -6,7 +6,8 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func AdminRoutes(api *gin.RouterGroup, adminHandler *handler.AdminHandler, productHandler *handler.ProductHandler, orderHandler *handler.OrderHandler) {
+func AdminRoutes(api *gin.RouterGroup, adminHandler *handler.AdminHandler, productHandler *handler.ProductHandler,
+	orderHandler *handler.OrderHandler, couponHandler *handler.CouponHandler) {
 
 	// Login
 	login := api.Group("/login")
@@ -19,6 +20,8 @@ func AdminRoutes(api *gin.RouterGroup, adminHandler *handler.AdminHandler, produ
 	{
 		signup.POST("/")
 	}
+	// for testing purpose sales report route removed from middleware
+	api.GET("/sales-report", adminHandler.SalesReport)
 
 	// Middleware
 	api.Use(middleware.AuthenticateAdmin)
@@ -60,6 +63,10 @@ func AdminRoutes(api *gin.RouterGroup, adminHandler *handler.AdminHandler, produ
 
 			// Order
 
+		}
+		coupons := api.Group("/coupons")
+		{
+			coupons.POST("/")
 		}
 	}
 }

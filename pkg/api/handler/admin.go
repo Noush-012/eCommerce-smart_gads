@@ -1,7 +1,9 @@
 package handler
 
 import (
+	"encoding/csv"
 	"errors"
+	"fmt"
 	"net/http"
 
 	"github.com/Noush-012/Project-eCommerce-smart_gads/pkg/api/auth"
@@ -220,4 +222,44 @@ func (a *AdminHandler) ChangeOrderStatus(c *gin.Context) {
 	response := response.SuccessResponse(200, "Order status updated successfully!", nil)
 	c.JSON(200, response)
 
+}
+
+func (a *AdminHandler) SalesReport(c *gin.Context) {
+	salesReport, err := a.adminService.SalesReport(c)
+	if err != nil {
+		response := response.ErrorResponse(500, "Something went wrong!", err.Error(), nil)
+		c.JSON(500, response)
+		return
+	}
+	// set header for downloading browser
+	c.Header("Content-Type", "text/csv")
+	c.Header("Content-Disposition", "attachment;filename= smart_gads_sales_report.csv")
+	wr := csv.NewWriter(c.Writer)
+
+	headers := []string{"Order ID", "User ID", "Total", "Coupon Code", "Payment Method", "Order Status", "Delivery Status", "Order Date"}
+	if err := wr.Write(headers); err != nil {
+		response := response.ErrorResponse(500, "Something went wrong! failed to generate sales report", err.Error(), nil)
+		c.JSON(500, response)
+		return
+	}
+	for _, sales := range salesReport {
+		var row = []string{
+			fmt.Sprintf("%v", sales.OrderID),
+			fmt.Sprintf("%v", sales.UserID),
+			fmt.Sprintf("%v", sales.TotalAmount),
+			sales.CouponCode,
+			sales.PaymentMethod,
+			sales.OrderStatus,
+			sales.DeliveryStatus,
+			sales.OrderDate.Format("2006-01-02 15:04:05")}
+
+		if err := wr.Write(row); err != nil {
+			response := response.ErrorResponse(500, "Something went wrong! failed to generate sales report", err.Error(), nil)
+			c.JSON(500, response)
+			return
+		}
+
+	}
+	// Flush the writer's buffer to ensure all data is written to the client
+	wr.Flush()
 }

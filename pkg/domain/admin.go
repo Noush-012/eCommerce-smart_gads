@@ -10,3 +10,13 @@ type Admin struct {
 	CreatedAt time.Time `json:"created_at" gorm:"not null"`
 	UpdatedAt time.Time `json:"updated_at"`
 }
+type SalesReport struct {
+	OrderID        int
+	UserID         int
+	TotalAmount    float64
+	CouponCode     string
+	PaymentMethod  string
+	OrderStatus    string
+	DeliveryStatus string
+	OrderDate      time.Time
+}

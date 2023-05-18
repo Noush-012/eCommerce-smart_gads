@@ -14,16 +14,16 @@
 	<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 	<script>
 		var options = {
-      "key": 'rzp_test_4SCX6e09uuGSIc',
-      "amount": "115999",
-      "currency": "INR",
-      "name": "Smart Gads",
-      "description": "Test Transaction",
-      "image": "https://example.com/your_logo",
-      "order_id": "order_LqOglO1qwFQttA",
+      "key": 'rzp_test_4SCX6e09uuGSIc', 
+    "amount":"119999" , 
+    "currency": "INR",
+    "name": "Smart Gads",
+    "description": "Test Transaction",
+    "image": "https://example.com/your_logo",
+    "order_id": "order_Lqdb1ZYQLXqVCJ", 
       "handler": function (response) {
         console.log('response:', response, "payment_id:", response.razorpay_payment_id);
-        verifyPayment(response, response.razorpay_payment_id, "3");
+        verifyPayment(response, response.razorpay_payment_id,"17");
       },
       "prefill": {
         "name": "Test",

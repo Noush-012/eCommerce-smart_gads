@@ -16,6 +16,15 @@ type UpdateProductReq struct {
 	Price       uint   `json:"price,omitempty"`
 	Image       string `json:"image,omitempty"`
 }
+type UpdateProductItemReq struct {
+	ID            uint   `json:"id"`
+	ProductId     uint   `json:"product_id,omitempty"`
+	QtyInStock    uint   `json:"quantity_inStock,omitempty"`
+	SKU           string `json:"sku,omitempty"`
+	DiscountPrice string `json:"discount_price,omitempty"`
+	Price         uint   `json:"price,omitempty"`
+	Image         string `json:"image,omitempty"`
+}
 
 type DeleteProductReq struct {
 	ID uint `json:"Prod_id" binding:"required"`
