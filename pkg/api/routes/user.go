@@ -50,8 +50,8 @@ func UserRoutes(api *gin.RouterGroup, userHandler *handler.UserHandler, productH
 			cart.GET("/checkout/:id", orderHandler.PlaceCODOrder)
 
 			// Razorpay
-			api.GET("/checkout/razorpay", orderHandler.RazorPayCheckout)
-			api.POST("/checkout/razorpay/success", orderHandler.RazorpayVerify, paymentHandler.SavePaymentDetails)
+			cart.GET("/checkout/razorpay/:payment_id", orderHandler.RazorPayCheckout)
+			cart.POST("/checkout/razorpay/success", orderHandler.RazorpayVerify, paymentHandler.SavePaymentDetails)
 
 		}
 		order := api.Group("/orders")
@@ -65,7 +65,8 @@ func UserRoutes(api *gin.RouterGroup, userHandler *handler.UserHandler, productH
 			profile.GET("/address", userHandler.GetAllAddress)
 			profile.POST("/address", userHandler.AddAddress)
 			// edit address
-			profile.PATCH("/address", userHandler.UpdateAddress)
+			profile.PUT("/address", userHandler.UpdateAddress)
+			profile.DELETE("/address:id", userHandler.DeleteAddress)
 
 		}
 

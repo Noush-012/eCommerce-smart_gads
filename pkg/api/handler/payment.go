@@ -1,6 +1,8 @@
 package handler
 
 import (
+	"fmt"
+
 	"github.com/Noush-012/Project-eCommerce-smart_gads/pkg/domain"
 	service "github.com/Noush-012/Project-eCommerce-smart_gads/pkg/useCase/interfaces"
 	"github.com/Noush-012/Project-eCommerce-smart_gads/pkg/utils"
@@ -42,8 +44,10 @@ func (p *PaymentHandler) SavePaymentDetails(c *gin.Context) {
 	data := domain.PaymentDetails{
 		OrderID:         Smart_gads_orderId,
 		PaymentMethodID: payMethodId,
-		PaymentRef:      razorPayOrderId,
+		// PaymentStatusID: 2, // id 2 is for status "Paid"
+		PaymentRef: razorPayOrderId,
 	}
+	fmt.Println("-------------->>>>>>>>>>>>>>>", razorPayOrderId)
 	if err := p.PaymentService.SavePaymentDetails(c, data); err != nil {
 		response := response.ErrorResponse(500, "Something went wrong! ", err.Error(), nil)
 		c.JSON(500, response)

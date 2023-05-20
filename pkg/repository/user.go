@@ -117,6 +117,13 @@ func (i *userDatabase) UpdateAddress(ctx context.Context, userAddress request.Ad
 	}
 	return nil
 }
+func (i *userDatabase) DeleteAddress(ctx context.Context, userID, addressID uint) error {
+	query := `DELETE FROM addresses WHERE user_id = $1 AND id = $2`
+	if err := i.DB.Exec(query, userID, addressID).Error; err != nil {
+		return err
+	}
+	return nil
+}
 
 func (u *userDatabase) GetAllAddress(ctx context.Context, userId uint) (address []response.Address, err error) {
 	query := `SELECT * FROM addresses WHERE user_id = ? ORDER BY is_default DESC, updated_at ASC`
@@ -256,7 +263,7 @@ func (i *userDatabase) GetEmailPhoneByUserId(ctx context.Context, userID uint) (
 }
 
 func (i *userDatabase) GetDefaultAddress(ctx context.Context, userId uint) (address response.Address, err error) {
-	query := `SELECT a.house, a.address_line1, a.address_line2, a.city, a.state, a.zip_code, a.country
+	query := `SELECT a.id, a.house, a.address_line1, a.address_line2, a.city, a.state, a.zip_code, a.country, a.is_default
 FROM addresses a
 WHERE a.user_id = ? AND a.is_default = true`
 	if err := i.DB.Raw(query, userId).Scan(&address).Error; err != nil {

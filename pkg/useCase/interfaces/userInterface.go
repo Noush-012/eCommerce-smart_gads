@@ -12,9 +12,10 @@ type UserService interface {
 	SignUp(ctx context.Context, user domain.Users) error
 	Login(ctx context.Context, user domain.Users) (domain.Users, error)
 	OTPLogin(ctx context.Context, user domain.Users) (domain.Users, error)
-	Profile(ctx context.Context, userId uint) (domain.Users, error)
+	Profile(ctx context.Context, userId uint) (profile response.Profile, err error)
 	Addaddress(ctx context.Context, address domain.Address) error
 	UpdateAddress(ctx context.Context, address request.AddressPatchReq) error
+	DeleteAddress(ctx context.Context, userID, addressID uint) error
 	GetAllAddress(ctx context.Context, userId uint) (address []response.Address, err error)
 
 	SaveCartItem(ctx context.Context, addToCart request.AddToCartReq) error

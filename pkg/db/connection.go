@@ -60,6 +60,9 @@ func ConnToDB(cfg config.Config) (*gorm.DB, error) {
 		domain.ShopOrder{},
 		domain.DeliveryStatus{},
 
+		// Coupon
+		domain.Coupon{},
+
 		// Return
 		domain.Return{},
 	)

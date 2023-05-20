@@ -37,7 +37,7 @@ func AdminRoutes(api *gin.RouterGroup, adminHandler *handler.AdminHandler, produ
 			user.GET("/", adminHandler.ListUsers)
 			user.PATCH("/block", adminHandler.BlockUser)
 			user.GET("/orders", orderHandler.GetAllOrderHistory)
-			user.POST("/orders", adminHandler.ChangeOrderStatus)
+			user.PATCH("/orders", adminHandler.ChangeOrderStatus)
 		}
 
 		// Brand
@@ -66,7 +66,10 @@ func AdminRoutes(api *gin.RouterGroup, adminHandler *handler.AdminHandler, produ
 		}
 		coupons := api.Group("/coupons")
 		{
-			coupons.POST("/")
+			coupons.GET("/", couponHandler.ListAllCoupons)
+			coupons.POST("/", couponHandler.CreateNewCoupon)
+			coupons.PATCH("/", couponHandler.UpdateCoupon)
+			coupons.DELETE("/:id", couponHandler.DeleteCoupon)
 		}
 	}
 }

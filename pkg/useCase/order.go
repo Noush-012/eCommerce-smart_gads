@@ -55,7 +55,7 @@ func (o *OrderUseCase) PlaceOrderByCOD(ctx context.Context, userId uint, Payment
 }
 
 func (o *OrderUseCase) RazorPayCheckout(ctx context.Context, razorpay request.RazorpayReq) (razorpayOrder response.RazorPayOrderResp, err error) {
-	// verify requested payment id is for razorpay
+	// Verify requested payment id is for Razorpay
 	payMethod, err := o.PayMentRepo.GetPaymentMethodByID(ctx, razorpay.PaymentMethodId)
 	if err != nil {
 		return razorpayOrder, err
@@ -64,50 +64,51 @@ func (o *OrderUseCase) RazorPayCheckout(ctx context.Context, razorpay request.Ra
 		return razorpayOrder, errors.New("requestID is not for Razorpay")
 	}
 
-	// find cart items
-	CheckOut, err := o.OrderRepository.CheckoutOrder(ctx, razorpay.UserID)
+	// Find cart items
+	checkOut, err := o.OrderRepository.CheckoutOrder(ctx, razorpay.UserID)
 	if err != nil {
 		return razorpayOrder, err
 	}
-	if CheckOut.TotalProductItems == 0 {
+	if checkOut.TotalProductItems == 0 {
 		return razorpayOrder, errors.New("cart is empty")
 	}
 
-	// get user contact
+	// Get user contact
 	contact, err := o.UserRepository.GetEmailPhoneByUserId(ctx, razorpay.UserID)
 	if err != nil {
 		return razorpayOrder, err
 	}
-	razorpayOrder.Email = contact.Email
-	razorpayOrder.Phone = contact.Phone
+	razorpayOrder = response.RazorPayOrderResp{
+		Email:          contact.Email,
+		Phone:          contact.Phone,
+		RazorpayAmount: checkOut.TotalPrice,
+		AmountToPay:    checkOut.TotalPrice,
+		UserID:         razorpay.UserID,
+		RazorpayKey:    config.GetConfig().RazorPayKey,
+		SGPay_id:       2,
+	}
 
-	// generate razorpay order id
-	razorPayOrderId, err := utils.GenerateRazorPayOrder(CheckOut.TotalPrice, "Test reciept")
+	// Generate Razorpay order ID
+	razorPayOrderId, err := utils.GenerateRazorPayOrder(checkOut.TotalPrice, "Test receipt")
 	if err != nil {
 		return razorpayOrder, err
 	}
 	razorpayOrder.RazorpayOrderID = razorPayOrderId
-	razorpayOrder.AmountToPay = CheckOut.TotalPrice
-	razorpayOrder.RazorpayAmount = CheckOut.TotalPrice
-	razorpayOrder.UserID = razorpay.UserID
-	razorpayOrder.RazorpayKey = config.GetConfig().RazorPayKey
 
-	// save order as pending
-	Order := domain.ShopOrder{
+	// Save order as pending
+	orderId, err := o.OrderRepository.SaveOrder(ctx, domain.ShopOrder{
 		UserID:          razorpay.UserID,
-		OrderTotal:      float64(CheckOut.TotalPrice),
-		ShippingID:      CheckOut.DefaultShipping.ID,
+		OrderTotal:      float64(checkOut.TotalPrice),
+		ShippingID:      checkOut.DefaultShipping.ID,
 		PaymentMethodID: razorpay.PaymentMethodId,
 		CouponID:        0,
-	}
-	orderId, err := o.OrderRepository.SaveOrder(ctx, Order)
+	})
 	if err != nil {
 		return razorpayOrder, err
 	}
 	razorpayOrder.OrderID = orderId
 
 	return razorpayOrder, nil
-
 }
 
 func (o *OrderUseCase) GetOrderHistory(ctx context.Context, page request.ReqPagination, userId uint) (orderHisory []response.OrderHistory, err error) {

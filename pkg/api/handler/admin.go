@@ -204,8 +204,16 @@ func (a *AdminHandler) UserOrderHistory(c *gin.Context) {
 
 }
 
+// ChangeOrderStatus godoc
+// @summary api for admin to change order status of user
+// @id ChangeOrderStatus
+// @tags Admin ChangeOrderStatus
+// @Param input body request.UpdateOrderStatus{} true "inputs"
+// @Router /admin/users/orders [patch]
+// @Success 200 {object} response.Response{} "Order status updated successfully!"
+// @Failure 400 {object} response.Response{} "Missing inputs"
+// @Failure 500 {object} response.Response{}"Something went wrong!"
 func (a *AdminHandler) ChangeOrderStatus(c *gin.Context) {
-	// take order status id from url
 	var body request.UpdateOrderStatus
 	err := c.ShouldBindJSON(&body)
 	if err != nil {
@@ -224,6 +232,14 @@ func (a *AdminHandler) ChangeOrderStatus(c *gin.Context) {
 
 }
 
+// SalesReport godoc
+// @summary api for admin to download sales report as csv format
+// @id SalesReport
+// @tags Admin SalesReport
+// @Router /admin/sales-report [get]
+// @Success 500 {object} response.Response{} "Something went wrong!"
+// @Failure 500 {object} response.Response{} "Something went wrong! failed to generate sales report"
+// @Failure 500 {object} response.Response{}"Something went wrong!"
 func (a *AdminHandler) SalesReport(c *gin.Context) {
 	salesReport, err := a.adminService.SalesReport(c)
 	if err != nil {

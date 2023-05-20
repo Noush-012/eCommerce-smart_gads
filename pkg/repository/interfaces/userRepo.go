@@ -14,6 +14,7 @@ type UserRepository interface {
 	GetUserbyID(ctx context.Context, userId uint) (domain.Users, error)
 	SaveAddress(ctx context.Context, userAddress domain.Address) error
 	UpdateAddress(ctx context.Context, userAddress request.AddressPatchReq) error
+	DeleteAddress(ctx context.Context, userID, addressID uint) error
 	GetAllAddress(ctx context.Context, userId uint) (address []response.Address, err error)
 	GetEmailPhoneByUserId(ctx context.Context, userID uint) (contact response.UserContact, err error)
 	GetDefaultAddress(ctx context.Context, userId uint) (address response.Address, err error)

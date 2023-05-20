@@ -361,6 +361,16 @@ func (u *UserHandler) AddAddress(c *gin.Context) {
 
 }
 
+// UpdateAddress godoc
+// @summary api for update user address
+// @description user can update a address
+// @security ApiKeyAuth
+// @id UpdateAddress
+// @tags User Address
+// @Param input body request.AddressPatchReq{} true "Input Field"
+// @Router /address [put]
+// @Success 200 {object} response.Response{} "Address updated successfuly"
+// @Failure 500 {object} response.Response{} "Something went wrong!"
 func (u *UserHandler) UpdateAddress(c *gin.Context) {
 	// Get user id from context
 	userId := utils.GetUserIdFromContext(c)
@@ -382,6 +392,44 @@ func (u *UserHandler) UpdateAddress(c *gin.Context) {
 
 }
 
+// delete address
+// @summary api for delete user address
+// @description user can delete a address
+// @security ApiKeyAuth
+// @id DeleteAddress
+// @tags User Address
+// @Param input body request.AddressDeleteReq{} true "Input Field"
+// @Router /address [delete]
+// @Success 200 {object} response.Response{} "Address deleted successfuly"
+// @Failure 500 {object} response.Response{} "Something went wrong!"
+func (u *UserHandler) DeleteAddress(c *gin.Context) {
+	// Get user id from context
+	userId := utils.GetUserIdFromContext(c)
+	addressId, err := utils.StringToUint(c.Param("id"))
+	if err != nil {
+		response := response.ErrorResponse(400, "Missing or invalid entry", err.Error(), nil)
+		c.JSON(400, response)
+		return
+	}
+	if err := u.userService.DeleteAddress(c, userId, addressId); err != nil {
+		response := response.ErrorResponse(500, "Something went wrong!", err.Error(), nil)
+		c.JSON(500, response)
+		return
+	}
+	response := response.SuccessResponse(200, "Address deleted successfuly", nil)
+	c.JSON(200, response)
+}
+
+// GetAllAddress godoc
+// @summary api for user to get all address
+// @description user can get address
+// @security ApiKeyAuth
+// @id GetAllAddress
+// @Param page_number query int false "Page Number"
+// @tags User GetAllAddress
+// @Router /address [get]
+// @Success 200 {object} response.Response{} "Get all address successful"
+// @Failure 500{object} response.Response{}  "Something went wrong!"
 func (u *UserHandler) GetAllAddress(c *gin.Context) {
 	// Get user id from context
 	userId := utils.GetUserIdFromContext(c)

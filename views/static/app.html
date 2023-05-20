@@ -22,8 +22,8 @@
     "image": "https://example.com/your_logo",
     "order_id": "{{.RazorpayOrderID}}", //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
       "handler": function (response) {
-        console.log('response:', response, "payment_id:", response.razorpay_payment_id);
-        verifyPayment(response, response.razorpay_payment_id,"{{.OrderID}}");
+        console.log('response:', response, "payment_id:", );
+        verifyPayment(response, "{{.SGPay_id}}","{{.OrderID}}");
       },
       "prefill": {
         "name": "Test",

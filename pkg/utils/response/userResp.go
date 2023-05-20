@@ -6,6 +6,18 @@ import (
 	"github.com/Noush-012/Project-eCommerce-smart_gads/pkg/domain"
 )
 
+type Profile struct {
+	ID             uint           `json:"id"`
+	UserName       string         `json:"user_name" copire:"must"`
+	FirstName      string         `json:"first_name" copier:"must"`
+	LastName       string         `json:"last_name" copier:"must"`
+	Age            uint           `json:"age" copier:"must"`
+	Email          string         `json:"email" copier:"must"`
+	Phone          string         `json:"phone" copier:"must"`
+	DefaultAddress Address        `json:"default_address"`
+	OrderHistory   []OrderHistory `json:"order_history"`
+}
+
 type UserRespStrcut struct {
 	ID          uint      `json:"id" copier:"must"`
 	FirstName   string    `json:"first_name" copier:"must"`

@@ -63,6 +63,9 @@ func (o *OrderHandler) PlaceCODOrder(c *gin.Context) {
 // @security ApiKeyAuth
 // @tags User Cart
 // @id CheckoutCart
+// @Router /carts/checkout [get]
+// @Success 200 {object} response.Response{}  "Successfuly checked out"
+// @Failure 500 {object} response.Response{}  "Something went wrong! "
 func (o *OrderHandler) CheckOut(c *gin.Context) {
 
 	userId := utils.GetUserIdFromContext(c)
@@ -77,6 +80,15 @@ func (o *OrderHandler) CheckOut(c *gin.Context) {
 
 }
 
+// GetAllOrderHistory godoc
+// @summary api for user to get all order history made
+// @security ApiKeyAuth
+// @tags User orderHistory
+// @id orderHistory
+// @Router /carts/orders [get]
+// @Success 200 {object} response.Response{}  "Order history successful"
+// @Failure 400 {object} response.Response{}  "Missing user id"
+// @Failure 500 {object} response.Response{}  "Something went wrong! "
 func (o *OrderHandler) GetAllOrderHistory(c *gin.Context) {
 	var userId uint
 	var err error
@@ -120,30 +132,50 @@ func (o *OrderHandler) GetAllOrderHistory(c *gin.Context) {
 
 }
 
+// RazorpayCheckout godoc
+// @summary api for create an razorpay order
+// @security ApiKeyAuth
+// @tags User Cart
+// @id RazorpayPage
+// @Param input body   request.RazorpayReq{} true "inputs"
+// @Router /carts/checkout/razorpay [post]
+// @Success 200 {object}  response.Response{} "Checkout successfull"
+// @Failure 500 {object}  response.Response{} "Something went wrong!"
 func (o *OrderHandler) RazorPayCheckout(c *gin.Context) {
 	// get user from context
 	userId := utils.GetUserIdFromContext(c)
 
-	// Verify payment request id is razorpay
 	var body request.RazorpayReq
-	if err := c.BindJSON(&body); err != nil {
-		response := "invalid input"
-		c.JSON(http.StatusBadRequest, response)
+	id, err := utils.StringToUint(c.Param("payment_id"))
+	if err != nil {
+		response := response.ErrorResponse(http.StatusBadRequest, "Missing or invalid input", err.Error(), nil)
+		c.JSON(400, response)
 		return
 	}
 	body.UserID = userId
+	body.PaymentMethodId = id
 	razorpayOrder, err := o.OrderService.RazorPayCheckout(c, body)
 	if err != nil {
 		response := response.ErrorResponse(500, "Something went wrong!", err.Error(), nil)
 		c.JSON(500, response)
 		return
 	}
+
 	// response := response.SuccessResponse(200, "Razorpay chekout successful", razorpayOrder)
 	fmt.Println("resp", razorpayOrder.RazorpayKey)
 	c.HTML(200, "app.html", razorpayOrder)
 
 }
 
+// RazorpayVerify godoc
+// @summary api user for verify razorpay payment
+// @security ApiKeyAuth
+// @tags User Cart
+// @id RazorpayVerify
+// @Param payment_method_id formData uint true "Payment Method ID"
+// @Router /carts/checkout/razorpay/success [post]
+// @Failure 500 {object}  response.Response{} "Failed to verify razor pay order!"
+// @Success 200 {object} response.Response{}  "successfully payment completed and order approved"
 func (o *OrderHandler) RazorpayVerify(c *gin.Context) {
 	// get user from context
 	userId := utils.GetUserIdFromContext(c)

@@ -15,11 +15,13 @@ import (
 )
 
 type UserUseCase struct {
-	userRepository interfaces.UserRepository
+	userRepository  interfaces.UserRepository
+	orderRepository interfaces.OrderRepository
 }
 
-func NewUserUseCase(repo interfaces.UserRepository) service.UserService {
-	return &UserUseCase{userRepository: repo}
+func NewUserUseCase(repo interfaces.UserRepository, orderRepo interfaces.OrderRepository) service.UserService {
+	return &UserUseCase{userRepository: repo,
+		orderRepository: orderRepo}
 }
 
 func (u *UserUseCase) SignUp(ctx context.Context, user domain.Users) error {
@@ -117,12 +119,30 @@ func (u *UserUseCase) RemoveCartItem(ctx context.Context, DelCartItem request.De
 	return nil
 }
 
-func (u *UserUseCase) Profile(ctx context.Context, userId uint) (domain.Users, error) {
+func (u *UserUseCase) Profile(ctx context.Context, userId uint) (profile response.Profile, err error) {
 	user, err := u.userRepository.GetUserbyID(ctx, userId)
-	if err != nil {
-		return user, err
+	defaultAddress, err1 := u.userRepository.GetDefaultAddress(ctx, userId)
+	page := request.ReqPagination{
+		PageNumber: 1,
+		Count:      5,
 	}
-	return user, nil
+	profile = response.Profile{
+		ID:             user.ID,
+		UserName:       user.UserName,
+		FirstName:      user.FirstName,
+		LastName:       user.LastName,
+		Age:            user.Age,
+		Email:          user.Email,
+		Phone:          user.Phone,
+		DefaultAddress: defaultAddress,
+	}
+	orderHistory, err2 := u.orderRepository.GetOrderHistory(ctx, page, userId)
+	profile.OrderHistory = append(profile.OrderHistory, orderHistory...)
+	if err = errors.Join(err, err1, err2); err != nil {
+		return profile, err
+	}
+
+	return profile, nil
 }
 
 func (u *UserUseCase) Addaddress(ctx context.Context, address domain.Address) error {
@@ -137,6 +157,13 @@ func (u *UserUseCase) UpdateAddress(ctx context.Context, address request.Address
 	}
 	return nil
 
+}
+
+func (u *UserUseCase) DeleteAddress(ctx context.Context, userID, addressID uint) error {
+	if err := u.userRepository.DeleteAddress(ctx, userID, addressID); err != nil {
+		return err
+	}
+	return nil
 }
 
 func (u *UserUseCase) GetAllAddress(ctx context.Context, userId uint) (address []response.Address, err error) {

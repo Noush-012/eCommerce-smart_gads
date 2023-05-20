@@ -90,6 +90,10 @@ func (o *OrderDatabase) CheckoutOrder(ctx context.Context, userId uint) (checkOu
 		return checkOut, err
 	}
 	checkOut.DefaultShipping = address
+
+	if checkOut.TotalProductItems == 0 {
+		return checkOut, errors.New("no items in cart to checkout")
+	}
 	return checkOut, nil
 
 }
@@ -175,13 +179,12 @@ func (o *OrderDatabase) GetOrderHistory(ctx context.Context, page request.ReqPag
 }
 
 func (o *OrderDatabase) GetOrderByOrderId(ctx context.Context, OrderId uint) (orderData response.ShopOrder, err error) {
-	query := `SELECT so.id, so.order_date,os.status, so.order_total, po.name AS payment_type, pm.name AS payment_method, ps.status AS payment_status
-FROM shop_orders so
-JOIN order_statuses os ON os.id = so.order_status_id
-JOIN payment_options po ON so.payment_option_id = po.id
-JOIN payment_methods pm ON pm.id = so.payment_method_id 
-JOIN payment_statuses ps on ps.id = so.payment_status_id
-WHERE so.id = $1`
+	query := `SELECT so.id, so.order_date,os.status AS order_status, so.order_total, pm.payment_method,
+	so.shipping_id
+	FROM shop_orders so
+	JOIN order_statuses os ON os.id = so.order_status_id
+	JOIN payment_methods pm ON pm.id = so.payment_method_id
+	WHERE so.id = ?`
 	if err := o.DB.Raw(query, OrderId).Scan(&orderData).Error; err != nil {
 		return orderData, err
 

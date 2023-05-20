@@ -29,7 +29,7 @@ func InitiateAPI(cfg config.Config) (*http.ServerHTTP, error) {
 	paymentRepository := repository.NewPaymentRepository(gormDB)
 	orderService := usecase.NewOrderUseCase(orderRepository, userRepository, paymentRepository)
 	adminHandler := handler.NewAdminHandler(adminService, orderService)
-	userService := usecase.NewUserUseCase(userRepository)
+	userService := usecase.NewUserUseCase(userRepository, orderRepository)
 	userHandler := handler.NewUserHandler(userService)
 	productRepository := repository.NewProductRepository(gormDB)
 	productService := usecase.NewProductUseCase(productRepository)

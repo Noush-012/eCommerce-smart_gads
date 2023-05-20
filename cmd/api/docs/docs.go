@@ -101,6 +101,69 @@ const docTemplate = `{
                 }
             }
         },
+        "/address": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "user can get address",
+                "tags": [
+                    "User GetAllAddress"
+                ],
+                "summary": "api for user to get all address",
+                "operationId": "GetAllAddress",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Page Number",
+                        "name": "page_number",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Get all address successful"
+                    },
+                    "500": {
+                        "description": "Something went wrong!"
+                    }
+                }
+            },
+            "patch": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "user can update a address",
+                "tags": [
+                    "User Address"
+                ],
+                "summary": "api for update user address",
+                "operationId": "UpdateAddress",
+                "parameters": [
+                    {
+                        "description": "Input Field",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.AddressPatchReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Address updated successfuly"
+                    },
+                    "500": {
+                        "description": "Something went wrong!"
+                    }
+                }
+            }
+        },
         "/admin": {
             "get": {
                 "tags": [
@@ -111,6 +174,46 @@ const docTemplate = `{
                 "responses": {
                     "200": {
                         "description": "Welcome to Admin Home",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/coupons": {
+            "post": {
+                "tags": [
+                    "Admin CreateNewCoupon"
+                ],
+                "summary": "api for admin to create a cooupon",
+                "operationId": "CreateNewCoupon",
+                "parameters": [
+                    {
+                        "description": "inputs",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.CreateCoupon"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Coupon created successfully",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Missing or invalid input",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
                         "schema": {
                             "$ref": "#/definitions/response.Response"
                         }
@@ -270,6 +373,23 @@ const docTemplate = `{
                 }
             }
         },
+        "/admin/sales-report": {
+            "get": {
+                "tags": [
+                    "Admin SalesReport"
+                ],
+                "summary": "api for admin to download sales report as csv format",
+                "operationId": "SalesReport",
+                "responses": {
+                    "500": {
+                        "description": "Something went wrong!",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
         "/admin/users": {
             "get": {
                 "tags": [
@@ -334,6 +454,46 @@ const docTemplate = `{
                     },
                     "400": {
                         "description": "invalid input",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/users/orders": {
+            "patch": {
+                "tags": [
+                    "Admin ChangeOrderStatus"
+                ],
+                "summary": "api for admin to change order status of user",
+                "operationId": "ChangeOrderStatus",
+                "parameters": [
+                    {
+                        "description": "inputs",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.UpdateOrderStatus"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Order status updated successfully!",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Missing inputs",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Something went wrong!",
                         "schema": {
                             "$ref": "#/definitions/response.Response"
                         }
@@ -463,6 +623,144 @@ const docTemplate = `{
                     },
                     "500": {
                         "description": "Something went wrong!"
+                    }
+                }
+            }
+        },
+        "/carts/checkout": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "tags": [
+                    "User Cart"
+                ],
+                "summary": "api for user to checkout cart and proceed for payment",
+                "operationId": "CheckoutCart",
+                "responses": {
+                    "200": {
+                        "description": "Successfuly checked out",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Something went wrong! ",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/carts/checkout/razorpay": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "tags": [
+                    "User Cart"
+                ],
+                "summary": "api for create an razorpay order",
+                "operationId": "RazorpayPage",
+                "parameters": [
+                    {
+                        "description": "inputs",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.RazorpayReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Checkout successfull",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Something went wrong!",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/carts/checkout/razorpay/success": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "tags": [
+                    "User Cart"
+                ],
+                "summary": "api user for verify razorpay payment",
+                "operationId": "RazorpayVerify",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Payment Method ID",
+                        "name": "payment_method_id",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successfully payment completed and order approved",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Failed to verify razor pay order!",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/carts/orders": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "tags": [
+                    "User orderHistory"
+                ],
+                "summary": "api for user to get all order history made",
+                "operationId": "orderHistory",
+                "responses": {
+                    "200": {
+                        "description": "Order history successful",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Missing user id",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Something went wrong! ",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
                     }
                 }
             }
@@ -800,6 +1098,38 @@ const docTemplate = `{
                 }
             }
         },
+        "request.AddressPatchReq": {
+            "type": "object",
+            "properties": {
+                "address_id": {
+                    "type": "integer"
+                },
+                "address_line_1": {
+                    "type": "string"
+                },
+                "address_line_2": {
+                    "type": "string"
+                },
+                "city": {
+                    "type": "string"
+                },
+                "country": {
+                    "type": "string"
+                },
+                "house": {
+                    "type": "string"
+                },
+                "is_default": {
+                    "type": "boolean"
+                },
+                "state": {
+                    "type": "string"
+                },
+                "zip_code": {
+                    "type": "string"
+                }
+            }
+        },
         "request.CategoryReq": {
             "type": "object",
             "properties": {
@@ -811,6 +1141,26 @@ const docTemplate = `{
                 },
                 "parent_id": {
                     "type": "integer"
+                }
+            }
+        },
+        "request.CreateCoupon": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "string"
+                },
+                "discount_max_amount": {
+                    "type": "number"
+                },
+                "discount_percent": {
+                    "type": "number"
+                },
+                "min_order_value": {
+                    "type": "number"
+                },
+                "valid_till": {
+                    "type": "string"
                 }
             }
         },
@@ -944,6 +1294,17 @@ const docTemplate = `{
                 }
             }
         },
+        "request.RazorpayReq": {
+            "type": "object",
+            "required": [
+                "payment_method_id"
+            ],
+            "properties": {
+                "payment_method_id": {
+                    "type": "integer"
+                }
+            }
+        },
         "request.SignupUserData": {
             "type": "object",
             "required": [
@@ -1002,6 +1363,25 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "quantity": {
+                    "type": "integer"
+                }
+            }
+        },
+        "request.UpdateOrderStatus": {
+            "type": "object",
+            "required": [
+                "order_id",
+                "status_id",
+                "user_id"
+            ],
+            "properties": {
+                "order_id": {
+                    "type": "integer"
+                },
+                "status_id": {
+                    "type": "integer"
+                },
+                "user_id": {
                     "type": "integer"
                 }
             }
