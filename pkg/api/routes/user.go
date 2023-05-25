@@ -6,8 +6,8 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func UserRoutes(api *gin.RouterGroup, userHandler *handler.UserHandler, productHandler *handler.ProductHandler, paymentHandler *handler.PaymentHandler,
-	orderHandler *handler.OrderHandler) {
+func UserRoutes(api *gin.RouterGroup, userHandler *handler.UserHandler, productHandler *handler.ProductHandler,
+	paymentHandler *handler.PaymentHandler, orderHandler *handler.OrderHandler, couponHandler *handler.CouponHandler) {
 
 	// Signup
 	signup := api.Group("/signup")
@@ -34,6 +34,7 @@ func UserRoutes(api *gin.RouterGroup, userHandler *handler.UserHandler, productH
 		// products routes
 		products := api.Group("/products")
 		{
+			products.GET("/brands", productHandler.GetAllBrands)
 			products.GET("/", productHandler.ListProducts)                           // show products
 			products.GET("/product-item/:product_id", productHandler.GetProductItem) // show product items of a product
 		}
@@ -46,18 +47,25 @@ func UserRoutes(api *gin.RouterGroup, userHandler *handler.UserHandler, productH
 			cart.DELETE("/", userHandler.DeleteCartItem)
 			// checkout
 			cart.GET("/payment-option", paymentHandler.GetAllPaymentOptions)
-			cart.GET("/checkout", orderHandler.CheckOut)
-			cart.GET("/checkout/:id", orderHandler.PlaceCODOrder)
+			cart.POST("/checkout", orderHandler.CheckOut)
+			cart.POST("/checkout/:id", orderHandler.PlaceCODOrder)
 
 			// Razorpay
 			cart.GET("/checkout/razorpay/:payment_id", orderHandler.RazorPayCheckout)
 			cart.POST("/checkout/razorpay/success", orderHandler.RazorpayVerify, paymentHandler.SavePaymentDetails)
 
 		}
+
+		wishList := api.Group("/wishlist")
+		{
+			wishList.POST("/", userHandler.AddToWishlist)
+			wishList.GET("/", userHandler.GetWishlist)
+			wishList.DELETE("/:id", userHandler.DeleteFromWishlist)
+		}
 		order := api.Group("/orders")
 		{
 			order.GET("/", orderHandler.GetAllOrderHistory)
-			order.POST("/")
+			order.POST("/return", orderHandler.ReturnRequest)
 		}
 		profile := api.Group("/profile")
 		{
@@ -68,6 +76,10 @@ func UserRoutes(api *gin.RouterGroup, userHandler *handler.UserHandler, productH
 			profile.PUT("/address", userHandler.UpdateAddress)
 			profile.DELETE("/address:id", userHandler.DeleteAddress)
 
+		}
+		coupon := api.Group("/coupons")
+		{
+			coupon.GET("/", couponHandler.ListAllCoupons)
 		}
 
 	}

@@ -75,15 +75,16 @@ func (a *adminDatabase) GetUserOrderHistory(c context.Context, userId uint) (ord
 	return orderHistory, nil
 }
 
-func (a *adminDatabase) GenerateSalesReport(c context.Context) (salesData []domain.SalesReport, err error) {
-	query := `SELECT so.id AS order_id, so.user_id,so.order_total AS total_amount,
-	so.coupon_id AS coupon_code,pm.payment_method,so.order_date, os.status AS order_status, ds.status AS delivery_status
-	FROM shop_orders so
-	LEFT JOIN payment_methods pm ON pm.id = so.payment_method_id
-	LEFT JOIN order_statuses os ON os.id = so.order_status_id
-	LEFT JOIN delivery_statuses ds ON ds.id = so.delivery_status_id`
+func (a *adminDatabase) GenerateSalesReport(c context.Context, dateRange request.DateRange) (salesData []domain.SalesReport, err error) {
+	query := `SELECT so.id AS order_id, so.user_id, so.order_total AS total_amount,
+	so.coupon_id AS coupon_code, pm.payment_method, so.order_date, os.status AS order_status, ds.status AS delivery_status
+FROM shop_orders so
+LEFT JOIN payment_methods pm ON pm.id = so.payment_method_id
+LEFT JOIN order_statuses os ON os.id = so.order_status_id
+LEFT JOIN delivery_statuses ds ON ds.id = so.delivery_status_id
+WHERE so.order_date BETWEEN $1 AND $2`
 
-	if err := a.DB.Raw(query).Scan(&salesData).Error; err != nil {
+	if err := a.DB.Raw(query, dateRange.StartDate, dateRange.EndDate).Scan(&salesData).Error; err != nil {
 		return salesData, err
 	}
 	return salesData, nil

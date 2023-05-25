@@ -23,11 +23,12 @@ func InitiateAPI(cfg config.Config) (*http.ServerHTTP, error) {
 		return nil, err
 	}
 	adminRepository := repository.NewAdminRepository(gormDB)
-	orderRepository := repository.NewOrderRepository(gormDB)
+	paymentRepository := repository.NewPaymentRepository(gormDB)
+	couponRepository := repository.NewCouponRepository(gormDB)
+	orderRepository := repository.NewOrderRepository(gormDB, paymentRepository, couponRepository)
 	adminService := usecase.NewAdminService(adminRepository, orderRepository)
 	userRepository := repository.NewUserRepository(gormDB)
-	paymentRepository := repository.NewPaymentRepository(gormDB)
-	orderService := usecase.NewOrderUseCase(orderRepository, userRepository, paymentRepository)
+	orderService := usecase.NewOrderUseCase(orderRepository, userRepository, paymentRepository, couponRepository)
 	adminHandler := handler.NewAdminHandler(adminService, orderService)
 	userService := usecase.NewUserUseCase(userRepository, orderRepository)
 	userHandler := handler.NewUserHandler(userService)
@@ -37,7 +38,6 @@ func InitiateAPI(cfg config.Config) (*http.ServerHTTP, error) {
 	paymentService := usecase.NewPaymentUseCase(paymentRepository, orderRepository)
 	paymentHandler := handler.NewPaymentHandler(paymentService)
 	orderHandler := handler.NewOrderHandler(orderService)
-	couponRepository := repository.NewCouponRepository(gormDB)
 	couponService := usecase.NewCouponUseCase(couponRepository)
 	couponHandler := handler.NewCouponHandler(couponService)
 	serverHTTP := http.NewServerHTTP(adminHandler, userHandler, productHandler, paymentHandler, orderHandler, couponHandler)

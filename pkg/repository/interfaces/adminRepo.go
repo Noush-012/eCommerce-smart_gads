@@ -15,5 +15,5 @@ type AdminRepository interface {
 	BlockUser(ctx context.Context, userID uint) error
 	GetUserOrderHistory(c context.Context, userId uint) (orderHistory []domain.ShopOrder, err error)
 
-	GenerateSalesReport(c context.Context) (salesData []domain.SalesReport, err error)
+	GenerateSalesReport(c context.Context, dateRange request.DateRange) (salesData []domain.SalesReport, err error)
 }

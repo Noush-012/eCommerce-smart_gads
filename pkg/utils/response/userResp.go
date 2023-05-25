@@ -51,11 +51,14 @@ type CartItemResp struct {
 
 type CartResp struct {
 	CartItems         []CartItemResp `json:"-"`
-	AppliedCouponID   uint           `json:"applied_coupon_id"`
 	TotalProductItems uint           `json:"total_product_items"`
 	TotalQty          uint           `json:"total_qty"`
-	TotalPrice        uint           `json:"total_price"`
-	DiscountAmount    uint           `json:"discount_amount"`
+	TotalPrice        float64        `json:"total_price"`
+	DiscountAmount    float64        `json:"discount"`
+	AppliedCouponID   uint           `json:"applied_coupon_id"`
+	AppliedCouponCode string         `json:"applied_coupon_code"`
+	CouponDiscount    float64        `json:"coupon_discount"`
+	FinalPrice        uint           `json:"final_price"`
 	DefaultShipping   Address        `json:"default_shipping"`
 }
 type Address struct {
@@ -83,4 +86,13 @@ type CheckoutOrder struct {
 type UserContact struct {
 	Email string
 	Phone string
+}
+type Wishlist struct {
+	ProductItemId uint   `json:"product_item_id"`
+	ProductName   string `json:"product_name"`
+	Color         string `json:"color"`
+	Storage       string `json:"storage"`
+	Price         uint   `json:"price"`
+	Quantity      uint   `json:"quantity"`
+	Image         string `json:"image"`
 }

@@ -62,3 +62,13 @@ type Cart struct {
 	Items  []CartItem `gorm:"foreignKey:CartID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL"`
 	Total  float64    `gorm:"default:0"`
 }
+
+type Wishlist struct {
+	ID            uint      `gorm:"primaryKey"`
+	UserID        uint      `gorm:"not null"`
+	ProductItemID uint      `gorm:"not null"`
+	Quantity      uint      `gorm:"not null"`
+	CreatedAt     time.Time `gorm:"not null"`
+	UpdatedAt     time.Time
+	DeletedAt     gorm.DeletedAt `gorm:"index"`
+}

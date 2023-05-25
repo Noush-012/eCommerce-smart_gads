@@ -44,3 +44,11 @@ func (c *couponUseCase) GetAllCoupons(ctx context.Context, page request.ReqPagin
 	}
 	return coupon, nil
 }
+
+func (c *couponUseCase) GetCouponDataByCode(ctx context.Context, couponCode string) (domain.Coupon, error) {
+	couponData, err := c.couponRepository.GetCouponBycode(ctx, couponCode)
+	if err != nil {
+		return couponData, err
+	}
+	return couponData, nil
+}

@@ -1,8 +1,9 @@
 package request
 
 type RazorpayReq struct {
-	UserID          uint `json:"-"`
-	PaymentMethodId uint `json:"payment_method_id" binding:"required,numeric"`
+	UserID          uint   `json:"-"`
+	PaymentMethodId uint   `json:"-"`
+	CouponCode      string `json:"coupon_code"`
 }
 
 type RazorpayVerifyReq struct {

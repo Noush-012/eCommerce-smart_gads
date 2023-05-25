@@ -10,15 +10,17 @@ type ShopOrder struct {
 	UserID     uint      `json:"-" gorm:"not null"`
 	Users      Users     `gorm:"foreignKey:UserID" json:"-"`
 	OrderDate  time.Time `json:"order_date" gorm:"not null"`
-	OrderTotal float64   `json:"order_total" gorm:"not null"`
+	OrderTotal uint      `json:"order_total" gorm:"not null"`
 	ShippingID uint      `json:"shipping_id" gorm:"not null"`
 	// Address           Address        `gorm:"foreignKey:AddressID" json:"-"`
-	OrderStatusID     uint           `json:"order_status_id" gorm:"not null"`
-	OrderStatus       OrderStatus    `gorm:"foreignKey:OrderStatusID" json:"-"`
-	PaymentMethodID   uint           `json:"payment_method_id"`
-	PaymentMethod     PaymentMethod  `gorm:"foreignKey:PaymentMethodID" json:"-"`
+	OrderStatusID   uint          `json:"order_status_id" gorm:"not null"`
+	OrderStatus     OrderStatus   `gorm:"foreignKey:OrderStatusID" json:"-"`
+	PaymentMethodID uint          `json:"payment_method_id" gorm:"not null"`
+	PaymentMethod   PaymentMethod `gorm:"foreignKey:PaymentMethodID" json:"-"`
+	// PaymentStatusID   uint           `json:"payment_status_id" gorm:"not null"`
+	// PaymentStatus     PaymentStatus  `gorm:"foreignKey:PaymentStatusID" json:"-"`
 	CouponID          uint           `json:"coupon_id"`
-	DeliveryStatusID  int            `json:"delivery_status_id"`
+	DeliveryStatusID  int            `json:"delivery_status_id" gorm:"not null"`
 	DeliveryStatus    DeliveryStatus `gorm:"foreignKey:DeliveryStatusID" json:"-"`
 	DeliveryUpdatedAt time.Time      `json:"delivery_time"`
 }
@@ -48,4 +50,5 @@ type Return struct {
 	ShopOrder   ShopOrder `gorm:"foreignKey:ShopOrderID"`
 	Reason      string    `json:"string"`
 	IsApproved  bool      `json:"approved"`
+	RequestedAt time.Time `json:"requested_at"`
 }

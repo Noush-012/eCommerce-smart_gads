@@ -33,3 +33,16 @@ type Actions struct {
 	Id   uint   `json:"-" `
 	Name string `json:"action_name"`
 }
+
+type ReturnRequests struct {
+	UserID        uint      `json:"user_id"`
+	OrderId       uint      `json:"order_id"`
+	RequestedAt   time.Time `json:"requested_at"`
+	OrderDate     time.Time `json:"order_date"`
+	DeliveredAt   time.Time `json:"delivered_at"`
+	PaymentMethod string    `json:"payment_method"`
+	PaymentStatus string    `json:"payment_status"`
+	Reason        string    `json:"reason"`
+	OrderTotal    uint      `json:"order_total"`
+	IsApproved    bool      `json:"is_approved"`
+}

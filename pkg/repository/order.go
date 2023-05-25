@@ -7,17 +7,22 @@ import (
 
 	"github.com/Noush-012/Project-eCommerce-smart_gads/pkg/domain"
 	"github.com/Noush-012/Project-eCommerce-smart_gads/pkg/repository/interfaces"
+	"github.com/Noush-012/Project-eCommerce-smart_gads/pkg/utils"
 	"github.com/Noush-012/Project-eCommerce-smart_gads/pkg/utils/request"
 	"github.com/Noush-012/Project-eCommerce-smart_gads/pkg/utils/response"
 	"gorm.io/gorm"
 )
 
 type OrderDatabase struct {
-	DB *gorm.DB
+	DB              *gorm.DB
+	PaymentDatabase interfaces.PaymentRepository
+	couponDatabase  interfaces.CouponRepository
 }
 
-func NewOrderRepository(db *gorm.DB) interfaces.OrderRepository {
-	return &OrderDatabase{DB: db}
+func NewOrderRepository(db *gorm.DB, paymentRepo interfaces.PaymentRepository, couponRepo interfaces.CouponRepository) interfaces.OrderRepository {
+	return &OrderDatabase{DB: db,
+		PaymentDatabase: paymentRepo,
+		couponDatabase:  couponRepo}
 }
 
 func (o *OrderDatabase) OrderStatus(ctx context.Context, id uint) (status string, err error) {
@@ -45,27 +50,28 @@ func (o *OrderDatabase) GetCartItemsbyUserId(ctx context.Context, page request.R
 		return CartItems, err
 	}
 	// get cartItems with cartID
-	query := `SELECT ci.product_item_id, p.name,p.price,ci.price AS discount_price, 
-	ci.quantity,pi.qty_in_stock AS qty_left, pi.stock_status AS stock_status, ci.price * ci.quantity AS sub_total
-	FROM cart_items ci
-	JOIN product_items pi ON ci.product_item_id = pi.id
-	JOIN products p ON pi.product_id = p.id
-	WHERE cart_id = $1
-	ORDER BY ci.created_at DESC LIMIT $2 OFFSET $3`
+	query := `SELECT ci.product_item_id, p.name,pi.price, pi.discount_price,ci.quantity,pi.qty_in_stock AS qty_left,
+	pi.stock_status AS stock_status,
+	pi.discount_price * ci.quantity AS sub_total
+		FROM cart_items ci
+		JOIN product_items pi ON ci.product_item_id = pi.id
+		JOIN products p ON pi.product_id = p.id
+		WHERE cart_id = $1
+		ORDER BY ci.created_at DESC LIMIT $2 OFFSET $3`
 	if err := o.DB.Raw(query, cartID, limit, offset).Scan(&CartItems).Error; err != nil {
 		return CartItems, err
 	}
 	return CartItems, nil
 }
 
-func (o *OrderDatabase) CheckoutOrder(ctx context.Context, userId uint) (checkOut response.CartResp, err error) {
+// CheckoutOrder checks out an order for a given user with the provided coupon code.
+func (o *OrderDatabase) CheckoutOrder(ctx context.Context, userId uint, couponCode string) (checkOut response.CartResp, err error) {
 	var page request.ReqPagination
 	page.PageNumber = 1
-	page.Count = 5
+	page.Count = 50
 
-	// get cartItems
+	// Get cart items for the user
 	cartItems, err := o.GetCartItemsbyUserId(ctx, page, userId)
-	// fmt.Println(">>>>>>>>>>>>>>>>>>>>>>", cartItems)
 	if err != nil {
 		return checkOut, err
 	}
@@ -75,14 +81,29 @@ func (o *OrderDatabase) CheckoutOrder(ctx context.Context, userId uint) (checkOu
 		if v.ProductItemID != 0 {
 			count++
 
-			checkOut.TotalPrice += v.SubTotal
+			checkOut.TotalPrice += float64(v.SubTotal)
 			checkOut.TotalQty += v.Quantity
-			checkOut.DiscountAmount += v.Price - v.DiscountPrice
+			checkOut.DiscountAmount += float64(v.Price - v.DiscountPrice)
 		}
 	}
 	checkOut.TotalProductItems = uint(count)
-	// get default address
-	query := `SELECT a.id,a.house,a.address_line1,a.address_line2,a.city,a.state,a.zip_code,a.country ,a.is_default
+
+	// Apply coupon
+	AppliedCoupon, err := o.couponDatabase.ApplyCoupon(ctx, utils.ApplyCoupon{
+		CouponCode: couponCode,
+		UserId:     userId,
+		TotalPrice: checkOut.TotalPrice,
+	})
+	if err != nil {
+		return checkOut, err
+	}
+	checkOut.AppliedCouponCode = AppliedCoupon.CouponCode
+	checkOut.AppliedCouponID = AppliedCoupon.CouponId
+	checkOut.CouponDiscount = AppliedCoupon.CouponDiscount
+	checkOut.FinalPrice = uint(AppliedCoupon.FinalPrice)
+
+	// Get default address for the user
+	query := `SELECT a.id, a.house, a.address_line1, a.address_line2, a.city, a.state, a.zip_code, a.country, a.is_default
 	FROM addresses a
 	WHERE a.is_default = true AND a.user_id = $1`
 	var address response.Address
@@ -94,13 +115,13 @@ func (o *OrderDatabase) CheckoutOrder(ctx context.Context, userId uint) (checkOu
 	if checkOut.TotalProductItems == 0 {
 		return checkOut, errors.New("no items in cart to checkout")
 	}
-	return checkOut, nil
 
+	return checkOut, nil
 }
 
-func (o *OrderDatabase) PlaceCODOrder(ctx context.Context, userId uint, PaymentMethodID uint) (OrderId uint, err error) {
+func (o *OrderDatabase) PlaceCODOrder(ctx context.Context, userId, PaymentMethodID uint, couponCode string) (OrderId uint, err error) {
 	tnx := o.DB.Begin()
-	checkOut, err := o.CheckoutOrder(ctx, userId)
+	checkOut, err := o.CheckoutOrder(ctx, userId, couponCode)
 	if err != nil {
 		return OrderId, err
 	}
@@ -109,11 +130,13 @@ func (o *OrderDatabase) PlaceCODOrder(ctx context.Context, userId uint, PaymentM
 	}
 
 	order := domain.ShopOrder{
-		UserID:          userId,
-		OrderTotal:      float64(checkOut.TotalPrice),
-		ShippingID:      checkOut.DefaultShipping.ID,
-		PaymentMethodID: PaymentMethodID,
-		CouponID:        0,
+		UserID:           userId,
+		OrderTotal:       checkOut.FinalPrice,
+		ShippingID:       checkOut.DefaultShipping.ID,
+		PaymentMethodID:  PaymentMethodID,
+		OrderStatusID:    1,
+		DeliveryStatusID: 1,
+		CouponID:         0,
 	}
 	OrderId, err = o.SaveOrder(ctx, order)
 	if err != nil {
@@ -135,6 +158,18 @@ func (o *OrderDatabase) PlaceCODOrder(ctx context.Context, userId uint, PaymentM
 			}
 
 		}
+	}
+	// Save payment details
+	if err := o.PaymentDatabase.SavePaymentData(ctx, domain.PaymentDetails{
+		OrderID:         OrderId,
+		OrderTotal:      checkOut.FinalPrice,
+		PaymentMethodID: PaymentMethodID,
+		PaymentStatusID: 1, // set payment status as pending ID 1 = "Pending"
+		PaymentRef:      "",
+		UpdatedAt:       time.Now(),
+	}); err != nil {
+		tnx.Rollback()
+		return OrderId, err
 	}
 
 	if err = tnx.Commit().Error; err != nil {
@@ -168,7 +203,7 @@ func (o *OrderDatabase) GetOrderHistory(ctx context.Context, page request.ReqPag
 	JOIN order_statuses os ON os.id = so.order_status_id
 	JOIN delivery_statuses ds ON ds.id = so.delivery_status_id
 	JOIN payment_methods pm ON pm.id = so.payment_method_id
-	LEFT JOIN payment_details pd ON pd.id = so.id
+	LEFT JOIN payment_details pd ON pd.order_id = so.id
 	LEFT JOIN payment_statuses ps ON ps.id = pd.payment_status_id
 	WHERE so.user_id = $1 ORDER BY so.order_date DESC LIMIT $2 OFFSET $3;`
 	if err := o.DB.Raw(query, userId, limit, offset).Scan(&orderHisory).Error; err != nil {
@@ -194,15 +229,13 @@ func (o *OrderDatabase) GetOrderByOrderId(ctx context.Context, OrderId uint) (or
 
 func (o *OrderDatabase) SaveOrder(ctx context.Context, order domain.ShopOrder) (OrderId uint, err error) {
 	query := `INSERT INTO shop_orders(user_id,order_date,order_total,shipping_id,order_status_id,
-	payment_method_id,coupon_id,delivery_status_id,delivery_updated_at)
+	payment_method_id, coupon_id,delivery_status_id, delivery_updated_at)
 	VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING ID`
 	order.OrderDate = time.Now()
 	if order.PaymentMethodID == 1 {
 
 		order.OrderStatusID = 1 // set default ID 1 is for placed for COD orders
 	}
-	order.OrderStatusID = 1    // set default ID 1 is for pending
-	order.DeliveryStatusID = 1 // set default ID 1 is for pending
 	if err := o.DB.Raw(query, order.UserID, order.OrderDate, order.OrderTotal, order.ShippingID, order.OrderStatusID,
 		order.PaymentMethodID, order.CouponID, order.DeliveryStatusID, order.DeliveryUpdatedAt).Scan(&OrderId).Error; err != nil {
 		return 0, err
@@ -219,7 +252,7 @@ func (o *OrderDatabase) SaveOrderLine(ctx context.Context, orderLine domain.Orde
 	return nil
 }
 
-func (o *OrderDatabase) ChangeOrderStatus(c context.Context, UpdateData request.UpdateOrderStatus) error {
+func (o *OrderDatabase) ChangeOrderStatus(c context.Context, UpdateData request.UpdateStatus) error {
 
 	query := `UPDATE shop_orders
 	SET order_status_id = $1
@@ -229,5 +262,57 @@ func (o *OrderDatabase) ChangeOrderStatus(c context.Context, UpdateData request.
 	}
 	//
 
+	return nil
+}
+
+func (o *OrderDatabase) GetDeliveryDate(c context.Context, orderId uint) (time.Time, error) {
+	var deliveryDate time.Time
+	// id 2 for status "delivered"
+	query := `SELECT delivery_updated_at FROM shop_orders WHERE delivery_status_id = 2
+	AND id = $1`
+	if err := o.DB.Raw(query, orderId).Scan(&deliveryDate).Error; err != nil {
+		return deliveryDate, err
+	}
+	return deliveryDate, nil
+}
+
+func (o *OrderDatabase) SaveReturnRequest(c context.Context, data request.ReturnRequest) error {
+	query := `INSERT INTO returns (shop_order_id, reason, requested_at)
+	VALUES ($1, $2, $3)`
+	requested_at := time.Now()
+	if err := o.DB.Exec(query, data.OrderID, data.Reason, requested_at).Error; err != nil {
+		return err
+	}
+	return nil
+
+}
+
+func (o *OrderDatabase) GetAllReturnOrder(c context.Context, page request.ReqPagination) (ReturnRequests []response.ReturnRequests, err error) {
+	limit := page.Count
+	offset := (page.PageNumber - 1) * limit
+	query := `SELECT so.user_id, r.requested_at, so.order_date,so.delivery_updated_at AS delivered_at,r.shop_order_id AS order_id,pm.payment_method,ps.status AS payment_status,
+	r.reason,so.order_total, r.is_approved
+	FROM returns r
+	JOIN shop_orders so ON so.id = r.shop_order_id
+	JOIN payment_methods pm ON pm.id = so.payment_method_id
+	JOIN payment_details pd ON pd.order_id = so.id
+	JOIN payment_statuses ps ON ps.id = pd.payment_status_id
+	ORDER BY r.requested_at ASC LIMIT $1 OFFSET $2`
+	err = o.DB.Raw(query, limit, offset).Scan(&ReturnRequests).Error
+	if err != nil {
+		return ReturnRequests, err
+	}
+	return ReturnRequests, nil
+}
+
+func (o *OrderDatabase) UpdateDeliveryStatus(c context.Context, UpdateData request.UpdateStatus) error {
+	query := `UPDATE shop_orders
+	SET delivery_status_id = $1, delivery_updated_at = $2
+	WHERE id = $3`
+	deliveryDate := time.Now()
+	err := o.DB.Exec(query, UpdateData.StatusId, deliveryDate, UpdateData.OrderId).Error
+	if err != nil {
+		return err
+	}
 	return nil
 }

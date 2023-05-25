@@ -28,7 +28,6 @@ func AdminRoutes(api *gin.RouterGroup, adminHandler *handler.AdminHandler, produ
 	{
 		api.GET("/", adminHandler.AdminHome)
 		api.GET("/logout", adminHandler.LogoutAdmin)
-
 		// Sales report
 
 		// Users dashboard
@@ -38,6 +37,8 @@ func AdminRoutes(api *gin.RouterGroup, adminHandler *handler.AdminHandler, produ
 			user.PATCH("/block", adminHandler.BlockUser)
 			user.GET("/orders", orderHandler.GetAllOrderHistory)
 			user.PATCH("/orders", adminHandler.ChangeOrderStatus)
+			user.GET("/return-orders", adminHandler.GetAllReturnOrder)
+			user.PATCH("/orders/delivery-update", adminHandler.UpdateDeliveryStatus)
 		}
 
 		// Brand
@@ -61,9 +62,8 @@ func AdminRoutes(api *gin.RouterGroup, adminHandler *handler.AdminHandler, produ
 			// Add product item
 			product.POST("/product-item", productHandler.AddProductItem)
 
-			// Order
-
 		}
+
 		coupons := api.Group("/coupons")
 		{
 			coupons.GET("/", couponHandler.ListAllCoupons)

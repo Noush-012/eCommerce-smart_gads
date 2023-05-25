@@ -6,12 +6,12 @@ type PaymentDetails struct {
 	ID      uint `gorm:"primaryKey" json:"id,omitempty"`
 	OrderID uint `json:"order_id,omitempty"`
 	// ShopOrder       ShopOrder     `gorm:"foreignKey:ShopOrderID" json:"-"`
-	OrderTotal      float64       `json:"order_total"`
+	OrderTotal      uint          `json:"order_total"`
 	PaymentMethodID uint          `json:"payment_method_id"`
 	PaymentMethod   PaymentMethod `gorm:"foreignKey:PaymentMethodID"`
 	PaymentStatusID uint          `json:"payment_status_id,omitempty"`
 	PaymentStatus   PaymentStatus `gorm:"foreignKey:PaymentStatusID" json:"-"`
-	PaymentRef      string        `gorm:"unique"`
+	PaymentRef      string        `gorm:"default:null;uniqueIndex" json:"payment_ref"`
 	UpdatedAt       time.Time
 }
 

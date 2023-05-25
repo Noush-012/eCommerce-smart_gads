@@ -65,9 +65,18 @@ func (p *PaymentDatabase) GetPaymentStatusByOrderId(ctx context.Context, orderId
 	if err := p.DB.Raw(query, orderId).Scan(&status).Error; err != nil {
 		return false, err
 	}
-	if status == "paid" {
+	if status == "Paid" {
+
 		return true, nil
 	}
 	return false, nil
 
+}
+func (p *PaymentDatabase) UpdatePaymentStatus(ctx context.Context, statusId, orderId uint) error {
+	query := `UPDATE payment_details SET payment_status_id = $1 WHERE order_id = $2`
+	err := p.DB.Exec(query, statusId, orderId).Error
+	if err != nil {
+		return err
+	}
+	return nil
 }

@@ -41,9 +41,17 @@ func (o *OrderHandler) PlaceCODOrder(c *gin.Context) {
 	}
 	// get user from context
 	userId := utils.GetUserIdFromContext(c)
-
-	// get final order details
-	shopOrder, err := o.OrderService.PlaceOrderByCOD(c, userId, PaymentMethodID)
+	// Get coupon code
+	// bind coupon
+	var coupon request.Coupon
+	err = c.ShouldBindJSON(&coupon)
+	if err != nil {
+		response := response.ErrorResponse(400, "Missing or invalid input", err.Error(), nil)
+		c.JSON(400, response)
+		return
+	}
+	// Place order and save
+	shopOrder, err := o.OrderService.PlaceOrderByCOD(c, userId, PaymentMethodID, coupon.Coupon)
 	if err != nil {
 		response := response.ErrorResponse(500, "Something went wrong! ", err.Error(), nil)
 		c.JSON(500, response)
@@ -59,7 +67,7 @@ func (o *OrderHandler) PlaceCODOrder(c *gin.Context) {
 }
 
 // CheckoutCart godoc
-// @summary api for user to checkout cart and proceed for payment
+// @summary api for user to checkout cart, apply voucher and proceed for payment
 // @security ApiKeyAuth
 // @tags User Cart
 // @id CheckoutCart
@@ -67,9 +75,18 @@ func (o *OrderHandler) PlaceCODOrder(c *gin.Context) {
 // @Success 200 {object} response.Response{}  "Successfuly checked out"
 // @Failure 500 {object} response.Response{}  "Something went wrong! "
 func (o *OrderHandler) CheckOut(c *gin.Context) {
+	// bind coupon
+	var coupon request.Coupon
+	err := c.ShouldBindJSON(&coupon)
+	if err != nil {
+		response := response.ErrorResponse(400, "Missing or invalid input", err.Error(), nil)
+		c.JSON(400, response)
+		return
+	}
 
 	userId := utils.GetUserIdFromContext(c)
-	CheckOut, err := o.OrderService.CheckoutOrder(c, userId)
+
+	CheckOut, err := o.OrderService.CheckoutOrder(c, userId, coupon)
 	if err != nil {
 		response := response.ErrorResponse(500, "Something went wrong!", err.Error(), nil)
 		c.JSON(500, response)
@@ -152,6 +169,15 @@ func (o *OrderHandler) RazorPayCheckout(c *gin.Context) {
 		c.JSON(400, response)
 		return
 	}
+	// err = c.ShouldBindJSON(&body)
+	couponCode := c.Query("coupon")
+	fmt.Println("------------------>", couponCode)
+	// if err != nil {
+	// 	response := response.ErrorResponse(http.StatusBadRequest, "Missing or invalid input", err.Error(), nil)
+	// 	c.JSON(400, response)
+	// 	return
+	// }
+	body.CouponCode = couponCode
 	body.UserID = userId
 	body.PaymentMethodId = id
 	razorpayOrder, err := o.OrderService.RazorPayCheckout(c, body)
@@ -162,7 +188,7 @@ func (o *OrderHandler) RazorPayCheckout(c *gin.Context) {
 	}
 
 	// response := response.SuccessResponse(200, "Razorpay chekout successful", razorpayOrder)
-	fmt.Println("resp", razorpayOrder.RazorpayKey)
+	// fmt.Println("resp", razorpayOrder.RazorpayKey)
 	c.HTML(200, "app.html", razorpayOrder)
 
 }
@@ -199,7 +225,7 @@ func (o *OrderHandler) RazorpayVerify(c *gin.Context) {
 		return
 	}
 	// Update order status and clear cart
-	Updatebody := request.UpdateOrderStatus{
+	Updatebody := request.UpdateStatus{
 		UserId:   userId,
 		StatusId: 2, // ID 2 is for satus "placed"
 		OrderId:  Smart_gads_orderId,
@@ -212,4 +238,33 @@ func (o *OrderHandler) RazorpayVerify(c *gin.Context) {
 
 	// calling payment handler to save payment details
 	c.Next()
+}
+
+// ReturnOrder godoc
+// @summary api user for return order
+// @security ApiKeyAuth
+// @tags User Cart
+// @id ReturnOrder
+// @Param payment_method_id formData uint true "Order ID"
+func (o *OrderHandler) ReturnRequest(c *gin.Context) {
+	// get user from context
+	userId := utils.GetUserIdFromContext(c)
+	var body request.ReturnRequest
+	err := c.ShouldBindJSON(&body)
+	if err != nil {
+		response := response.ErrorResponse(400, "Failed to bind return request!", err.Error(), nil)
+		c.JSON(400, response)
+		return
+	}
+	body.UserID = userId
+	// Validate return request and save if valid
+	err = o.OrderService.ReturnEligibilityCheck(c, body)
+	if err != nil {
+		response := response.ErrorResponse(http.StatusBadRequest, "Alert", err.Error(), nil)
+		c.JSON(500, response)
+		return
+	}
+	response := response.SuccessResponse(200, "Return request successful, Please wait for approval")
+	c.JSON(200, response)
+
 }

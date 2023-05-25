@@ -271,3 +271,48 @@ WHERE a.user_id = ? AND a.is_default = true`
 	}
 	return address, nil
 }
+
+func (i *userDatabase) AddToWishlist(ctx context.Context, wishlistData request.AddToWishlist) error {
+
+	query := `INSERT INTO wishlists (user_id, product_item_id,quantity,created_at)
+	VALUES ($1, $2, $3, $4)`
+	CreatedAt := time.Now()
+	if err := i.DB.Exec(query, wishlistData.UserID, wishlistData.ProductItemID, wishlistData.Quantity, CreatedAt).Error; err != nil {
+		return err
+	}
+	return nil
+}
+
+func (i *userDatabase) GetWishlist(ctx context.Context, userId uint) (wishlist []response.Wishlist, err error) {
+	query := `SELECT w.product_item_id, p.name AS product_name,pi.discount_price AS price,w.quantity,p.image,
+	vo1.option_value AS color,  vo2.option_value AS storage
+	FROM wishlists w
+	JOIN product_items pi ON pi.id = w.product_item_id
+	JOIN products p ON p.id = pi.product_id
+	JOIN product_configs pc1 ON pi.id = pc1.product_item_id AND pc1.variation_option_id IN (SELECT id FROM variation_options WHERE variation_id = 1)
+		JOIN variation_options vo1 ON vo1.id = pc1.variation_option_id 
+		JOIN product_configs pc2 ON pi.id = pc2.product_item_id AND pc2.variation_option_id IN (SELECT id FROM variation_options WHERE variation_id = 2)
+		JOIN variation_options vo2 ON vo2.id = pc2.variation_option_id
+	
+	WHERE w.user_id = ?`
+	if err := i.DB.Raw(query, userId).Scan(&wishlist).Error; err != nil {
+		return wishlist, err
+	}
+	// fetch pictures
+	// query = `SELECT image
+	// FROM product_images
+	// WHERE product_item_id = 14`
+
+	// i.DB.Row(query)
+	return wishlist, err
+
+}
+
+func (i *userDatabase) DeleteFromWishlist(ctx context.Context, productId, userId uint) error {
+	query := `DELETE from wishlists WHERE product_item_id = $1 AND user_id = $2`
+	err := i.DB.Exec(query, productId, userId).Error
+	if err != nil {
+		return err
+	}
+	return nil
+}

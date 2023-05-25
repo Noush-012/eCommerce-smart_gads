@@ -33,6 +33,9 @@ func (p *PaymentUseCase) GetPaymentMethodByID(ctx context.Context, id uint) (pay
 	}
 	return payMethod, nil
 }
+func (p *PaymentUseCase) UpdatePaymentStatus(ctx context.Context, statusId, orderId uint) error {
+	return nil
+}
 
 func (p *PaymentUseCase) SavePaymentDetails(ctx context.Context, paymentData domain.PaymentDetails) error {
 	// get order data with orderId
@@ -40,7 +43,8 @@ func (p *PaymentUseCase) SavePaymentDetails(ctx context.Context, paymentData dom
 	if err != nil {
 		return err
 	}
-	paymentData.OrderTotal = order.OrderTotal
+	paymentData.OrderTotal = uint(order.OrderTotal)
+
 	if err := p.PaymentRepository.SavePaymentData(ctx, paymentData); err != nil {
 		return err
 	}

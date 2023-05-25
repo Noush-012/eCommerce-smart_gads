@@ -34,3 +34,9 @@ type DeleteCartItemReq struct {
 	UserID        uint `json:"-"`
 	ProductItemID uint `json:"product_item_id" binding:"required"`
 }
+
+type AddToWishlist struct {
+	UserID        uint `json:"-"`
+	ProductItemID uint `json:"product_item_id" binding:"required"`
+	Quantity      uint `json:"quantity" binding:"required"`
+}

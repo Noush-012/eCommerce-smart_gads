@@ -173,3 +173,27 @@ func (u *UserUseCase) GetAllAddress(ctx context.Context, userId uint) (address [
 	}
 	return address, nil
 }
+
+func (u *UserUseCase) AddToWishlist(ctx context.Context, wishlistData request.AddToWishlist) error {
+	err := u.userRepository.AddToWishlist(ctx, wishlistData)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (u *UserUseCase) GetWishlist(ctx context.Context, userId uint) (wishlist []response.Wishlist, err error) {
+	wishlist, err = u.userRepository.GetWishlist(ctx, userId)
+	if err != nil {
+		return wishlist, err
+	}
+	return wishlist, nil
+}
+
+func (u *UserUseCase) DeleteFromWishlist(ctx context.Context, productId, userId uint) error {
+	err := u.userRepository.DeleteFromWishlist(ctx, productId, userId)
+	if err != nil {
+		return err
+	}
+	return nil
+}

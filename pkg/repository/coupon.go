@@ -2,9 +2,12 @@ package repository
 
 import (
 	"context"
+	"errors"
+	"time"
 
 	"github.com/Noush-012/Project-eCommerce-smart_gads/pkg/domain"
 	"github.com/Noush-012/Project-eCommerce-smart_gads/pkg/repository/interfaces"
+	"github.com/Noush-012/Project-eCommerce-smart_gads/pkg/utils"
 	"github.com/Noush-012/Project-eCommerce-smart_gads/pkg/utils/request"
 	"gorm.io/gorm"
 )
@@ -19,7 +22,7 @@ func NewCouponRepository(db *gorm.DB) interfaces.CouponRepository {
 
 // coupon management
 // Fetch by coupon code
-func (c *couponDatabase) GetCouponBycode(ctx context.Context, code uint) (coupon domain.Coupon, err error) {
+func (c *couponDatabase) GetCouponBycode(ctx context.Context, code string) (coupon domain.Coupon, err error) {
 	query := `SELECT * FROM coupons WHERE code = ?`
 	if err := c.DB.Raw(query, code).Scan(&coupon).Error; err != nil {
 		return coupon, err
@@ -79,4 +82,31 @@ func (c *couponDatabase) DeleteCoupon(ctx context.Context, couponId uint) error 
 		return err
 	}
 	return nil
+}
+
+func (c *couponDatabase) ApplyCoupon(ctx context.Context, data utils.ApplyCoupon) (AppliedCoupon utils.ApplyCouponResponse, err error) {
+
+	// Get coupon and validate
+	couponData, err := c.GetCouponBycode(ctx, data.CouponCode)
+	if err != nil {
+		return AppliedCoupon, err
+	}
+	// fmt.Println("--------------------->", couponData)
+	if couponData.ValidTill.Before(time.Now()) {
+		return AppliedCoupon, errors.New("coupon expired")
+	}
+	if data.TotalPrice < couponData.MinOrderValue {
+		return AppliedCoupon, errors.New("unable to apply coupon. minimum order value not reached")
+	}
+	AppliedCoupon.CouponDiscount = data.TotalPrice * couponData.DiscountPercent / 100
+	if AppliedCoupon.CouponDiscount > couponData.DiscountMaxAmount {
+		AppliedCoupon.CouponDiscount = couponData.DiscountMaxAmount
+	}
+	AppliedCoupon.FinalPrice = data.TotalPrice - AppliedCoupon.CouponDiscount
+	AppliedCoupon.CouponId = couponData.ID
+	AppliedCoupon.CouponCode = couponData.Code
+
+	// check coupon is valid or not
+	return AppliedCoupon, nil
+
 }

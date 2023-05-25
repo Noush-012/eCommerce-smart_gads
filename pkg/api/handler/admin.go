@@ -214,7 +214,7 @@ func (a *AdminHandler) UserOrderHistory(c *gin.Context) {
 // @Failure 400 {object} response.Response{} "Missing inputs"
 // @Failure 500 {object} response.Response{}"Something went wrong!"
 func (a *AdminHandler) ChangeOrderStatus(c *gin.Context) {
-	var body request.UpdateOrderStatus
+	var body request.UpdateStatus
 	err := c.ShouldBindJSON(&body)
 	if err != nil {
 		response := response.ErrorResponse(400, "Missing inputs", err.Error(), body)
@@ -241,7 +241,14 @@ func (a *AdminHandler) ChangeOrderStatus(c *gin.Context) {
 // @Failure 500 {object} response.Response{} "Something went wrong! failed to generate sales report"
 // @Failure 500 {object} response.Response{}"Something went wrong!"
 func (a *AdminHandler) SalesReport(c *gin.Context) {
-	salesReport, err := a.adminService.SalesReport(c)
+	var body request.DateRange
+	err := c.ShouldBindJSON(&body)
+	if err != nil {
+		response := response.ErrorResponse(400, "Missing or Invalid inputs", err.Error(), body)
+		c.JSON(400, response)
+		return
+	}
+	salesReport, err := a.adminService.SalesReport(c, body)
 	if err != nil {
 		response := response.ErrorResponse(500, "Something went wrong!", err.Error(), nil)
 		c.JSON(500, response)
@@ -278,4 +285,70 @@ func (a *AdminHandler) SalesReport(c *gin.Context) {
 	}
 	// Flush the writer's buffer to ensure all data is written to the client
 	wr.Flush()
+}
+
+// GetAllReturnRequest godoc
+// @Summary List all return request
+// @Description List all return request
+// @Tags Admin
+// @Accept  json
+// @Produce  json
+// @Success 200 {object} Response
+// @Failure 400 {object} Response
+// @Failure 500 {object} Response
+// @Router /admin/return-request [get]
+func (a *AdminHandler) GetAllReturnOrder(c *gin.Context) {
+
+	count, err1 := utils.StringToUint(c.Query("count"))
+	pageNumber, err2 := utils.StringToUint(c.Query("page_number"))
+
+	err1 = errors.Join(err1, err2)
+	if err1 != nil {
+		response := response.ErrorResponse(400, "Missing or invalid inputs", err1.Error(), nil)
+		c.JSON(http.StatusBadRequest, response)
+		return
+	}
+
+	pagination := request.ReqPagination{
+		PageNumber: pageNumber,
+		Count:      count,
+	}
+	returnRequest, err := a.orderService.GetAllReturnRequest(c, pagination)
+	if err != nil {
+		response := response.ErrorResponse(400, "Something went wrong!", err1.Error(), nil)
+		c.JSON(http.StatusBadRequest, response)
+		return
+	}
+	response := response.SuccessResponse(http.StatusOK, "Return Request List", returnRequest, nil)
+	c.JSON(http.StatusOK, response)
+
+}
+
+// UpdateDeliveryStatus godoc
+// @Summary Update delivery status of user orders
+// @Description Update delivery status of user orders
+// @Tags Admin
+// @Accept  json
+// @Produce  json
+// @Param input body request.UpdateSatus{} true "inputs"
+// @Router /admin/users/orders/delivery-update [patch]
+// @Success 200 {object} Response
+// @Failure 400 {object} Response
+// @Failure 500 {object} Response
+func (a *AdminHandler) UpdateDeliveryStatus(c *gin.Context) {
+	var body request.UpdateStatus
+	if err := c.ShouldBindJSON(&body); err != nil {
+		response := response.ErrorResponse(400, "Invalid Request Body", err.Error(), nil)
+		c.JSON(http.StatusBadRequest, response)
+		return
+	}
+
+	err := a.adminService.UpdateDeliveryStatus(c, body)
+	if err != nil {
+		response := response.ErrorResponse(400, "Something went wrong!", err.Error(), nil)
+		c.JSON(http.StatusBadRequest, response)
+		return
+	}
+	response := response.SuccessResponse(http.StatusOK, "Delivery Status Updated", nil, nil)
+	c.JSON(http.StatusOK, response)
 }

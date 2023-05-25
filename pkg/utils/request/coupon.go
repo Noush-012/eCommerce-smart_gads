@@ -18,3 +18,6 @@ type UpdateCoupon struct {
 	DiscountMaxAmount float64   `json:"discount_max_amount,omitempty"`
 	ValidTill         time.Time `json:"valid_till"`
 }
+type Coupon struct {
+	Coupon string `json:"coupon_code,omitempty"`
+}

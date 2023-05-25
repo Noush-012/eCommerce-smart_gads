@@ -84,11 +84,23 @@ func (a *adminService) GetUserOrderHistory(c context.Context, userId uint) (orde
 }
 
 // Generate sales report
-func (a *adminService) SalesReport(c context.Context) (salesReport []domain.SalesReport, err error) {
+func (a *adminService) SalesReport(c context.Context, daterange request.DateRange) (salesReport []domain.SalesReport, err error) {
 
-	salesReport, err = a.adminRepository.GenerateSalesReport(c)
+	salesReport, err = a.adminRepository.GenerateSalesReport(c, daterange)
 	if err != nil {
 		return salesReport, err
 	}
 	return salesReport, nil
+}
+
+func (a *adminService) GetAllReturnOrders(c context.Context) {
+
+}
+
+func (o *adminService) UpdateDeliveryStatus(c context.Context, UpdateData request.UpdateStatus) error {
+	err := o.orderRepositoty.UpdateDeliveryStatus(c, UpdateData)
+	if err != nil {
+		return err
+	}
+	return nil
 }

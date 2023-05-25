@@ -41,7 +41,7 @@ func GenerateSKU(prod request.ProductItemReq) (string, error) {
 	return "", nil
 }
 
-func GenerateRazorPayOrder(amount uint, ReceiptId string) (razorpayOrderID interface{}, err error) {
+func GenerateRazorPayOrder(amount float64, ReceiptId string) (razorpayOrderID interface{}, err error) {
 	// Get razor pay api config
 	razorPayKey := config.GetConfig().RazorPayKey
 	razorPaySecret := config.GetConfig().RazorPaySecret
