@@ -72,3 +72,24 @@ type Wishlist struct {
 	UpdatedAt     time.Time
 	DeletedAt     gorm.DeletedAt `gorm:"index"`
 }
+
+//	type Wallet struct {
+//		ID           uint    `gorm:"primaryKey"`
+//		UserID       uint    `gorm:"not null"`
+//		Balance      float64 `gorm:"not null"`
+//		Credit       uint
+//		CreditRemark string
+//		Debit        uint
+//		DebitRemark  string
+//		CreatedAt    time.Time
+//		UpdatedAt    time.Time      `gorm:"not null"`
+//		DeletedAt    gorm.DeletedAt `gorm:"index"`
+//	}
+type Wallet struct {
+	ID        uint    `gorm:"primaryKey"`
+	UserID    uint    `gorm:"not null"`
+	Balance   float64 `gorm:"not null"`
+	Remark    string
+	UpdatedAt time.Time
+	CreatedAt time.Time
+}

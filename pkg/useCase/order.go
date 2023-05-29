@@ -176,10 +176,17 @@ func (o *OrderUseCase) ReturnEligibilityCheck(c context.Context, data request.Re
 
 }
 
-func (o *OrderUseCase) GetAllReturnRequest(c context.Context, page request.ReqPagination) (ReturnRequests []response.ReturnRequests, err error) {
-	ReturnRequests, err = o.OrderRepository.GetAllReturnOrder(c, page)
+func (o *OrderUseCase) GetAllPendingReturnRequest(c context.Context, page request.ReqPagination) (ReturnRequests []response.ReturnRequests, err error) {
+	ReturnRequests, err = o.OrderRepository.GetAllPendingReturnOrder(c, page)
 	if err != nil {
 		return ReturnRequests, err
 	}
 	return ReturnRequests, nil
+}
+
+func (o *OrderUseCase) OrderCancellation(c context.Context, data request.CancelOrder) error {
+	if err := o.OrderRepository.OrderCancellation(c, data); err != nil {
+		return err
+	}
+	return nil
 }

@@ -12,4 +12,5 @@ type PaymentService interface {
 
 	SavePaymentDetails(ctx context.Context, paymentData domain.PaymentDetails) error
 	UpdatePaymentStatus(ctx context.Context, statusId, orderId uint) error
+	GetPaymentDataByOrderId(ctx context.Context, orderId uint) (paymentData domain.PaymentDetails, err error)
 }

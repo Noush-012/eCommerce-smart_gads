@@ -229,11 +229,17 @@ func (i *userDatabase) UpdateCart(ctx context.Context, cartUpadates request.Upda
 		return err
 	}
 	// update cart
-	query := `UPDATE carts SET
-    product_item_id = COALESCE($1, product_item_id),
-    quantity = COALESCE($2, quantity)
-	WHERE id = $3`
-	if err := i.DB.Exec(query, cartUpadates.ProductItemID, cartUpadates.Quantity, cartID).Error; err != nil {
+	query := `UPDATE cart_items 
+	SET quantity = COALESCE($3, quantity),
+	updated_at = $4
+	WHERE id = $1 AND product_item_id = $2`
+	// `UPDATE cart_items
+	// SET product_item_id = COALESCE($1, product_item_id),
+	// quantity = COALESCE($2, quantity)
+	// WHERE id = $3`
+	updatedAt := time.Now()
+
+	if err := i.DB.Exec(query, cartID, cartUpadates.ProductItemID, cartUpadates.Quantity, updatedAt).Error; err != nil {
 		return err
 	}
 	return nil
@@ -313,6 +319,46 @@ func (i *userDatabase) DeleteFromWishlist(ctx context.Context, productId, userId
 	err := i.DB.Exec(query, productId, userId).Error
 	if err != nil {
 		return err
+	}
+	return nil
+}
+
+func (i *userDatabase) GetWalletHistory(ctx context.Context, userId uint) (wallet []domain.Wallet, err error) {
+	query := `SELECT * FROM wallets WHERE user_id = ?`
+	err = i.DB.Raw(query, userId).Scan(&wallet).Error
+	if err != nil {
+		return wallet, err
+	}
+
+	return wallet, err
+}
+
+func (i *userDatabase) CreditUserWallet(ctx context.Context, data domain.Wallet) error {
+	// check if the user already have wallet id
+	wallet, err := i.GetWalletHistory(ctx, data.UserID)
+	if err != nil {
+		return err
+	}
+	if len(wallet) == 0 {
+
+		// insert wallet
+		query := `INSERT INTO wallets (user_id, balance, remark,updated_at,created_at) VALUES ($1, $2, $3, $4, $5)`
+		data.CreatedAt = time.Now()
+		err := i.DB.Exec(query, data.UserID, data.Balance, data.Remark, data.CreatedAt, data.CreatedAt).Error
+		if err != nil {
+			return err
+		}
+
+	} else {
+
+		query := `UPDATE wallets
+	SET balance = balance + $2, remark = $3, Updated_at = $4
+	WHERE user_id = $1`
+		data.UpdatedAt = time.Now()
+		err := i.DB.Exec(query, data.UserID, data.Balance, data.Remark, data.UpdatedAt).Error
+		if err != nil {
+			return err
+		}
 	}
 	return nil
 }

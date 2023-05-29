@@ -16,4 +16,5 @@ type AdminService interface {
 	GetUserOrderHistory(c context.Context, userId uint) (orderHistory []domain.ShopOrder, err error)
 	SalesReport(c context.Context, daterange request.DateRange) (salesReport []domain.SalesReport, err error)
 	UpdateDeliveryStatus(c context.Context, UpdateData request.UpdateStatus) error
+	ApproveReturnOrder(c context.Context, data request.ApproveReturnRequest) error
 }

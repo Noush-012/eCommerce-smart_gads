@@ -128,7 +128,7 @@ func (u *UserHandler) UserOTPVerify(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, response)
 		return
 	}
-	fmt.Println(body.OTP)
+
 	// Verify otp
 	err = verify.TwilioVerifyOTP("+91"+usr.Phone, body.OTP)
 	if err != nil {
@@ -530,5 +530,37 @@ func (u *UserHandler) DeleteFromWishlist(c *gin.Context) {
 		return
 	}
 	response := response.SuccessResponse(200, "Delete product from wishlist successful", nil)
+	c.IndentedJSON(200, response)
+}
+
+// GetWalletHistory godoc
+// @summary api for user to get wallet history
+// @description user can get wallet history
+// @security ApiKeyAuth
+// @id GetWalletHistory
+// @tags User GetWalletHistory
+// @Router /wallet/history [get]
+// @Success 200 {object} response.Response{} "Get wallet history successful"
+// @Failure 500{object} response.Response{}  "Something went wrong!"
+func (u *UserHandler) GetWalletHistory(c *gin.Context) {
+	// Get user id from context
+	userId := utils.GetUserIdFromContext(c)
+	// Get product id from path
+	// page, err := utils.StringToUint(c.Query("page"))
+	// if err != nil {
+	// 	page = 1
+	// }
+	// limit, err := utils.StringToUint(c.Query("limit"))
+	// if err != nil {
+	// 	limit = 10
+	// }
+	// Get wallet history
+	history, err := u.userService.GetWalletHistory(c, userId)
+	if err != nil {
+		response := response.ErrorResponse(500, "Something went wrong!", err.Error(), nil)
+		c.IndentedJSON(500, response)
+		return
+	}
+	response := response.SuccessResponse(200, "Get wallet history successful", history)
 	c.IndentedJSON(200, response)
 }

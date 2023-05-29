@@ -38,6 +38,7 @@ func AdminRoutes(api *gin.RouterGroup, adminHandler *handler.AdminHandler, produ
 			user.GET("/orders", orderHandler.GetAllOrderHistory)
 			user.PATCH("/orders", adminHandler.ChangeOrderStatus)
 			user.GET("/return-orders", adminHandler.GetAllReturnOrder)
+			user.PATCH("/return-orders/approval", adminHandler.ApproveReturnOrder)
 			user.PATCH("/orders/delivery-update", adminHandler.UpdateDeliveryStatus)
 		}
 
@@ -53,6 +54,8 @@ func AdminRoutes(api *gin.RouterGroup, adminHandler *handler.AdminHandler, produ
 		{
 			// To list products
 			product.GET("/", productHandler.ListProducts)
+			// To list product items
+			product.GET("/product-item/:product_id", productHandler.GetProductItem)
 			// To add product
 			product.POST("/", productHandler.AddProduct)
 			// To update product

@@ -68,6 +68,9 @@ func ConnToDB(cfg config.Config) (*gorm.DB, error) {
 
 		// Return
 		domain.Return{},
+
+		// wallet
+		domain.Wallet{},
 	)
 	if err != nil {
 		log.Fatal("Migration failed")

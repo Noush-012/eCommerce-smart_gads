@@ -27,4 +27,6 @@ type UserService interface {
 	AddToWishlist(ctx context.Context, wishlistData request.AddToWishlist) error
 	GetWishlist(ctx context.Context, userId uint) (wishlist []response.Wishlist, err error)
 	DeleteFromWishlist(ctx context.Context, productId, userId uint) error
+
+	GetWalletHistory(ctx context.Context, userId uint) (wallet []domain.Wallet, err error)
 }

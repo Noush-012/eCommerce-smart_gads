@@ -17,5 +17,6 @@ type OrderService interface {
 
 	UpdateOrderStatus(c context.Context, UpdateData request.UpdateStatus) error
 	ReturnEligibilityCheck(c context.Context, data request.ReturnRequest) error
-	GetAllReturnRequest(c context.Context, page request.ReqPagination) (ReturnRequests []response.ReturnRequests, err error)
+	GetAllPendingReturnRequest(c context.Context, page request.ReqPagination) (ReturnRequests []response.ReturnRequests, err error)
+	OrderCancellation(c context.Context, data request.CancelOrder) error
 }

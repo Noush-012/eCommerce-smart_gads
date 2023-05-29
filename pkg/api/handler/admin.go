@@ -313,7 +313,7 @@ func (a *AdminHandler) GetAllReturnOrder(c *gin.Context) {
 		PageNumber: pageNumber,
 		Count:      count,
 	}
-	returnRequest, err := a.orderService.GetAllReturnRequest(c, pagination)
+	returnRequest, err := a.orderService.GetAllPendingReturnRequest(c, pagination)
 	if err != nil {
 		response := response.ErrorResponse(400, "Something went wrong!", err1.Error(), nil)
 		c.JSON(http.StatusBadRequest, response)
@@ -350,5 +350,34 @@ func (a *AdminHandler) UpdateDeliveryStatus(c *gin.Context) {
 		return
 	}
 	response := response.SuccessResponse(http.StatusOK, "Delivery Status Updated", nil, nil)
+	c.JSON(http.StatusOK, response)
+}
+
+// ApproveReturnOrder godoc
+// @Summary Approve return order
+// @Description Approve return order
+// @Tags Admin
+// @Accept  json
+// @Produce  json
+// @Param input body request.ApproveReturnOrder true "inputs"
+// @Router /admin/users/orders/return-order/approval [patch]
+// @Success 200 {object} Response
+// @Failure 400 {object} Response
+// @Failure 500 {object} Response
+func (a *AdminHandler) ApproveReturnOrder(c *gin.Context) {
+	var body request.ApproveReturnRequest
+	if err := c.ShouldBindJSON(&body); err != nil {
+		response := response.ErrorResponse(400, "Invalid Request Body", err.Error(), nil)
+		c.JSON(http.StatusBadRequest, response)
+		return
+	}
+
+	err := a.adminService.ApproveReturnOrder(c, body)
+	if err != nil {
+		response := response.ErrorResponse(400, "Something went wrong!", err.Error(), nil)
+		c.JSON(http.StatusBadRequest, response)
+		return
+	}
+	response := response.SuccessResponse(http.StatusOK, "Return Order Approved", nil, nil)
 	c.JSON(http.StatusOK, response)
 }

@@ -35,6 +35,7 @@ type Actions struct {
 }
 
 type ReturnRequests struct {
+	ReturnID      uint      `json:"return_id"`
 	UserID        uint      `json:"user_id"`
 	OrderId       uint      `json:"order_id"`
 	RequestedAt   time.Time `json:"requested_at"`

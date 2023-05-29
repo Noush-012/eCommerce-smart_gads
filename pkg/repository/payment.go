@@ -80,3 +80,15 @@ func (p *PaymentDatabase) UpdatePaymentStatus(ctx context.Context, statusId, ord
 	}
 	return nil
 }
+
+func (p *PaymentDatabase) GetPaymentDataByOrderId(ctx context.Context, orderId uint) (paymentData domain.PaymentDetails, err error) {
+	query := `SELECT *
+	FROM payment_details 
+	WHERE order_id = $1`
+	err = p.DB.Raw(query, orderId).Scan(&paymentData).Error
+	if err != nil {
+		return paymentData, err
+	}
+	return paymentData, nil
+
+}

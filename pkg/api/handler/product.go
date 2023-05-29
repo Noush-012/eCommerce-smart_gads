@@ -38,7 +38,7 @@ func (p *ProductHandler) ListProducts(c *gin.Context) {
 
 	count, err1 := utils.StringToUint(c.Query("count"))
 	pageNumber, err2 := utils.StringToUint(c.Query("page_number"))
-	fmt.Println(count, pageNumber)
+
 	err1 = errors.Join(err1, err2)
 	if err1 != nil {
 		response := response.ErrorResponse(400, "invalid inputs", err1.Error(), nil)
@@ -261,17 +261,18 @@ func (p *ProductHandler) GetProductItem(c *gin.Context) {
 	}
 	productItems, count, err := p.ProductService.GetProductItem(c, productID)
 	// Create a map to combine the count and productItems
+	fmt.Println("------------->", productItems)
 	data := map[string]interface{}{
 		"count":        count,
 		"productItems": productItems,
 	}
 	if err != nil {
-		response := response.ErrorResponse(400, "failed to get product item for given product id", err.Error(), data)
+		response := response.ErrorResponse(400, "failed to get product item for given product id", err.Error(), nil)
 		c.JSON(400, response)
 		return
 	}
-	if productItems == nil {
-		response := response.ErrorResponse(http.StatusBadRequest, "No product items for this product id", err.Error(), data)
+	if count == 0 {
+		response := response.ErrorResponse(http.StatusBadRequest, "No product items for this product id", "", nil)
 		c.JSON(http.StatusBadRequest, response)
 		return
 	}

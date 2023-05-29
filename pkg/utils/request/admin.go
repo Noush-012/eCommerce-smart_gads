@@ -18,3 +18,12 @@ type UpdateDeliveryStatus struct {
 	StatusId uint `json:"status_id" binding:"required,numeric"`
 	OrderId  uint `json:"order_id" binding:"required,numeric"`
 }
+
+type ApproveReturnRequest struct {
+	ReturnID   uint   `json:"return_id"`
+	OrderID    uint   `json:"order_id"`
+	UserID     uint   `json:"user_id"`
+	OrderTotal uint   `json:"-"`
+	IsApproved bool   `json:"is_approved"`
+	Comment    string `json:"comment"`
+}

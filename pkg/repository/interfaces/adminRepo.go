@@ -16,4 +16,5 @@ type AdminRepository interface {
 	GetUserOrderHistory(c context.Context, userId uint) (orderHistory []domain.ShopOrder, err error)
 
 	GenerateSalesReport(c context.Context, dateRange request.DateRange) (salesData []domain.SalesReport, err error)
+	ApproveReturnOrder(c context.Context, data request.ApproveReturnRequest) error
 }

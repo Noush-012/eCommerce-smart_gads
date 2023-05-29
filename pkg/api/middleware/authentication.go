@@ -23,7 +23,6 @@ func AuthenticateAdmin(ctx *gin.Context) {
 func authHelper(ctx *gin.Context, user string) {
 
 	tokenString, err := ctx.Cookie(user + "-auth") // get cookie for user or admin with name
-	// fmt.Println("Middleware", tokenString)
 
 	if err != nil || tokenString == "" {
 		ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{

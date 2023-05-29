@@ -14,11 +14,13 @@ import (
 )
 
 type adminDatabase struct {
-	DB *gorm.DB
+	DB           *gorm.DB
+	userDatabase interfaces.UserRepository
 }
 
-func NewAdminRepository(db *gorm.DB) interfaces.AdminRepository {
-	return &adminDatabase{DB: db}
+func NewAdminRepository(db *gorm.DB, userRepo interfaces.UserRepository) interfaces.AdminRepository {
+	return &adminDatabase{DB: db,
+		userDatabase: userRepo}
 }
 
 func (a *adminDatabase) GetAdmin(ctx context.Context, admin domain.Admin) (domain.Admin, error) {
@@ -88,4 +90,31 @@ WHERE so.order_date BETWEEN $1 AND $2`
 		return salesData, err
 	}
 	return salesData, nil
+}
+
+func (a *adminDatabase) ApproveReturnOrder(c context.Context, data request.ApproveReturnRequest) error {
+	query := `UPDATE returns
+	SET is_approved = $1
+	WHERE shop_order_id = $2 AND is_approved = false`
+
+	err := a.DB.Exec(query, data.IsApproved, data.OrderID).Error
+	if err != nil {
+		return err
+	}
+	// add amount to user wallet
+	if data.IsApproved {
+
+		err := a.userDatabase.CreditUserWallet(c, domain.Wallet{
+			UserID:  data.UserID,
+			Balance: float64(data.OrderTotal),
+			Remark:  data.Comment,
+		})
+		if err != nil {
+			return err
+		}
+	} else {
+		return errors.New("return request denied by admin")
+	}
+	return nil
+
 }

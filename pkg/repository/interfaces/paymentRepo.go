@@ -14,4 +14,5 @@ type PaymentRepository interface {
 	GetPaymentStatusByOrderId(ctx context.Context, orderId uint) (ok bool, err error)
 	UpdatePaymentStatus(ctx context.Context, statusId, orderId uint) error
 	SavePaymentData(ctx context.Context, paymentData domain.PaymentDetails) error
+	GetPaymentDataByOrderId(ctx context.Context, orderId uint) (paymentData domain.PaymentDetails, err error)
 }

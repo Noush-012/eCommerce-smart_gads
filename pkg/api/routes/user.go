@@ -66,6 +66,7 @@ func UserRoutes(api *gin.RouterGroup, userHandler *handler.UserHandler, productH
 		{
 			order.GET("/", orderHandler.GetAllOrderHistory)
 			order.POST("/return", orderHandler.ReturnRequest)
+			order.PATCH("/cancel", orderHandler.CancellOrder)
 		}
 		profile := api.Group("/profile")
 		{
@@ -80,6 +81,11 @@ func UserRoutes(api *gin.RouterGroup, userHandler *handler.UserHandler, productH
 		coupon := api.Group("/coupons")
 		{
 			coupon.GET("/", couponHandler.ListAllCoupons)
+		}
+
+		wallet := api.Group("/wallet")
+		{
+			wallet.GET("/history", userHandler.GetWalletHistory)
 		}
 
 	}

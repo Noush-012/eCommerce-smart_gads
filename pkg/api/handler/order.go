@@ -112,7 +112,7 @@ func (o *OrderHandler) GetAllOrderHistory(c *gin.Context) {
 	// if url path is admin/users/orders
 	if c.Request.URL.Path == "/admin/users/orders" {
 		userId, err = utils.StringToUint(c.Query("userId"))
-		fmt.Println(userId)
+
 		if err != nil {
 			response := response.ErrorResponse(400, "Missing user id", err.Error(), nil)
 			c.JSON(http.StatusBadRequest, response)
@@ -265,6 +265,34 @@ func (o *OrderHandler) ReturnRequest(c *gin.Context) {
 		return
 	}
 	response := response.SuccessResponse(200, "Return request successful, Please wait for approval")
+	c.JSON(200, response)
+
+}
+
+// CancellOrder godoc
+// @summary api user for cancel order
+// @security ApiKeyAuth
+// @tags User Order
+// @id CancellOrder
+// @Param payment_method_id formData uint true "Order ID"
+func (o *OrderHandler) CancellOrder(c *gin.Context) {
+	// get user from context
+	userId := utils.GetUserIdFromContext(c)
+	var body request.CancelOrder
+	err := c.ShouldBindJSON(&body)
+	if err != nil {
+		response := response.ErrorResponse(400, "Failed to bind cancell order request!", err.Error(), nil)
+		c.JSON(400, response)
+		return
+	}
+	body.UserID = userId
+	err = o.OrderService.OrderCancellation(c, body)
+	if err != nil {
+		response := response.ErrorResponse(500, "Something went wrong!", err.Error(), nil)
+		c.JSON(500, response)
+		return
+	}
+	response := response.SuccessResponse(200, "Order cancellation successful")
 	c.JSON(200, response)
 
 }

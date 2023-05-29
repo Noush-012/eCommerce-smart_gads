@@ -49,6 +49,6 @@ type Return struct {
 	ShopOrderID int       `json:"order_id"`
 	ShopOrder   ShopOrder `gorm:"foreignKey:ShopOrderID"`
 	Reason      string    `json:"string"`
-	IsApproved  bool      `json:"approved"`
+	IsApproved  bool      `json:"approved" gorm:"default:false"`
 	RequestedAt time.Time `json:"requested_at"`
 }

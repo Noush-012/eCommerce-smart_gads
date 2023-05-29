@@ -27,5 +27,6 @@ type OrderRepository interface {
 	UpdateDeliveryStatus(c context.Context, UpdateData request.UpdateStatus) error
 	GetDeliveryDate(c context.Context, orderId uint) (time.Time, error)
 	SaveReturnRequest(c context.Context, data request.ReturnRequest) error
-	GetAllReturnOrder(c context.Context, page request.ReqPagination) (ReturnRequests []response.ReturnRequests, err error)
+	GetAllPendingReturnOrder(c context.Context, page request.ReqPagination) (ReturnRequests []response.ReturnRequests, err error)
+	OrderCancellation(c context.Context, data request.CancelOrder) error
 }

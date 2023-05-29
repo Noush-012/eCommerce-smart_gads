@@ -17,12 +17,15 @@ type OrderDatabase struct {
 	DB              *gorm.DB
 	PaymentDatabase interfaces.PaymentRepository
 	couponDatabase  interfaces.CouponRepository
+	userDatabase    interfaces.UserRepository
 }
 
-func NewOrderRepository(db *gorm.DB, paymentRepo interfaces.PaymentRepository, couponRepo interfaces.CouponRepository) interfaces.OrderRepository {
+func NewOrderRepository(db *gorm.DB, paymentRepo interfaces.PaymentRepository, couponRepo interfaces.CouponRepository,
+	userRepo interfaces.UserRepository) interfaces.OrderRepository {
 	return &OrderDatabase{DB: db,
 		PaymentDatabase: paymentRepo,
-		couponDatabase:  couponRepo}
+		couponDatabase:  couponRepo,
+		userDatabase:    userRepo}
 }
 
 func (o *OrderDatabase) OrderStatus(ctx context.Context, id uint) (status string, err error) {
@@ -287,16 +290,17 @@ func (o *OrderDatabase) SaveReturnRequest(c context.Context, data request.Return
 
 }
 
-func (o *OrderDatabase) GetAllReturnOrder(c context.Context, page request.ReqPagination) (ReturnRequests []response.ReturnRequests, err error) {
+func (o *OrderDatabase) GetAllPendingReturnOrder(c context.Context, page request.ReqPagination) (ReturnRequests []response.ReturnRequests, err error) {
 	limit := page.Count
 	offset := (page.PageNumber - 1) * limit
-	query := `SELECT so.user_id, r.requested_at, so.order_date,so.delivery_updated_at AS delivered_at,r.shop_order_id AS order_id,pm.payment_method,ps.status AS payment_status,
+	query := `SELECT r.id AS return_id, so.user_id, r.requested_at, so.order_date,so.delivery_updated_at AS delivered_at,r.shop_order_id AS order_id,pm.payment_method,ps.status AS payment_status,
 	r.reason,so.order_total, r.is_approved
 	FROM returns r
 	JOIN shop_orders so ON so.id = r.shop_order_id
 	JOIN payment_methods pm ON pm.id = so.payment_method_id
 	JOIN payment_details pd ON pd.order_id = so.id
 	JOIN payment_statuses ps ON ps.id = pd.payment_status_id
+	WHERE r.is_approved = false
 	ORDER BY r.requested_at ASC LIMIT $1 OFFSET $2`
 	err = o.DB.Raw(query, limit, offset).Scan(&ReturnRequests).Error
 	if err != nil {
@@ -314,5 +318,34 @@ func (o *OrderDatabase) UpdateDeliveryStatus(c context.Context, UpdateData reque
 	if err != nil {
 		return err
 	}
+	return nil
+}
+
+func (o *OrderDatabase) OrderCancellation(c context.Context, data request.CancelOrder) error {
+	// check payment status
+	payment, err := o.PaymentDatabase.GetPaymentDataByOrderId(c, data.OrderID)
+	if err != nil {
+		return err
+	}
+	// set order status cancel
+	query := `UPDATE shop_orders
+	SET order_status_id = (
+	  SELECT ID FROM order_statuses WHERE status = 'cancelled'
+	)
+	WHERE id = $1;`
+	err = o.DB.Exec(query, data.OrderID).Error
+	if err != nil {
+		return err
+	}
+	if payment.PaymentStatusID == 2 { // checking the status "Paid"
+
+		// refund amount to the wallet
+		o.userDatabase.CreditUserWallet(c, domain.Wallet{
+			UserID:  data.UserID,
+			Balance: float64(payment.OrderTotal),
+			Remark:  "Cancelled order",
+		})
+	}
+
 	return nil
 }
