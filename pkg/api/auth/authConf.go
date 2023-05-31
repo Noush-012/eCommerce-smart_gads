@@ -14,7 +14,7 @@ import (
 
 func JwtCookieSetup(c *gin.Context, name string, userId uint) bool {
 	//time = 10 mins
-	cookieTime := time.Now().Add(10 * time.Hour).Unix()
+	cookieTime := time.Now().Add(10 * time.Minute).Unix()
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.StandardClaims{
 		Id:        fmt.Sprint(userId),

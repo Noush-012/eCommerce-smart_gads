@@ -398,7 +398,7 @@ func (u *UserHandler) UpdateAddress(c *gin.Context) {
 // @security ApiKeyAuth
 // @id DeleteAddress
 // @tags User Address
-// @Param input body request.AddressDeleteReq{} true "Input Field"
+// @Param id path string true "id"
 // @Router /address [delete]
 // @Success 200 {object} response.Response{} "Address deleted successfuly"
 // @Failure 500 {object} response.Response{} "Something went wrong!"
@@ -429,7 +429,7 @@ func (u *UserHandler) DeleteAddress(c *gin.Context) {
 // @tags User GetAllAddress
 // @Router /address [get]
 // @Success 200 {object} response.Response{} "Get all address successful"
-// @Failure 500{object} response.Response{}  "Something went wrong!"
+// @Failure 500 {object} response.Response{} "Something went wrong!"
 func (u *UserHandler) GetAllAddress(c *gin.Context) {
 	// Get user id from context
 	userId := utils.GetUserIdFromContext(c)
@@ -457,7 +457,7 @@ func (u *UserHandler) GetAllAddress(c *gin.Context) {
 // @tags User AddToWishlist
 // @Router /wishlist/{product_id} [post]
 // @Success 200 {object} response.Response{} "Add product to wishlist successful"
-// @Failure 500{object} response.Response{}  "Something went wrong!"
+// @Failure 500 {object} response.Response{}  "Something went wrong!"
 func (u *UserHandler) AddToWishlist(c *gin.Context) {
 	var body request.AddToWishlist
 	// Get user id from context
@@ -489,7 +489,7 @@ func (u *UserHandler) AddToWishlist(c *gin.Context) {
 // @tags User GetWishlist
 // @Router /wishlist [get]
 // @Success 200 {object} response.Response{} "Get wishlist successful"
-// @Failure 500{object} response.Response{}  "Something went wrong!"
+// @Failure 500 {object} response.Response{}  "Something went wrong!"
 func (u *UserHandler) GetWishlist(c *gin.Context) {
 	// Get user id from context
 	userId := utils.GetUserIdFromContext(c)
@@ -511,8 +511,9 @@ func (u *UserHandler) GetWishlist(c *gin.Context) {
 // @id DeleteFromWishlist
 // @tags User DeleteFromWishlist
 // @Router /wishlist/{id} [delete]
+// @Param id path string true "id"
 // @Success 200 {object} response.Response{} "Delete product from wishlist successful"
-// @Failure 500{object} response.Response{}  "Something went wrong!"
+// @Failure 500 {object} response.Response{}  "Something went wrong!"
 func (u *UserHandler) DeleteFromWishlist(c *gin.Context) {
 	// Get user id from context
 	userId := utils.GetUserIdFromContext(c)
@@ -541,7 +542,7 @@ func (u *UserHandler) DeleteFromWishlist(c *gin.Context) {
 // @tags User GetWalletHistory
 // @Router /wallet/history [get]
 // @Success 200 {object} response.Response{} "Get wallet history successful"
-// @Failure 500{object} response.Response{}  "Something went wrong!"
+// @Failure 500 {object} response.Response{}  "Something went wrong!"
 func (u *UserHandler) GetWalletHistory(c *gin.Context) {
 	// Get user id from context
 	userId := utils.GetUserIdFromContext(c)

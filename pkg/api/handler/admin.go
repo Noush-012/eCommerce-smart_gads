@@ -30,7 +30,7 @@ func NewAdminHandler(adminService interfaces.AdminService, orderUseCase interfac
 // AdminSignUp godoc
 // @summary api for admin to login
 // @id AdminSignUp
-// @tags Admin Login
+// @tags Admin Login / Signup
 // @Param input body domain.Admin{} true "inputs"
 // @Router /admin/login [post]
 // @Success 200 {object} response.Response{} "Create admin account successful"
@@ -58,7 +58,7 @@ func (a *AdminHandler) AdminSignUp(c *gin.Context) {
 // AdminLogin godoc
 // @summary api for admin to login
 // @id AdminLogin
-// @tags Admin Login
+// @tags Admin Login / Signup
 // @Param input body request.LoginData{} true "Credentials"
 // @Router /admin/login [post]
 // @Success 200 {object} response.Response{} "successfully logged in"
@@ -132,6 +132,7 @@ func (a *AdminHandler) LogoutAdmin(c *gin.Context) {
 // @Router /admin/users [get]
 // @Success 200 {object} response.Response{} "List user successful"
 // @Failure 500 {object} response.Response{} "failed to get all users"
+// @Failure 400 {object} response.Response{} "Missing or invalid inputs"
 func (a *AdminHandler) ListUsers(c *gin.Context) {
 
 	count, err1 := utils.StringToUint(c.Query("count"))
@@ -208,11 +209,11 @@ func (a *AdminHandler) UserOrderHistory(c *gin.Context) {
 // @summary api for admin to change order status of user
 // @id ChangeOrderStatus
 // @tags Admin ChangeOrderStatus
-// @Param input body request.UpdateOrderStatus{} true "inputs"
+// @Param input body request.UpdateStatus{} true "inputs"
 // @Router /admin/users/orders [patch]
 // @Success 200 {object} response.Response{} "Order status updated successfully!"
 // @Failure 400 {object} response.Response{} "Missing inputs"
-// @Failure 500 {object} response.Response{}"Something went wrong!"
+// @Failure 500 {object} response.Response{} "Something went wrong!"
 func (a *AdminHandler) ChangeOrderStatus(c *gin.Context) {
 	var body request.UpdateStatus
 	err := c.ShouldBindJSON(&body)
@@ -239,7 +240,7 @@ func (a *AdminHandler) ChangeOrderStatus(c *gin.Context) {
 // @Router /admin/sales-report [get]
 // @Success 500 {object} response.Response{} "Something went wrong!"
 // @Failure 500 {object} response.Response{} "Something went wrong! failed to generate sales report"
-// @Failure 500 {object} response.Response{}"Something went wrong!"
+// @Failure 400 {object} response.Response{} "Missing or Invalid inputs"
 func (a *AdminHandler) SalesReport(c *gin.Context) {
 	var body request.DateRange
 	err := c.ShouldBindJSON(&body)
@@ -293,10 +294,10 @@ func (a *AdminHandler) SalesReport(c *gin.Context) {
 // @Tags Admin
 // @Accept  json
 // @Produce  json
-// @Success 200 {object} Response
-// @Failure 400 {object} Response
-// @Failure 500 {object} Response
 // @Router /admin/return-request [get]
+// @Success 200 {object} response.Response{} "Return Request List"
+// @Failure 400 {object} response.Response{} "Missing or invalid inputs"
+// @Failure 500 {object} response.Response{} "Something went wrong!"
 func (a *AdminHandler) GetAllReturnOrder(c *gin.Context) {
 
 	count, err1 := utils.StringToUint(c.Query("count"))
@@ -330,11 +331,11 @@ func (a *AdminHandler) GetAllReturnOrder(c *gin.Context) {
 // @Tags Admin
 // @Accept  json
 // @Produce  json
-// @Param input body request.UpdateSatus{} true "inputs"
+// @Param input body request.UpdateStatus{} true "inputs"
 // @Router /admin/users/orders/delivery-update [patch]
-// @Success 200 {object} Response
-// @Failure 400 {object} Response
-// @Failure 500 {object} Response
+// @Success 200 {object} response.Response{} "Delivery Status Updated"
+// @Failure 400 {object} response.Response{} "Invalid Request Body"
+// @Failure 500 {object} response.Response{} "Something went wrong!"
 func (a *AdminHandler) UpdateDeliveryStatus(c *gin.Context) {
 	var body request.UpdateStatus
 	if err := c.ShouldBindJSON(&body); err != nil {
@@ -359,11 +360,11 @@ func (a *AdminHandler) UpdateDeliveryStatus(c *gin.Context) {
 // @Tags Admin
 // @Accept  json
 // @Produce  json
-// @Param input body request.ApproveReturnOrder true "inputs"
+// @Param input body request.ApproveReturnRequest{} true "inputs"
 // @Router /admin/users/orders/return-order/approval [patch]
-// @Success 200 {object} Response
-// @Failure 400 {object} Response
-// @Failure 500 {object} Response
+// @Success 200 {object} response.Response{} "Return Order Approved"
+// @Failure 400 {object} response.Response{} "Invalid Request Body"
+// @Failure 500 {object} response.Response{} "Something went wrong!"
 func (a *AdminHandler) ApproveReturnOrder(c *gin.Context) {
 	var body request.ApproveReturnRequest
 	if err := c.ShouldBindJSON(&body); err != nil {
