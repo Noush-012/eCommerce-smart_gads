@@ -126,7 +126,7 @@ func (a *AdminHandler) LogoutAdmin(c *gin.Context) {
 // ListUsers godoc
 // @summary api for admin to list users
 // @id ListUsers
-// @tags Admin User
+// @tags User Controlls
 // @Param page_number query int false "Page Number"
 // @Param count query int false "Count Of Order"
 // @Router /admin/users [get]
@@ -172,7 +172,7 @@ func (a *AdminHandler) ListUsers(c *gin.Context) {
 // BlockUser godoc
 // @summary api for admin to block or unblock user
 // @id BlockUser
-// @tags Admin User
+// @tags User Controlls
 // @Param input body request.UserID{} true "inputs"
 // @Router /admin/users/block [patch]
 // @Success 200 {object} response.Response{} "Successfully changed user block_status"
@@ -208,7 +208,7 @@ func (a *AdminHandler) UserOrderHistory(c *gin.Context) {
 // ChangeOrderStatus godoc
 // @summary api for admin to change order status of user
 // @id ChangeOrderStatus
-// @tags Admin ChangeOrderStatus
+// @tags Order Controlls
 // @Param input body request.UpdateStatus{} true "inputs"
 // @Router /admin/users/orders [patch]
 // @Success 200 {object} response.Response{} "Order status updated successfully!"
@@ -236,7 +236,7 @@ func (a *AdminHandler) ChangeOrderStatus(c *gin.Context) {
 // SalesReport godoc
 // @summary api for admin to download sales report as csv format
 // @id SalesReport
-// @tags Admin SalesReport
+// @tags Business Reports
 // @Router /admin/sales-report [get]
 // @Success 500 {object} response.Response{} "Something went wrong!"
 // @Failure 500 {object} response.Response{} "Something went wrong! failed to generate sales report"
@@ -291,7 +291,7 @@ func (a *AdminHandler) SalesReport(c *gin.Context) {
 // GetAllReturnRequest godoc
 // @Summary List all return request
 // @Description List all return request
-// @Tags Admin
+// @tags Order Controlls
 // @Accept  json
 // @Produce  json
 // @Router /admin/return-request [get]
@@ -328,7 +328,7 @@ func (a *AdminHandler) GetAllReturnOrder(c *gin.Context) {
 // UpdateDeliveryStatus godoc
 // @Summary Update delivery status of user orders
 // @Description Update delivery status of user orders
-// @Tags Admin
+// @tags Order Controlls
 // @Accept  json
 // @Produce  json
 // @Param input body request.UpdateStatus{} true "inputs"
@@ -357,7 +357,7 @@ func (a *AdminHandler) UpdateDeliveryStatus(c *gin.Context) {
 // ApproveReturnOrder godoc
 // @Summary Approve return order
 // @Description Approve return order
-// @Tags Admin
+// @tags Order Controlls
 // @Accept  json
 // @Produce  json
 // @Param input body request.ApproveReturnRequest{} true "inputs"

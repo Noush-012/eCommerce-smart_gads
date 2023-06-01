@@ -706,7 +706,7 @@ paths:
             $ref: '#/definitions/response.Response'
       summary: List all return request
       tags:
-      - Admin
+      - Order Controlls
   /admin/sales-report:
     get:
       operationId: SalesReport
@@ -721,7 +721,7 @@ paths:
             $ref: '#/definitions/response.Response'
       summary: api for admin to download sales report as csv format
       tags:
-      - Admin SalesReport
+      - Business Reports
   /admin/users:
     get:
       operationId: ListUsers
@@ -749,7 +749,7 @@ paths:
             $ref: '#/definitions/response.Response'
       summary: api for admin to list users
       tags:
-      - Admin User
+      - User Controlls
   /admin/users/block:
     patch:
       operationId: BlockUser
@@ -771,7 +771,7 @@ paths:
             $ref: '#/definitions/response.Response'
       summary: api for admin to block or unblock user
       tags:
-      - Admin User
+      - User Controlls
   /admin/users/orders:
     patch:
       operationId: ChangeOrderStatus
@@ -797,7 +797,7 @@ paths:
             $ref: '#/definitions/response.Response'
       summary: api for admin to change order status of user
       tags:
-      - Admin ChangeOrderStatus
+      - Order Controlls
   /admin/users/orders/delivery-update:
     patch:
       consumes:
@@ -827,7 +827,7 @@ paths:
             $ref: '#/definitions/response.Response'
       summary: Update delivery status of user orders
       tags:
-      - Admin
+      - Order Controlls
   /admin/users/orders/return-order/approval:
     patch:
       consumes:
@@ -857,7 +857,7 @@ paths:
             $ref: '#/definitions/response.Response'
       summary: Approve return order
       tags:
-      - Admin
+      - Order Controlls
   /brands:
     get:
       operationId: ListBrands-admin

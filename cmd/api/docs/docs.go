@@ -548,7 +548,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Admin"
+                    "Order Controlls"
                 ],
                 "summary": "List all return request",
                 "responses": {
@@ -576,7 +576,7 @@ const docTemplate = `{
         "/admin/sales-report": {
             "get": {
                 "tags": [
-                    "Admin SalesReport"
+                    "Business Reports"
                 ],
                 "summary": "api for admin to download sales report as csv format",
                 "operationId": "SalesReport",
@@ -599,7 +599,7 @@ const docTemplate = `{
         "/admin/users": {
             "get": {
                 "tags": [
-                    "Admin User"
+                    "User Controlls"
                 ],
                 "summary": "api for admin to list users",
                 "operationId": "ListUsers",
@@ -642,7 +642,7 @@ const docTemplate = `{
         "/admin/users/block": {
             "patch": {
                 "tags": [
-                    "Admin User"
+                    "User Controlls"
                 ],
                 "summary": "api for admin to block or unblock user",
                 "operationId": "BlockUser",
@@ -676,7 +676,7 @@ const docTemplate = `{
         "/admin/users/orders": {
             "patch": {
                 "tags": [
-                    "Admin ChangeOrderStatus"
+                    "Order Controlls"
                 ],
                 "summary": "api for admin to change order status of user",
                 "operationId": "ChangeOrderStatus",
@@ -723,7 +723,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Admin"
+                    "Order Controlls"
                 ],
                 "summary": "Update delivery status of user orders",
                 "parameters": [
@@ -769,7 +769,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Admin"
+                    "Order Controlls"
                 ],
                 "summary": "Approve return order",
                 "parameters": [
