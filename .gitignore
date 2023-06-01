@@ -2,10 +2,10 @@
 .env
 
 # payload excluding
-./payload/
-tmp/
-./temp/
 .vscode
+payload/
+postman_collection/
+temp/
 
 # Executables
 bin/
