@@ -91,7 +91,9 @@ func (c *couponDatabase) ApplyCoupon(ctx context.Context, data utils.ApplyCoupon
 	if err != nil {
 		return AppliedCoupon, err
 	}
-
+	if couponData.ID == 0 {
+		return AppliedCoupon, errors.New("invalid coupon")
+	}
 	if couponData.ValidTill.Before(time.Now()) {
 		return AppliedCoupon, errors.New("coupon expired")
 	}

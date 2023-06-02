@@ -51,7 +51,7 @@ func (i *userDatabase) SaveUser(ctx context.Context, user domain.Users) error {
 	return nil
 }
 
-func (i *userDatabase) SaveAddress(ctx context.Context, userAddress domain.Address) error {
+func (i *userDatabase) SaveAddress(ctx context.Context, userAddress request.Address) error {
 	var defaultAddressID uint
 	userAddress.CreatedAt = time.Now()
 	query := `INSERT INTO addresses (user_id ,house,address_line1,address_line2,city,state,zip_code,country,created_at) 
@@ -140,7 +140,9 @@ func (i *userDatabase) SavetoCart(ctx context.Context, addToCart request.AddToCa
 	if err := i.DB.Raw(query, addToCart.ProductItemID).Scan(&addToCart.Discount_price).Error; err != nil {
 		return err
 	}
-
+	if addToCart.Discount_price == 0 {
+		return errors.New("invalid product item id")
+	}
 	// get cart id with user id
 	query = `SELECT id FROM carts WHERE user_id = $1`
 	var cartID int

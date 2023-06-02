@@ -2,7 +2,6 @@ package handler
 
 import (
 	"errors"
-	"fmt"
 	"net/http"
 
 	service "github.com/Noush-012/Project-eCommerce-smart_gads/pkg/useCase/interfaces"
@@ -171,7 +170,7 @@ func (o *OrderHandler) RazorPayCheckout(c *gin.Context) {
 	}
 	// err = c.ShouldBindJSON(&body)
 	couponCode := c.Query("coupon")
-	fmt.Println("------------------>", couponCode)
+
 	// if err != nil {
 	// 	response := response.ErrorResponse(http.StatusBadRequest, "Missing or invalid input", err.Error(), nil)
 	// 	c.JSON(400, response)
