@@ -12,7 +12,7 @@ type UserRepository interface {
 	SaveUser(ctx context.Context, user domain.Users) error
 	FindUser(ctx context.Context, user domain.Users) (domain.Users, error)
 	GetUserbyID(ctx context.Context, userId uint) (domain.Users, error)
-	SaveAddress(ctx context.Context, userAddress domain.Address) error
+	SaveAddress(ctx context.Context, userAddress request.Address) error
 	UpdateAddress(ctx context.Context, userAddress request.AddressPatchReq) error
 	DeleteAddress(ctx context.Context, userID, addressID uint) error
 	GetAllAddress(ctx context.Context, userId uint) (address []response.Address, err error)

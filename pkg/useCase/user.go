@@ -145,7 +145,7 @@ func (u *UserUseCase) Profile(ctx context.Context, userId uint) (profile respons
 	return profile, nil
 }
 
-func (u *UserUseCase) Addaddress(ctx context.Context, address domain.Address) error {
+func (u *UserUseCase) Addaddress(ctx context.Context, address request.Address) error {
 	if err := u.userRepository.SaveAddress(ctx, address); err != nil {
 		return err
 	}

@@ -235,8 +235,8 @@ func (u *UserHandler) AddToCart(c *gin.Context) {
 		return
 	}
 	if err := u.userService.SaveCartItem(c, body); err != nil {
-		response := response.ErrorResponse(500, "Failed to add product item in cart", err.Error(), body)
-		c.JSON(500, response)
+		response := response.ErrorResponse(http.StatusBadRequest, "Failed to add product item in cart", err.Error(), nil)
+		c.JSON(400, response)
 		return
 	}
 	response := response.SuccessResponse(200, "Successfuly added product item to cart ", body)
@@ -336,12 +336,12 @@ func (u *UserHandler) Profile(c *gin.Context) {
 // @security ApiKeyAuth
 // @id AddAddress
 // @tags User Address
-// @Param inputs body domain.Address{} true "Input Field"
+// @Param inputs body request.Address{} true "Input Field"
 // @Router /account/address [post]
 // @Success 200 {object} response.Response{} "Successfully address added"
 // @Failure 400 {object} response.Response{} "inavlid input"
 func (u *UserHandler) AddAddress(c *gin.Context) {
-	var body domain.Address
+	var body request.Address
 	userId := utils.GetUserIdFromContext(c)
 
 	body.UserID = userId

@@ -90,20 +90,23 @@ func (o *OrderDatabase) CheckoutOrder(ctx context.Context, userId uint, couponCo
 		}
 	}
 	checkOut.TotalProductItems = uint(count)
+	checkOut.FinalPrice = uint(checkOut.TotalPrice)
 
 	// Apply coupon
-	AppliedCoupon, err := o.couponDatabase.ApplyCoupon(ctx, utils.ApplyCoupon{
-		CouponCode: couponCode,
-		UserId:     userId,
-		TotalPrice: checkOut.TotalPrice,
-	})
-	if err != nil {
-		return checkOut, err
+	if couponCode != "" {
+		AppliedCoupon, err := o.couponDatabase.ApplyCoupon(ctx, utils.ApplyCoupon{
+			CouponCode: couponCode,
+			UserId:     userId,
+			TotalPrice: checkOut.TotalPrice,
+		})
+		if err != nil {
+			return checkOut, err
+		}
+		checkOut.AppliedCouponCode = AppliedCoupon.CouponCode
+		checkOut.AppliedCouponID = AppliedCoupon.CouponId
+		checkOut.CouponDiscount = AppliedCoupon.CouponDiscount
+		checkOut.FinalPrice = uint(AppliedCoupon.FinalPrice)
 	}
-	checkOut.AppliedCouponCode = AppliedCoupon.CouponCode
-	checkOut.AppliedCouponID = AppliedCoupon.CouponId
-	checkOut.CouponDiscount = AppliedCoupon.CouponDiscount
-	checkOut.FinalPrice = uint(AppliedCoupon.FinalPrice)
 
 	// Get default address for the user
 	query := `SELECT a.id, a.house, a.address_line1, a.address_line2, a.city, a.state, a.zip_code, a.country, a.is_default
@@ -113,6 +116,7 @@ func (o *OrderDatabase) CheckoutOrder(ctx context.Context, userId uint, couponCo
 	if err := o.DB.Raw(query, userId).Scan(&address).Error; err != nil {
 		return checkOut, err
 	}
+
 	checkOut.DefaultShipping = address
 
 	if checkOut.TotalProductItems == 0 {

@@ -95,8 +95,29 @@ func (o *OrderUseCase) RazorPayCheckout(ctx context.Context, razorpay request.Ra
 		SGPay_id:       2,
 	}
 
+	// get coupon data
+	coupon, err := o.CouponRepo.GetCouponBycode(ctx, razorpay.CouponCode)
+	if err != nil {
+		return razorpayOrder, err
+	}
+	if coupon.Code != "" {
+		appliedCoupon, err := o.CouponRepo.ApplyCoupon(ctx, utils.ApplyCoupon{
+			CouponId:   coupon.ID,
+			CouponCode: coupon.Code,
+			UserId:     razorpay.UserID,
+			TotalPrice: checkOut.TotalPrice,
+		})
+		if err != nil {
+			return razorpayOrder, err
+		}
+		checkOut.CouponDiscount = appliedCoupon.CouponDiscount
+		checkOut.AppliedCouponID = coupon.ID
+		checkOut.AppliedCouponCode = appliedCoupon.CouponCode
+		checkOut.FinalPrice = uint(appliedCoupon.FinalPrice)
+	}
+
 	// Generate Razorpay order ID
-	razorPayOrderId, err := utils.GenerateRazorPayOrder(checkOut.TotalPrice, "Test receipt")
+	razorPayOrderId, err := utils.GenerateRazorPayOrder(float64(checkOut.FinalPrice), "Test receipt")
 	if err != nil {
 		return razorpayOrder, err
 	}
@@ -110,7 +131,7 @@ func (o *OrderUseCase) RazorPayCheckout(ctx context.Context, razorpay request.Ra
 		PaymentMethodID:  razorpay.PaymentMethodId,
 		DeliveryStatusID: 1, // id 1 is for status "Pending"
 		OrderStatusID:    1, // id 1 is for status "Pending"
-		CouponID:         0,
+		CouponID:         coupon.ID,
 	})
 	if err != nil {
 		return razorpayOrder, err
