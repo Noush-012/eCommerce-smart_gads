@@ -21,22 +21,26 @@ type Users struct {
 	UpdatedAt   time.Time `json:"updated_at"`
 }
 
-type UserAddress struct {
-	UserID    uint    `gorm:"not null;unique"`
-	AddressID uint    `gorm:"not null;unique"`
-	IsDefault bool    `gorm:"not null"`
-	Address   Address `gorm:"foreignKey:AddressID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL"`
-}
+//	type UserAddress struct {
+//		UserID    uint    `gorm:"not null;unique"`
+//		AddressID uint    `gorm:"not null;unique"`
+//		IsDefault bool    `gorm:"not null"`
+//		Address   Address `gorm:"foreignKey:AddressID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL"`
+//	}
 type Address struct {
-	ID           uint   `json:"id" gorm:"primaryKey;unique;autoIncrement"`
-	UserID       uint   `json:"-"`
-	House        string `json:"house" gorm:"not null"`
-	AddressLine1 string `json:"address_line_1" gorm:"not null" binding:"required,min=2,max=40"`
-	AddressLine2 string `json:"address_line_2" gorm:"not null" binding:"required,min=2,max=40"`
-	City         string `json:"city" gorm:"not null" binding:"required,min=2,max=20"`
-	State        string `json:"state" gorm:"not null" binding:"required,min=2,max=20"`
-	ZipCode      string `json:"zip_code" gorm:"not null" binding:"required,min=2,max=10"`
-	Country      string `json:"country" gorm:"not null" binding:"required,min=2,max=20"`
+	ID           uint      `json:"id" gorm:"primaryKey;unique;autoIncrement"`
+	UserID       uint      `json:"-"`
+	Users        Users     `gorm:"foreignKey:UserID" json:"-"`
+	House        string    `json:"house" gorm:"not null"`
+	AddressLine1 string    `json:"address_line_1" gorm:"not null" binding:"required,min=2,max=40"`
+	AddressLine2 string    `json:"address_line_2" gorm:"not null" binding:"required,min=2,max=40"`
+	City         string    `json:"city" gorm:"not null" binding:"required,min=2,max=20"`
+	State        string    `json:"state" gorm:"not null" binding:"required,min=2,max=20"`
+	ZipCode      string    `json:"zip_code" gorm:"not null" binding:"required,min=2,max=10"`
+	Country      string    `json:"country" gorm:"not null" binding:"required,min=2,max=20"`
+	IsDefault    bool      `json:"-" gorm:"not null;default:false"`
+	CreatedAt    time.Time `gorm:"not null"`
+	UpdatedAt    time.Time
 }
 
 // cart model
@@ -57,4 +61,35 @@ type Cart struct {
 	UserID uint       `gorm:"not null"`
 	Items  []CartItem `gorm:"foreignKey:CartID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL"`
 	Total  float64    `gorm:"default:0"`
+}
+
+type Wishlist struct {
+	ID            uint      `gorm:"primaryKey"`
+	UserID        uint      `gorm:"not null"`
+	ProductItemID uint      `gorm:"not null"`
+	Quantity      uint      `gorm:"not null"`
+	CreatedAt     time.Time `gorm:"not null"`
+	UpdatedAt     time.Time
+	DeletedAt     gorm.DeletedAt `gorm:"index"`
+}
+
+//	type Wallet struct {
+//		ID           uint    `gorm:"primaryKey"`
+//		UserID       uint    `gorm:"not null"`
+//		Balance      float64 `gorm:"not null"`
+//		Credit       uint
+//		CreditRemark string
+//		Debit        uint
+//		DebitRemark  string
+//		CreatedAt    time.Time
+//		UpdatedAt    time.Time      `gorm:"not null"`
+//		DeletedAt    gorm.DeletedAt `gorm:"index"`
+//	}
+type Wallet struct {
+	ID        uint    `gorm:"primaryKey"`
+	UserID    uint    `gorm:"not null"`
+	Balance   float64 `gorm:"not null"`
+	Remark    string
+	UpdatedAt time.Time
+	CreatedAt time.Time
 }

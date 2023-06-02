@@ -1,4 +1,46 @@
 definitions:
+  domain.Address:
+    properties:
+      address_line_1:
+        maxLength: 40
+        minLength: 2
+        type: string
+      address_line_2:
+        maxLength: 40
+        minLength: 2
+        type: string
+      city:
+        maxLength: 20
+        minLength: 2
+        type: string
+      country:
+        maxLength: 20
+        minLength: 2
+        type: string
+      createdAt:
+        type: string
+      house:
+        type: string
+      id:
+        type: integer
+      state:
+        maxLength: 20
+        minLength: 2
+        type: string
+      updatedAt:
+        type: string
+      zip_code:
+        maxLength: 10
+        minLength: 2
+        type: string
+    required:
+    - address_line_1
+    - address_line_2
+    - city
+    - country
+    - state
+    - zip_code
+    type: object
   domain.Admin:
     properties:
       created_at:
@@ -32,14 +74,49 @@ definitions:
     - product_item_id
     - quantity
     type: object
-  request.AddressReq:
-    type: object
-  request.Block:
+  request.AddToWishlist:
     properties:
-      user_id:
+      product_item_id:
+        type: integer
+      quantity:
         type: integer
     required:
-    - user_id
+    - product_item_id
+    - quantity
+    type: object
+  request.AddressPatchReq:
+    properties:
+      address_id:
+        type: integer
+      address_line_1:
+        type: string
+      address_line_2:
+        type: string
+      city:
+        type: string
+      country:
+        type: string
+      house:
+        type: string
+      is_default:
+        type: boolean
+      state:
+        type: string
+      zip_code:
+        type: string
+    type: object
+  request.ApproveReturnRequest:
+    properties:
+      comment:
+        type: string
+      is_approved:
+        type: boolean
+      order_id:
+        type: integer
+      return_id:
+        type: integer
+      user_id:
+        type: integer
     type: object
   request.CategoryReq:
     properties:
@@ -49,6 +126,19 @@ definitions:
         type: integer
       parent_id:
         type: integer
+    type: object
+  request.CreateCoupon:
+    properties:
+      code:
+        type: string
+      discount_max_amount:
+        type: number
+      discount_percent:
+        type: number
+      min_order_value:
+        type: number
+      valid_till:
+        type: string
     type: object
   request.DeleteCartItemReq:
     properties:
@@ -141,6 +231,11 @@ definitions:
     - price
     - product_name
     type: object
+  request.RazorpayReq:
+    properties:
+      coupon_code:
+        type: string
+    type: object
   request.SignupUserData:
     properties:
       age:
@@ -187,6 +282,21 @@ definitions:
     - product_item_id
     - quantity
     type: object
+  request.UpdateCoupon:
+    properties:
+      code:
+        type: string
+      discount_max_amount:
+        type: number
+      discount_percent:
+        type: number
+      id:
+        type: integer
+      min_order_value:
+        type: number
+      valid_till:
+        type: string
+    type: object
   request.UpdateProductReq:
     properties:
       brand_id:
@@ -201,6 +311,26 @@ definitions:
         type: integer
       product_name:
         type: string
+    type: object
+  request.UpdateStatus:
+    properties:
+      order_id:
+        type: integer
+      status_id:
+        type: integer
+      user_id:
+        type: integer
+    required:
+    - order_id
+    - status_id
+    - user_id
+    type: object
+  request.UserID:
+    properties:
+      user_id:
+        type: integer
+    required:
+    - user_id
     type: object
   request.Variation:
     properties:
@@ -256,7 +386,7 @@ paths:
         name: inputs
         required: true
         schema:
-          $ref: '#/definitions/request.AddressReq'
+          $ref: '#/definitions/domain.Address'
       responses:
         "200":
           description: Successfully address added
@@ -271,6 +401,76 @@ paths:
       summary: api for adding a new address for user
       tags:
       - User Address
+  /address:
+    delete:
+      description: user can delete a address
+      operationId: DeleteAddress
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: Address deleted successfuly
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Something went wrong!
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: api for delete user address
+      tags:
+      - User Address
+    get:
+      description: user can get address
+      operationId: GetAllAddress
+      parameters:
+      - description: Page Number
+        in: query
+        name: page_number
+        type: integer
+      responses:
+        "200":
+          description: Get all address successful
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Something went wrong!
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: api for user to get all address
+      tags:
+      - User GetAllAddress
+    put:
+      description: user can update a address
+      operationId: UpdateAddress
+      parameters:
+      - description: Input Field
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/request.AddressPatchReq'
+      responses:
+        "200":
+          description: Address updated successfuly
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Something went wrong!
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: api for update user address
+      tags:
+      - User Address
   /admin:
     get:
       operationId: AdminHome
@@ -282,6 +482,109 @@ paths:
       summary: api admin home
       tags:
       - Admin Home
+  /admin/coupons:
+    get:
+      operationId: ListAllCoupons
+      parameters:
+      - description: Page Number
+        in: query
+        name: page_number
+        type: integer
+      - description: Count Of Order
+        in: query
+        name: count
+        type: integer
+      responses:
+        "200":
+          description: List of coupons
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Missing or invalid input
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: api for admin to list all coupons
+      tags:
+      - Admin ListAllCoupons
+    post:
+      operationId: CreateNewCoupon
+      parameters:
+      - description: inputs
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/request.CreateCoupon'
+      responses:
+        "200":
+          description: Coupon created successfully
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Missing or invalid input
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: api for admin to create a cooupon
+      tags:
+      - Admin CreateNewCoupon
+    put:
+      operationId: UpdateCoupon
+      parameters:
+      - description: inputs
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/request.UpdateCoupon'
+      responses:
+        "200":
+          description: Coupon updated successfully
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Missing or invalid input
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: api for admin to update a cooupon
+      tags:
+      - Admin UpdateCoupon
+  /admin/coupons/{id}:
+    delete:
+      operationId: DeleteCoupon
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: Coupon deleted successfully
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Missing or invalid input
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: api for admin to delete a cooupon
+      tags:
+      - Admin DeleteCoupon
   /admin/login:
     post:
       operationId: AdminLogin
@@ -307,7 +610,7 @@ paths:
             $ref: '#/definitions/response.Response'
       summary: api for admin to login
       tags:
-      - Admin Login
+      - Admin Login / Signup
   /admin/products:
     post:
       operationId: AddCategory
@@ -381,6 +684,44 @@ paths:
       summary: api for admin to add product item for particular product
       tags:
       - Admin Product
+  /admin/return-request:
+    get:
+      consumes:
+      - application/json
+      description: List all return request
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Return Request List
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Missing or invalid inputs
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Something went wrong!
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: List all return request
+      tags:
+      - Order Controlls
+  /admin/sales-report:
+    get:
+      operationId: SalesReport
+      responses:
+        "400":
+          description: Missing or Invalid inputs
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Something went wrong! failed to generate sales report
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: api for admin to download sales report as csv format
+      tags:
+      - Business Reports
   /admin/users:
     get:
       operationId: ListUsers
@@ -398,13 +739,17 @@ paths:
           description: List user successful
           schema:
             $ref: '#/definitions/response.Response'
+        "400":
+          description: Missing or invalid inputs
+          schema:
+            $ref: '#/definitions/response.Response'
         "500":
           description: failed to get all users
           schema:
             $ref: '#/definitions/response.Response'
       summary: api for admin to list users
       tags:
-      - Admin User
+      - User Controlls
   /admin/users/block:
     patch:
       operationId: BlockUser
@@ -414,7 +759,7 @@ paths:
         name: input
         required: true
         schema:
-          $ref: '#/definitions/request.Block'
+          $ref: '#/definitions/request.UserID'
       responses:
         "200":
           description: Successfully changed user block_status
@@ -426,7 +771,93 @@ paths:
             $ref: '#/definitions/response.Response'
       summary: api for admin to block or unblock user
       tags:
-      - Admin User
+      - User Controlls
+  /admin/users/orders:
+    patch:
+      operationId: ChangeOrderStatus
+      parameters:
+      - description: inputs
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/request.UpdateStatus'
+      responses:
+        "200":
+          description: Order status updated successfully!
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Missing inputs
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Something went wrong!
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: api for admin to change order status of user
+      tags:
+      - Order Controlls
+  /admin/users/orders/delivery-update:
+    patch:
+      consumes:
+      - application/json
+      description: Update delivery status of user orders
+      parameters:
+      - description: inputs
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/request.UpdateStatus'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Delivery Status Updated
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Invalid Request Body
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Something went wrong!
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Update delivery status of user orders
+      tags:
+      - Order Controlls
+  /admin/users/orders/return-order/approval:
+    patch:
+      consumes:
+      - application/json
+      description: Approve return order
+      parameters:
+      - description: inputs
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/request.ApproveReturnRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Return Order Approved
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Invalid Request Body
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Something went wrong!
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Approve return order
+      tags:
+      - Order Controlls
   /brands:
     get:
       operationId: ListBrands-admin
@@ -505,6 +936,91 @@ paths:
       summary: api for update user cart
       tags:
       - User Cart
+  /carts/checkout:
+    get:
+      operationId: CheckoutCart
+      responses:
+        "200":
+          description: Successfuly checked out
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: 'Something went wrong! '
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: api for user to checkout cart, apply voucher and proceed for payment
+      tags:
+      - User Cart
+  /carts/checkout/razorpay:
+    post:
+      operationId: RazorpayPage
+      parameters:
+      - description: inputs
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/request.RazorpayReq'
+      responses:
+        "200":
+          description: Checkout successfull
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Something went wrong!
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: api for create an razorpay order
+      tags:
+      - User Cart
+  /carts/checkout/razorpay/success:
+    post:
+      operationId: RazorpayVerify
+      parameters:
+      - description: Payment Method ID
+        in: formData
+        name: payment_method_id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: successfully payment completed and order approved
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Failed to verify razor pay order!
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: api user for verify razorpay payment
+      tags:
+      - User Cart
+  /carts/orders:
+    get:
+      operationId: orderHistory
+      responses:
+        "200":
+          description: Order history successful
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Missing user id
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: 'Something went wrong! '
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: api for user to get all order history made
+      tags:
+      - User orderHistory
   /carts/place-order/cod:
     post:
       operationId: PlaceCODOrder
@@ -524,7 +1040,7 @@ paths:
           schema:
             $ref: '#/definitions/response.Response'
         "500":
-          description: failed to save shop order
+          description: 'Something went wrong! '
           schema:
             $ref: '#/definitions/response.Response'
       security:
@@ -646,4 +1162,89 @@ paths:
       summary: api for register user
       tags:
       - User Signup
+  /wallet/history:
+    get:
+      description: user can get wallet history
+      operationId: GetWalletHistory
+      responses:
+        "200":
+          description: Get wallet history successful
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Something went wrong!
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: api for user to get wallet history
+      tags:
+      - User GetWalletHistory
+  /wishlist:
+    get:
+      description: user can get wishlist
+      operationId: GetWishlist
+      responses:
+        "200":
+          description: Get wishlist successful
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Something went wrong!
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: api for user to get wishlist
+      tags:
+      - User GetWishlist
+  /wishlist/{id}:
+    delete:
+      description: user can delete product from wishlist
+      operationId: DeleteFromWishlist
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: Delete product from wishlist successful
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Something went wrong!
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: api for user to delete product from wishlist
+      tags:
+      - User DeleteFromWishlist
+  /wishlist/{product_id}:
+    post:
+      description: user can add product to wishlist
+      operationId: AddToWishlist
+      parameters:
+      - description: Input Field
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/request.AddToWishlist'
+      responses:
+        "200":
+          description: Add product to wishlist successful
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Something went wrong!
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: api for user to add product to wishlist
+      tags:
+      - User AddToWishlist
 swagger: "2.0"

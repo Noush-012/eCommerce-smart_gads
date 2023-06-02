@@ -14,11 +14,13 @@ import (
 )
 
 type adminDatabase struct {
-	DB *gorm.DB
+	DB           *gorm.DB
+	userDatabase interfaces.UserRepository
 }
 
-func NewAdminRepository(db *gorm.DB) interfaces.AdminRepository {
-	return &adminDatabase{DB: db}
+func NewAdminRepository(db *gorm.DB, userRepo interfaces.UserRepository) interfaces.AdminRepository {
+	return &adminDatabase{DB: db,
+		userDatabase: userRepo}
 }
 
 func (a *adminDatabase) GetAdmin(ctx context.Context, admin domain.Admin) (domain.Admin, error) {
@@ -63,4 +65,56 @@ func (a *adminDatabase) GetAllUser(ctx context.Context, page request.ReqPaginati
 	err = a.DB.Raw(query, limit, offset).Scan(&users).Error
 
 	return users, err
+}
+
+func (a *adminDatabase) GetUserOrderHistory(c context.Context, userId uint) (orderHistory []domain.ShopOrder, err error) {
+	query := `SELECT *
+	FROM shop_orders so 
+	WHERE user_id = $1`
+	if err := a.DB.Raw(query, userId).Scan(&orderHistory).Error; err != nil {
+		return orderHistory, err
+	}
+	return orderHistory, nil
+}
+
+func (a *adminDatabase) GenerateSalesReport(c context.Context, dateRange request.DateRange) (salesData []domain.SalesReport, err error) {
+	query := `SELECT so.id AS order_id, so.user_id, so.order_total AS total_amount,
+	so.coupon_id AS coupon_code, pm.payment_method, so.order_date, os.status AS order_status, ds.status AS delivery_status
+FROM shop_orders so
+LEFT JOIN payment_methods pm ON pm.id = so.payment_method_id
+LEFT JOIN order_statuses os ON os.id = so.order_status_id
+LEFT JOIN delivery_statuses ds ON ds.id = so.delivery_status_id
+WHERE so.order_date BETWEEN $1 AND $2`
+
+	if err := a.DB.Raw(query, dateRange.StartDate, dateRange.EndDate).Scan(&salesData).Error; err != nil {
+		return salesData, err
+	}
+	return salesData, nil
+}
+
+func (a *adminDatabase) ApproveReturnOrder(c context.Context, data request.ApproveReturnRequest) error {
+	query := `UPDATE returns
+	SET is_approved = $1
+	WHERE shop_order_id = $2 AND is_approved = false`
+
+	err := a.DB.Exec(query, data.IsApproved, data.OrderID).Error
+	if err != nil {
+		return err
+	}
+	// add amount to user wallet
+	if data.IsApproved {
+
+		err := a.userDatabase.CreditUserWallet(c, domain.Wallet{
+			UserID:  data.UserID,
+			Balance: float64(data.OrderTotal),
+			Remark:  data.Comment,
+		})
+		if err != nil {
+			return err
+		}
+	} else {
+		return errors.New("return request denied by admin")
+	}
+	return nil
+
 }

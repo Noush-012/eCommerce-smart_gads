@@ -1,7 +1,9 @@
 package handler
 
 import (
+	"encoding/csv"
 	"errors"
+	"fmt"
 	"net/http"
 
 	"github.com/Noush-012/Project-eCommerce-smart_gads/pkg/api/auth"
@@ -16,16 +18,19 @@ import (
 
 type AdminHandler struct {
 	adminService interfaces.AdminService
+	orderService interfaces.OrderService
 }
 
-func NewAdminHandler(adminService interfaces.AdminService) *AdminHandler {
-	return &AdminHandler{adminService: adminService}
+func NewAdminHandler(adminService interfaces.AdminService, orderUseCase interfaces.OrderService) *AdminHandler {
+	return &AdminHandler{adminService: adminService,
+		orderService: orderUseCase,
+	}
 }
 
 // AdminSignUp godoc
 // @summary api for admin to login
 // @id AdminSignUp
-// @tags Admin Login
+// @tags Admin Login / Signup
 // @Param input body domain.Admin{} true "inputs"
 // @Router /admin/login [post]
 // @Success 200 {object} response.Response{} "Create admin account successful"
@@ -53,7 +58,7 @@ func (a *AdminHandler) AdminSignUp(c *gin.Context) {
 // AdminLogin godoc
 // @summary api for admin to login
 // @id AdminLogin
-// @tags Admin Login
+// @tags Admin Login / Signup
 // @Param input body request.LoginData{} true "Credentials"
 // @Router /admin/login [post]
 // @Success 200 {object} response.Response{} "successfully logged in"
@@ -121,12 +126,13 @@ func (a *AdminHandler) LogoutAdmin(c *gin.Context) {
 // ListUsers godoc
 // @summary api for admin to list users
 // @id ListUsers
-// @tags Admin User
+// @tags User Controlls
 // @Param page_number query int false "Page Number"
 // @Param count query int false "Count Of Order"
 // @Router /admin/users [get]
 // @Success 200 {object} response.Response{} "List user successful"
 // @Failure 500 {object} response.Response{} "failed to get all users"
+// @Failure 400 {object} response.Response{} "Missing or invalid inputs"
 func (a *AdminHandler) ListUsers(c *gin.Context) {
 
 	count, err1 := utils.StringToUint(c.Query("count"))
@@ -166,28 +172,213 @@ func (a *AdminHandler) ListUsers(c *gin.Context) {
 // BlockUser godoc
 // @summary api for admin to block or unblock user
 // @id BlockUser
-// @tags Admin User
-// @Param input body request.Block{} true "inputs"
+// @tags User Controlls
+// @Param input body request.UserID{} true "inputs"
 // @Router /admin/users/block [patch]
 // @Success 200 {object} response.Response{} "Successfully changed user block_status"
 // @Failure 400 {object} response.Response{} "invalid input"
-func (a *AdminHandler) BlockUser(ctx *gin.Context) {
+func (a *AdminHandler) BlockUser(c *gin.Context) {
 
-	var body request.Block
+	var body request.UserID
 
-	if err := ctx.ShouldBindJSON(&body); err != nil {
+	if err := c.ShouldBindJSON(&body); err != nil {
 		response := response.ErrorResponse(400, "invalid input", err.Error(), body)
-		ctx.JSON(http.StatusBadRequest, response)
+		c.JSON(http.StatusBadRequest, response)
 		return
 	}
-	err := a.adminService.BlockUser(ctx, body.UserID)
+	err := a.adminService.BlockUser(c, body.UserID)
 	if err != nil {
 		response := response.ErrorResponse(400, "faild to change user block_status", err.Error(), nil)
-		ctx.JSON(http.StatusBadRequest, response)
+		c.JSON(http.StatusBadRequest, response)
 		return
 	}
 
 	response := response.SuccessResponse(200, "Successfully changed user block_status", body.UserID)
 	// if successfully blocked or unblock user then response 200
-	ctx.JSON(http.StatusOK, response)
+	c.JSON(http.StatusOK, response)
+}
+
+func (a *AdminHandler) UserOrderHistory(c *gin.Context) {
+
+	var body request.UserID
+	c.ShouldBindJSON(&body)
+
+}
+
+// ChangeOrderStatus godoc
+// @summary api for admin to change order status of user
+// @id ChangeOrderStatus
+// @tags Order Controlls
+// @Param input body request.UpdateStatus{} true "inputs"
+// @Router /admin/users/orders [patch]
+// @Success 200 {object} response.Response{} "Order status updated successfully!"
+// @Failure 400 {object} response.Response{} "Missing inputs"
+// @Failure 500 {object} response.Response{} "Something went wrong!"
+func (a *AdminHandler) ChangeOrderStatus(c *gin.Context) {
+	var body request.UpdateStatus
+	err := c.ShouldBindJSON(&body)
+	if err != nil {
+		response := response.ErrorResponse(400, "Missing inputs", err.Error(), body)
+		c.JSON(400, response)
+		return
+	}
+	err = a.orderService.UpdateOrderStatus(c, body)
+	if err != nil {
+		response := response.ErrorResponse(500, "Something went wrong!", err.Error(), nil)
+		c.JSON(500, response)
+		return
+	}
+	response := response.SuccessResponse(200, "Order status updated successfully!", nil)
+	c.JSON(200, response)
+
+}
+
+// SalesReport godoc
+// @summary api for admin to download sales report as csv format
+// @id SalesReport
+// @tags Business Reports
+// @Router /admin/sales-report [get]
+// @Success 500 {object} response.Response{} "Something went wrong!"
+// @Failure 500 {object} response.Response{} "Something went wrong! failed to generate sales report"
+// @Failure 400 {object} response.Response{} "Missing or Invalid inputs"
+func (a *AdminHandler) SalesReport(c *gin.Context) {
+	var body request.DateRange
+	err := c.ShouldBindJSON(&body)
+	if err != nil {
+		response := response.ErrorResponse(400, "Missing or Invalid inputs", err.Error(), body)
+		c.JSON(400, response)
+		return
+	}
+	salesReport, err := a.adminService.SalesReport(c, body)
+	if err != nil {
+		response := response.ErrorResponse(500, "Something went wrong!", err.Error(), nil)
+		c.JSON(500, response)
+		return
+	}
+	// set header for downloading browser
+	c.Header("Content-Type", "text/csv")
+	c.Header("Content-Disposition", "attachment;filename= smart_gads_sales_report.csv")
+	wr := csv.NewWriter(c.Writer)
+
+	headers := []string{"Order ID", "User ID", "Total", "Coupon Code", "Payment Method", "Order Status", "Delivery Status", "Order Date"}
+	if err := wr.Write(headers); err != nil {
+		response := response.ErrorResponse(500, "Something went wrong! failed to generate sales report", err.Error(), nil)
+		c.JSON(500, response)
+		return
+	}
+	for _, sales := range salesReport {
+		var row = []string{
+			fmt.Sprintf("%v", sales.OrderID),
+			fmt.Sprintf("%v", sales.UserID),
+			fmt.Sprintf("%v", sales.TotalAmount),
+			sales.CouponCode,
+			sales.PaymentMethod,
+			sales.OrderStatus,
+			sales.DeliveryStatus,
+			sales.OrderDate.Format("2006-01-02 15:04:05")}
+
+		if err := wr.Write(row); err != nil {
+			response := response.ErrorResponse(500, "Something went wrong! failed to generate sales report", err.Error(), nil)
+			c.JSON(500, response)
+			return
+		}
+
+	}
+	// Flush the writer's buffer to ensure all data is written to the client
+	wr.Flush()
+}
+
+// GetAllReturnRequest godoc
+// @Summary List all return request
+// @Description List all return request
+// @tags Order Controlls
+// @Accept  json
+// @Produce  json
+// @Router /admin/return-request [get]
+// @Success 200 {object} response.Response{} "Return Request List"
+// @Failure 400 {object} response.Response{} "Missing or invalid inputs"
+// @Failure 500 {object} response.Response{} "Something went wrong!"
+func (a *AdminHandler) GetAllReturnOrder(c *gin.Context) {
+
+	count, err1 := utils.StringToUint(c.Query("count"))
+	pageNumber, err2 := utils.StringToUint(c.Query("page_number"))
+
+	err1 = errors.Join(err1, err2)
+	if err1 != nil {
+		response := response.ErrorResponse(400, "Missing or invalid inputs", err1.Error(), nil)
+		c.JSON(http.StatusBadRequest, response)
+		return
+	}
+
+	pagination := request.ReqPagination{
+		PageNumber: pageNumber,
+		Count:      count,
+	}
+	returnRequest, err := a.orderService.GetAllPendingReturnRequest(c, pagination)
+	if err != nil {
+		response := response.ErrorResponse(400, "Something went wrong!", err1.Error(), nil)
+		c.JSON(http.StatusBadRequest, response)
+		return
+	}
+	response := response.SuccessResponse(http.StatusOK, "Return Request List", returnRequest, nil)
+	c.JSON(http.StatusOK, response)
+
+}
+
+// UpdateDeliveryStatus godoc
+// @Summary Update delivery status of user orders
+// @Description Update delivery status of user orders
+// @tags Order Controlls
+// @Accept  json
+// @Produce  json
+// @Param input body request.UpdateStatus{} true "inputs"
+// @Router /admin/users/orders/delivery-update [patch]
+// @Success 200 {object} response.Response{} "Delivery Status Updated"
+// @Failure 400 {object} response.Response{} "Invalid Request Body"
+// @Failure 500 {object} response.Response{} "Something went wrong!"
+func (a *AdminHandler) UpdateDeliveryStatus(c *gin.Context) {
+	var body request.UpdateStatus
+	if err := c.ShouldBindJSON(&body); err != nil {
+		response := response.ErrorResponse(400, "Invalid Request Body", err.Error(), nil)
+		c.JSON(http.StatusBadRequest, response)
+		return
+	}
+
+	err := a.adminService.UpdateDeliveryStatus(c, body)
+	if err != nil {
+		response := response.ErrorResponse(400, "Something went wrong!", err.Error(), nil)
+		c.JSON(http.StatusBadRequest, response)
+		return
+	}
+	response := response.SuccessResponse(http.StatusOK, "Delivery Status Updated", nil, nil)
+	c.JSON(http.StatusOK, response)
+}
+
+// ApproveReturnOrder godoc
+// @Summary Approve return order
+// @Description Approve return order
+// @tags Order Controlls
+// @Accept  json
+// @Produce  json
+// @Param input body request.ApproveReturnRequest{} true "inputs"
+// @Router /admin/users/orders/return-order/approval [patch]
+// @Success 200 {object} response.Response{} "Return Order Approved"
+// @Failure 400 {object} response.Response{} "Invalid Request Body"
+// @Failure 500 {object} response.Response{} "Something went wrong!"
+func (a *AdminHandler) ApproveReturnOrder(c *gin.Context) {
+	var body request.ApproveReturnRequest
+	if err := c.ShouldBindJSON(&body); err != nil {
+		response := response.ErrorResponse(400, "Invalid Request Body", err.Error(), nil)
+		c.JSON(http.StatusBadRequest, response)
+		return
+	}
+
+	err := a.adminService.ApproveReturnOrder(c, body)
+	if err != nil {
+		response := response.ErrorResponse(400, "Something went wrong!", err.Error(), nil)
+		c.JSON(http.StatusBadRequest, response)
+		return
+	}
+	response := response.SuccessResponse(http.StatusOK, "Return Order Approved", nil, nil)
+	c.JSON(http.StatusOK, response)
 }

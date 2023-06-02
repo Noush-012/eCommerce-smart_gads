@@ -98,13 +98,16 @@ func (p *productUseCase) AddProductItem(ctx context.Context, productItem request
 }
 
 // to get a product variant
-func (p *productUseCase) GetProductItem(ctx context.Context, productId uint) (ProductItems []response.ProductItemResp, err error) {
+func (p *productUseCase) GetProductItem(ctx context.Context, productId uint) (ProductItems []response.ProductItemResp, count int, err error) {
+
 	productItems, err := p.ProductRepository.GetProductItems(ctx, productId)
 	if err != nil {
-		return productItems, err
+		return productItems, count, err
 	}
 
-	return productItems, nil
+	count = len(productItems)
+
+	return productItems, count, nil
 }
 
 func (p *productUseCase) SKUhelper(ctx context.Context, productId uint) (interface{}, error) {

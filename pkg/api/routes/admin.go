@@ -6,7 +6,8 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func AdminRoutes(api *gin.RouterGroup, adminHandler *handler.AdminHandler, productHandler *handler.ProductHandler) {
+func AdminRoutes(api *gin.RouterGroup, adminHandler *handler.AdminHandler, productHandler *handler.ProductHandler,
+	orderHandler *handler.OrderHandler, couponHandler *handler.CouponHandler) {
 
 	// Login
 	login := api.Group("/login")
@@ -19,13 +20,14 @@ func AdminRoutes(api *gin.RouterGroup, adminHandler *handler.AdminHandler, produ
 	{
 		signup.POST("/")
 	}
+	// for testing purpose sales report route removed from middleware
+	api.GET("/sales-report", adminHandler.SalesReport)
 
 	// Middleware
 	api.Use(middleware.AuthenticateAdmin)
 	{
 		api.GET("/", adminHandler.AdminHome)
 		api.GET("/logout", adminHandler.LogoutAdmin)
-
 		// Sales report
 
 		// Users dashboard
@@ -33,6 +35,11 @@ func AdminRoutes(api *gin.RouterGroup, adminHandler *handler.AdminHandler, produ
 		{
 			user.GET("/", adminHandler.ListUsers)
 			user.PATCH("/block", adminHandler.BlockUser)
+			user.GET("/orders", orderHandler.GetAllOrderHistory)
+			user.PATCH("/orders", adminHandler.ChangeOrderStatus)
+			user.GET("/return-orders", adminHandler.GetAllReturnOrder)
+			user.PATCH("/return-orders/approval", adminHandler.ApproveReturnOrder)
+			user.PATCH("/orders/delivery-update", adminHandler.UpdateDeliveryStatus)
 		}
 
 		// Brand
@@ -47,6 +54,8 @@ func AdminRoutes(api *gin.RouterGroup, adminHandler *handler.AdminHandler, produ
 		{
 			// To list products
 			product.GET("/", productHandler.ListProducts)
+			// To list product items
+			product.GET("/product-item/:product_id", productHandler.GetProductItem)
 			// To add product
 			product.POST("/", productHandler.AddProduct)
 			// To update product
@@ -56,8 +65,14 @@ func AdminRoutes(api *gin.RouterGroup, adminHandler *handler.AdminHandler, produ
 			// Add product item
 			product.POST("/product-item", productHandler.AddProductItem)
 
-			// Order
+		}
 
+		coupons := api.Group("/coupons")
+		{
+			coupons.GET("/", couponHandler.ListAllCoupons)
+			coupons.POST("/", couponHandler.CreateNewCoupon)
+			coupons.PATCH("/", couponHandler.UpdateCoupon)
+			coupons.DELETE("/:id", couponHandler.DeleteCoupon)
 		}
 	}
 }

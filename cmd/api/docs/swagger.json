@@ -69,7 +69,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/request.AddressReq"
+                            "$ref": "#/definitions/domain.Address"
                         }
                     }
                 ],
@@ -82,6 +82,117 @@
                     },
                     "400": {
                         "description": "inavlid input",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/address": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "user can get address",
+                "tags": [
+                    "User GetAllAddress"
+                ],
+                "summary": "api for user to get all address",
+                "operationId": "GetAllAddress",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Page Number",
+                        "name": "page_number",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Get all address successful",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Something went wrong!",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "user can update a address",
+                "tags": [
+                    "User Address"
+                ],
+                "summary": "api for update user address",
+                "operationId": "UpdateAddress",
+                "parameters": [
+                    {
+                        "description": "Input Field",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.AddressPatchReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Address updated successfuly",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Something went wrong!",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "user can delete a address",
+                "tags": [
+                    "User Address"
+                ],
+                "summary": "api for delete user address",
+                "operationId": "DeleteAddress",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Address deleted successfuly",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Something went wrong!",
                         "schema": {
                             "$ref": "#/definitions/response.Response"
                         }
@@ -106,10 +217,167 @@
                 }
             }
         },
+        "/admin/coupons": {
+            "get": {
+                "tags": [
+                    "Admin ListAllCoupons"
+                ],
+                "summary": "api for admin to list all coupons",
+                "operationId": "ListAllCoupons",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Page Number",
+                        "name": "page_number",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Count Of Order",
+                        "name": "count",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of coupons",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Missing or invalid input",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Admin UpdateCoupon"
+                ],
+                "summary": "api for admin to update a cooupon",
+                "operationId": "UpdateCoupon",
+                "parameters": [
+                    {
+                        "description": "inputs",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.UpdateCoupon"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Coupon updated successfully",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Missing or invalid input",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Admin CreateNewCoupon"
+                ],
+                "summary": "api for admin to create a cooupon",
+                "operationId": "CreateNewCoupon",
+                "parameters": [
+                    {
+                        "description": "inputs",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.CreateCoupon"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Coupon created successfully",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Missing or invalid input",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/coupons/{id}": {
+            "delete": {
+                "tags": [
+                    "Admin DeleteCoupon"
+                ],
+                "summary": "api for admin to delete a cooupon",
+                "operationId": "DeleteCoupon",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Coupon deleted successfully",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Missing or invalid input",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
         "/admin/login": {
             "post": {
                 "tags": [
-                    "Admin Login"
+                    "Admin Login / Signup"
                 ],
                 "summary": "api for admin to login",
                 "operationId": "AdminLogin",
@@ -258,10 +526,68 @@
                 }
             }
         },
+        "/admin/return-request": {
+            "get": {
+                "description": "List all return request",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Order Controlls"
+                ],
+                "summary": "List all return request",
+                "responses": {
+                    "200": {
+                        "description": "Return Request List",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Missing or invalid inputs",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Something went wrong!",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/sales-report": {
+            "get": {
+                "tags": [
+                    "Business Reports"
+                ],
+                "summary": "api for admin to download sales report as csv format",
+                "operationId": "SalesReport",
+                "responses": {
+                    "400": {
+                        "description": "Missing or Invalid inputs",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Something went wrong! failed to generate sales report",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
         "/admin/users": {
             "get": {
                 "tags": [
-                    "Admin User"
+                    "User Controlls"
                 ],
                 "summary": "api for admin to list users",
                 "operationId": "ListUsers",
@@ -286,6 +612,12 @@
                             "$ref": "#/definitions/response.Response"
                         }
                     },
+                    "400": {
+                        "description": "Missing or invalid inputs",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
                     "500": {
                         "description": "failed to get all users",
                         "schema": {
@@ -298,7 +630,7 @@
         "/admin/users/block": {
             "patch": {
                 "tags": [
-                    "Admin User"
+                    "User Controlls"
                 ],
                 "summary": "api for admin to block or unblock user",
                 "operationId": "BlockUser",
@@ -309,7 +641,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/request.Block"
+                            "$ref": "#/definitions/request.UserID"
                         }
                     }
                 ],
@@ -322,6 +654,138 @@
                     },
                     "400": {
                         "description": "invalid input",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/users/orders": {
+            "patch": {
+                "tags": [
+                    "Order Controlls"
+                ],
+                "summary": "api for admin to change order status of user",
+                "operationId": "ChangeOrderStatus",
+                "parameters": [
+                    {
+                        "description": "inputs",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.UpdateStatus"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Order status updated successfully!",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Missing inputs",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Something went wrong!",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/users/orders/delivery-update": {
+            "patch": {
+                "description": "Update delivery status of user orders",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Order Controlls"
+                ],
+                "summary": "Update delivery status of user orders",
+                "parameters": [
+                    {
+                        "description": "inputs",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.UpdateStatus"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Delivery Status Updated",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid Request Body",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Something went wrong!",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/users/orders/return-order/approval": {
+            "patch": {
+                "description": "Approve return order",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Order Controlls"
+                ],
+                "summary": "Approve return order",
+                "parameters": [
+                    {
+                        "description": "inputs",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.ApproveReturnRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Return Order Approved",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid Request Body",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Something went wrong!",
                         "schema": {
                             "$ref": "#/definitions/response.Response"
                         }
@@ -455,6 +919,144 @@
                 }
             }
         },
+        "/carts/checkout": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "tags": [
+                    "User Cart"
+                ],
+                "summary": "api for user to checkout cart, apply voucher and proceed for payment",
+                "operationId": "CheckoutCart",
+                "responses": {
+                    "200": {
+                        "description": "Successfuly checked out",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Something went wrong! ",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/carts/checkout/razorpay": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "tags": [
+                    "User Cart"
+                ],
+                "summary": "api for create an razorpay order",
+                "operationId": "RazorpayPage",
+                "parameters": [
+                    {
+                        "description": "inputs",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.RazorpayReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Checkout successfull",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Something went wrong!",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/carts/checkout/razorpay/success": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "tags": [
+                    "User Cart"
+                ],
+                "summary": "api user for verify razorpay payment",
+                "operationId": "RazorpayVerify",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Payment Method ID",
+                        "name": "payment_method_id",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successfully payment completed and order approved",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Failed to verify razor pay order!",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/carts/orders": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "tags": [
+                    "User orderHistory"
+                ],
+                "summary": "api for user to get all order history made",
+                "operationId": "orderHistory",
+                "responses": {
+                    "200": {
+                        "description": "Order history successful",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Missing user id",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Something went wrong! ",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
         "/carts/place-order/cod": {
             "post": {
                 "security": [
@@ -490,7 +1092,7 @@
                         }
                     },
                     "500": {
-                        "description": "failed to save shop order",
+                        "description": "Something went wrong! ",
                         "schema": {
                             "$ref": "#/definitions/response.Response"
                         }
@@ -682,9 +1284,200 @@
                     }
                 }
             }
+        },
+        "/wallet/history": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "user can get wallet history",
+                "tags": [
+                    "User GetWalletHistory"
+                ],
+                "summary": "api for user to get wallet history",
+                "operationId": "GetWalletHistory",
+                "responses": {
+                    "200": {
+                        "description": "Get wallet history successful",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Something went wrong!",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/wishlist": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "user can get wishlist",
+                "tags": [
+                    "User GetWishlist"
+                ],
+                "summary": "api for user to get wishlist",
+                "operationId": "GetWishlist",
+                "responses": {
+                    "200": {
+                        "description": "Get wishlist successful",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Something went wrong!",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/wishlist/{id}": {
+            "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "user can delete product from wishlist",
+                "tags": [
+                    "User DeleteFromWishlist"
+                ],
+                "summary": "api for user to delete product from wishlist",
+                "operationId": "DeleteFromWishlist",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Delete product from wishlist successful",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Something went wrong!",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/wishlist/{product_id}": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "user can add product to wishlist",
+                "tags": [
+                    "User AddToWishlist"
+                ],
+                "summary": "api for user to add product to wishlist",
+                "operationId": "AddToWishlist",
+                "parameters": [
+                    {
+                        "description": "Input Field",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.AddToWishlist"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Add product to wishlist successful",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Something went wrong!",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
+        "domain.Address": {
+            "type": "object",
+            "required": [
+                "address_line_1",
+                "address_line_2",
+                "city",
+                "country",
+                "state",
+                "zip_code"
+            ],
+            "properties": {
+                "address_line_1": {
+                    "type": "string",
+                    "maxLength": 40,
+                    "minLength": 2
+                },
+                "address_line_2": {
+                    "type": "string",
+                    "maxLength": 40,
+                    "minLength": 2
+                },
+                "city": {
+                    "type": "string",
+                    "maxLength": 20,
+                    "minLength": 2
+                },
+                "country": {
+                    "type": "string",
+                    "maxLength": 20,
+                    "minLength": 2
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "house": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "state": {
+                    "type": "string",
+                    "maxLength": 20,
+                    "minLength": 2
+                },
+                "updatedAt": {
+                    "type": "string"
+                },
+                "zip_code": {
+                    "type": "string",
+                    "maxLength": 10,
+                    "minLength": 2
+                }
+            }
+        },
         "domain.Admin": {
             "type": "object",
             "required": [
@@ -733,15 +1526,68 @@
                 }
             }
         },
-        "request.AddressReq": {
-            "type": "object"
-        },
-        "request.Block": {
+        "request.AddToWishlist": {
             "type": "object",
             "required": [
-                "user_id"
+                "product_item_id",
+                "quantity"
             ],
             "properties": {
+                "product_item_id": {
+                    "type": "integer"
+                },
+                "quantity": {
+                    "type": "integer"
+                }
+            }
+        },
+        "request.AddressPatchReq": {
+            "type": "object",
+            "properties": {
+                "address_id": {
+                    "type": "integer"
+                },
+                "address_line_1": {
+                    "type": "string"
+                },
+                "address_line_2": {
+                    "type": "string"
+                },
+                "city": {
+                    "type": "string"
+                },
+                "country": {
+                    "type": "string"
+                },
+                "house": {
+                    "type": "string"
+                },
+                "is_default": {
+                    "type": "boolean"
+                },
+                "state": {
+                    "type": "string"
+                },
+                "zip_code": {
+                    "type": "string"
+                }
+            }
+        },
+        "request.ApproveReturnRequest": {
+            "type": "object",
+            "properties": {
+                "comment": {
+                    "type": "string"
+                },
+                "is_approved": {
+                    "type": "boolean"
+                },
+                "order_id": {
+                    "type": "integer"
+                },
+                "return_id": {
+                    "type": "integer"
+                },
                 "user_id": {
                     "type": "integer"
                 }
@@ -758,6 +1604,26 @@
                 },
                 "parent_id": {
                     "type": "integer"
+                }
+            }
+        },
+        "request.CreateCoupon": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "string"
+                },
+                "discount_max_amount": {
+                    "type": "number"
+                },
+                "discount_percent": {
+                    "type": "number"
+                },
+                "min_order_value": {
+                    "type": "number"
+                },
+                "valid_till": {
+                    "type": "string"
                 }
             }
         },
@@ -891,6 +1757,14 @@
                 }
             }
         },
+        "request.RazorpayReq": {
+            "type": "object",
+            "properties": {
+                "coupon_code": {
+                    "type": "string"
+                }
+            }
+        },
         "request.SignupUserData": {
             "type": "object",
             "required": [
@@ -953,6 +1827,29 @@
                 }
             }
         },
+        "request.UpdateCoupon": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "string"
+                },
+                "discount_max_amount": {
+                    "type": "number"
+                },
+                "discount_percent": {
+                    "type": "number"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "min_order_value": {
+                    "type": "number"
+                },
+                "valid_till": {
+                    "type": "string"
+                }
+            }
+        },
         "request.UpdateProductReq": {
             "type": "object",
             "properties": {
@@ -973,6 +1870,36 @@
                 },
                 "product_name": {
                     "type": "string"
+                }
+            }
+        },
+        "request.UpdateStatus": {
+            "type": "object",
+            "required": [
+                "order_id",
+                "status_id",
+                "user_id"
+            ],
+            "properties": {
+                "order_id": {
+                    "type": "integer"
+                },
+                "status_id": {
+                    "type": "integer"
+                },
+                "user_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "request.UserID": {
+            "type": "object",
+            "required": [
+                "user_id"
+            ],
+            "properties": {
+                "user_id": {
+                    "type": "integer"
                 }
             }
         },

@@ -1,0 +1,27 @@
+{
+    "name": "Sample Product",
+    "description": "This is a sample product.",
+    "category_id": 1,
+    "price": 100,
+    "discount_price": 80,
+    "image": "https://example.com/sample.jpg",
+    "items": [
+      {
+        "qty_in_stock": 10,
+        "price": 100,
+        "sku": "SP1001",
+        "discount_price": 80,
+        "configurations": [
+          {
+            "variation_id": 1,
+            "option_id": 1
+          }
+        ],
+        "images": [
+          {
+            "image": "https://example.com/sample.jpg"
+          }
+        ]
+      }
+    ]
+  }

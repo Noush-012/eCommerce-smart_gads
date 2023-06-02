@@ -22,21 +22,24 @@ func InitiateAPI(cfg config.Config) (*http.ServerHTTP, error) {
 	if err != nil {
 		return nil, err
 	}
-	adminRepository := repository.NewAdminRepository(gormDB)
-	adminService := usecase.NewAdminService(adminRepository)
-	adminHandler := handler.NewAdminHandler(adminService)
 	userRepository := repository.NewUserRepository(gormDB)
-	userService := usecase.NewUserUseCase(userRepository)
+	adminRepository := repository.NewAdminRepository(gormDB, userRepository)
+	paymentRepository := repository.NewPaymentRepository(gormDB)
+	couponRepository := repository.NewCouponRepository(gormDB)
+	orderRepository := repository.NewOrderRepository(gormDB, paymentRepository, couponRepository, userRepository)
+	adminService := usecase.NewAdminService(adminRepository, orderRepository, paymentRepository)
+	orderService := usecase.NewOrderUseCase(orderRepository, userRepository, paymentRepository, couponRepository)
+	adminHandler := handler.NewAdminHandler(adminService, orderService)
+	userService := usecase.NewUserUseCase(userRepository, orderRepository)
 	userHandler := handler.NewUserHandler(userService)
 	productRepository := repository.NewProductRepository(gormDB)
 	productService := usecase.NewProductUseCase(productRepository)
 	productHandler := handler.NewProductHandler(productService)
-	paymentRepository := repository.NewPaymentRepository(gormDB)
-	paymentService := usecase.NewPaymentUseCase(paymentRepository)
+	paymentService := usecase.NewPaymentUseCase(paymentRepository, orderRepository)
 	paymentHandler := handler.NewPaymentHandler(paymentService)
-	orderRepository := repository.NewOrderRepository(gormDB)
-	orderService := usecase.NewOrderUseCase(orderRepository)
 	orderHandler := handler.NewOrderHandler(orderService)
-	serverHTTP := http.NewServerHTTP(adminHandler, userHandler, productHandler, paymentHandler, orderHandler)
+	couponService := usecase.NewCouponUseCase(couponRepository)
+	couponHandler := handler.NewCouponHandler(couponService)
+	serverHTTP := http.NewServerHTTP(adminHandler, userHandler, productHandler, paymentHandler, orderHandler, couponHandler)
 	return serverHTTP, nil
 }

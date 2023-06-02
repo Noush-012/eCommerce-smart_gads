@@ -28,6 +28,6 @@ type ReqPagination struct {
 	PageNumber uint `json:"page_number"`
 }
 
-type Block struct {
+type UserID struct {
 	UserID uint `json:"user_id" binding:"required,numeric"`
 }

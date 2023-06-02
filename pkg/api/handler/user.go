@@ -24,6 +24,9 @@ type UserHandler struct {
 func NewUserHandler(userUsecase interfaces.UserService) *UserHandler {
 	return &UserHandler{userService: userUsecase}
 }
+func (u *UserHandler) LoginPage(c *gin.Context) {
+	c.HTML(200, "index.html", nil)
+}
 
 // UserSignUp godoc
 // @summary api for register user
@@ -125,7 +128,7 @@ func (u *UserHandler) UserOTPVerify(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, response)
 		return
 	}
-	fmt.Println(body.OTP)
+
 	// Verify otp
 	err = verify.TwilioVerifyOTP("+91"+usr.Phone, body.OTP)
 	if err != nil {
@@ -232,8 +235,8 @@ func (u *UserHandler) AddToCart(c *gin.Context) {
 		return
 	}
 	if err := u.userService.SaveCartItem(c, body); err != nil {
-		response := response.ErrorResponse(500, "Failed to add product item in cart", err.Error(), body)
-		c.JSON(500, response)
+		response := response.ErrorResponse(http.StatusBadRequest, "Failed to add product item in cart", err.Error(), nil)
+		c.JSON(400, response)
 		return
 	}
 	response := response.SuccessResponse(200, "Successfuly added product item to cart ", body)
@@ -320,6 +323,7 @@ func (u *UserHandler) Profile(c *gin.Context) {
 	if err != nil {
 		response := response.ErrorResponse(500, "Something went wrong!", err.Error(), nil)
 		c.JSON(500, response)
+		return
 	}
 	response := response.SuccessResponse(200, "Successfuly got profile", user)
 	c.JSON(200, response)
@@ -332,12 +336,12 @@ func (u *UserHandler) Profile(c *gin.Context) {
 // @security ApiKeyAuth
 // @id AddAddress
 // @tags User Address
-// @Param inputs body request.AddressReq{} true "Input Field"
+// @Param inputs body request.Address{} true "Input Field"
 // @Router /account/address [post]
 // @Success 200 {object} response.Response{} "Successfully address added"
 // @Failure 400 {object} response.Response{} "inavlid input"
 func (u *UserHandler) AddAddress(c *gin.Context) {
-	var body domain.Address
+	var body request.Address
 	userId := utils.GetUserIdFromContext(c)
 
 	body.UserID = userId
@@ -350,8 +354,214 @@ func (u *UserHandler) AddAddress(c *gin.Context) {
 	if err := u.userService.Addaddress(c, body); err != nil {
 		response := response.ErrorResponse(500, "Something went wrong!", err.Error(), body)
 		c.JSON(500, response)
+		return
 	}
-	response := response.SuccessResponse(200, "Save address successful", body)
+	response := response.SuccessResponse(200, "Save address successful", nil)
 	c.JSON(200, response)
 
+}
+
+// UpdateAddress godoc
+// @summary api for update user address
+// @description user can update a address
+// @security ApiKeyAuth
+// @id UpdateAddress
+// @tags User Address
+// @Param input body request.AddressPatchReq{} true "Input Field"
+// @Router /address [put]
+// @Success 200 {object} response.Response{} "Address updated successfuly"
+// @Failure 500 {object} response.Response{} "Something went wrong!"
+func (u *UserHandler) UpdateAddress(c *gin.Context) {
+	// Get user id from context
+	userId := utils.GetUserIdFromContext(c)
+
+	var body request.AddressPatchReq
+	body.UserID = userId
+	if err := c.ShouldBindJSON(&body); err != nil {
+		response := response.ErrorResponse(400, "Missing or invalid entry", err.Error(), body)
+		c.JSON(400, response)
+		return
+	}
+	if err := u.userService.UpdateAddress(c, body); err != nil {
+		response := response.ErrorResponse(500, "Something went wrong!", err.Error(), body)
+		c.JSON(500, response)
+		return
+	}
+	response := response.SuccessResponse(200, "Address updated successfuly", nil)
+	c.JSON(200, response)
+
+}
+
+// delete address
+// @summary api for delete user address
+// @description user can delete a address
+// @security ApiKeyAuth
+// @id DeleteAddress
+// @tags User Address
+// @Param id path string true "id"
+// @Router /address [delete]
+// @Success 200 {object} response.Response{} "Address deleted successfuly"
+// @Failure 500 {object} response.Response{} "Something went wrong!"
+func (u *UserHandler) DeleteAddress(c *gin.Context) {
+	// Get user id from context
+	userId := utils.GetUserIdFromContext(c)
+	addressId, err := utils.StringToUint(c.Param("id"))
+	if err != nil {
+		response := response.ErrorResponse(400, "Missing or invalid entry", err.Error(), nil)
+		c.JSON(400, response)
+		return
+	}
+	if err := u.userService.DeleteAddress(c, userId, addressId); err != nil {
+		response := response.ErrorResponse(500, "Something went wrong!", err.Error(), nil)
+		c.JSON(500, response)
+		return
+	}
+	response := response.SuccessResponse(200, "Address deleted successfuly", nil)
+	c.JSON(200, response)
+}
+
+// GetAllAddress godoc
+// @summary api for user to get all address
+// @description user can get address
+// @security ApiKeyAuth
+// @id GetAllAddress
+// @Param page_number query int false "Page Number"
+// @tags User GetAllAddress
+// @Router /address [get]
+// @Success 200 {object} response.Response{} "Get all address successful"
+// @Failure 500 {object} response.Response{} "Something went wrong!"
+func (u *UserHandler) GetAllAddress(c *gin.Context) {
+	// Get user id from context
+	userId := utils.GetUserIdFromContext(c)
+	if userId == 0 {
+		response := response.ErrorResponse(500, "No user detected!", "", nil)
+		c.IndentedJSON(400, response)
+		return
+	}
+	address, err := u.userService.GetAllAddress(c, userId)
+	if err != nil {
+		response := response.ErrorResponse(500, "Something went wrong!", err.Error(), nil)
+		c.IndentedJSON(500, response)
+		return
+	}
+	response := response.SuccessResponse(200, "Get all address successful", address)
+	c.IndentedJSON(200, response)
+}
+
+// AddToWishlist godoc
+// @summary api for user to add product to wishlist
+// @description user can add product to wishlist
+// @security ApiKeyAuth
+// @id AddToWishlist
+// @Param input body request.AddToWishlist{} true "Input Field"
+// @tags User AddToWishlist
+// @Router /wishlist/{product_id} [post]
+// @Success 200 {object} response.Response{} "Add product to wishlist successful"
+// @Failure 500 {object} response.Response{}  "Something went wrong!"
+func (u *UserHandler) AddToWishlist(c *gin.Context) {
+	var body request.AddToWishlist
+	// Get user id from context
+	userId := utils.GetUserIdFromContext(c)
+	body.UserID = userId
+
+	if err := c.ShouldBindJSON(&body); err != nil {
+		response := response.ErrorResponse(500, "Something went wrong!", err.Error(), nil)
+		c.IndentedJSON(500, response)
+		return
+	}
+
+	err := u.userService.AddToWishlist(c, body)
+	if err != nil {
+		response := response.ErrorResponse(500, "Something went wrong!", err.Error(), nil)
+		c.IndentedJSON(500, response)
+		return
+	}
+	response := response.SuccessResponse(200, "Add product to wishlist successful", nil)
+	c.IndentedJSON(200, response)
+
+}
+
+// GetWishlist godoc
+// @summary api for user to get wishlist
+// @description user can get wishlist
+// @security ApiKeyAuth
+// @id GetWishlist
+// @tags User GetWishlist
+// @Router /wishlist [get]
+// @Success 200 {object} response.Response{} "Get wishlist successful"
+// @Failure 500 {object} response.Response{}  "Something went wrong!"
+func (u *UserHandler) GetWishlist(c *gin.Context) {
+	// Get user id from context
+	userId := utils.GetUserIdFromContext(c)
+	wishlist, err := u.userService.GetWishlist(c, userId)
+	if err != nil {
+		response := response.ErrorResponse(500, "Something went wrong!", err.Error(), nil)
+		c.IndentedJSON(500, response)
+		return
+	}
+
+	response := response.SuccessResponse(200, "Get wishlist successful", wishlist)
+	c.IndentedJSON(200, response)
+}
+
+// DeleteFromWishlist godoc
+// @summary api for user to delete product from wishlist
+// @description user can delete product from wishlist
+// @security ApiKeyAuth
+// @id DeleteFromWishlist
+// @tags User DeleteFromWishlist
+// @Router /wishlist/{id} [delete]
+// @Param id path string true "id"
+// @Success 200 {object} response.Response{} "Delete product from wishlist successful"
+// @Failure 500 {object} response.Response{}  "Something went wrong!"
+func (u *UserHandler) DeleteFromWishlist(c *gin.Context) {
+	// Get user id from context
+	userId := utils.GetUserIdFromContext(c)
+	// Get product id from path
+	id, err := utils.StringToUint(c.Param("id"))
+	if err != nil {
+		response := response.ErrorResponse(500, "Missing or invalid input", err.Error(), nil)
+		c.IndentedJSON(500, response)
+		return
+	}
+	err = u.userService.DeleteFromWishlist(c, userId, id)
+	if err != nil {
+		response := response.ErrorResponse(500, "Something went wrong!", err.Error(), nil)
+		c.IndentedJSON(500, response)
+		return
+	}
+	response := response.SuccessResponse(200, "Delete product from wishlist successful", nil)
+	c.IndentedJSON(200, response)
+}
+
+// GetWalletHistory godoc
+// @summary api for user to get wallet history
+// @description user can get wallet history
+// @security ApiKeyAuth
+// @id GetWalletHistory
+// @tags User GetWalletHistory
+// @Router /wallet/history [get]
+// @Success 200 {object} response.Response{} "Get wallet history successful"
+// @Failure 500 {object} response.Response{}  "Something went wrong!"
+func (u *UserHandler) GetWalletHistory(c *gin.Context) {
+	// Get user id from context
+	userId := utils.GetUserIdFromContext(c)
+	// Get product id from path
+	// page, err := utils.StringToUint(c.Query("page"))
+	// if err != nil {
+	// 	page = 1
+	// }
+	// limit, err := utils.StringToUint(c.Query("limit"))
+	// if err != nil {
+	// 	limit = 10
+	// }
+	// Get wallet history
+	history, err := u.userService.GetWalletHistory(c, userId)
+	if err != nil {
+		response := response.ErrorResponse(500, "Something went wrong!", err.Error(), nil)
+		c.IndentedJSON(500, response)
+		return
+	}
+	response := response.SuccessResponse(200, "Get wallet history successful", history)
+	c.IndentedJSON(200, response)
 }

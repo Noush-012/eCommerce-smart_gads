@@ -28,6 +28,11 @@ run:
 #air
 	$(GOCMD) run ./cmd/api
 
+# to do tidy
+tidy:
+	@echo "Tidying Go modules ..."
+	$(GOCMD) mod tidy
+
  # to test all tests in current and sub modlues
 test:
 	$(GOCMD) test ./... -cover

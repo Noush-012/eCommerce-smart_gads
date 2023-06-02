@@ -15,20 +15,25 @@ type ServerHTTP struct {
 }
 
 func NewServerHTTP(adminHandler *handler.AdminHandler, userHandler *handler.UserHandler,
-	productHandler *handler.ProductHandler, paymentHandler *handler.PaymentHandler, orderHandler *handler.OrderHandler) *ServerHTTP {
+	productHandler *handler.ProductHandler, paymentHandler *handler.PaymentHandler,
+	orderHandler *handler.OrderHandler, couponHandler *handler.CouponHandler) *ServerHTTP {
 
 	engine := gin.New()
 
 	// to load views
-	// engine.LoadHTMLGlob("views/*.html")
+	// Serve static files
+	engine.Static("/assets", "./views/static/assets")
+	engine.LoadHTMLGlob("views/static/*.html")
+
+	// Add the Gin Logger middleware.
 	engine.Use(gin.Logger())
 
 	// Get swagger docs
 	engine.GET("/swagger/*any", ginSwagger.WrapHandler(swaggoFiles.Handler))
 
 	// Calling routes
-	routes.UserRoutes(engine.Group("/"), userHandler, productHandler, paymentHandler, orderHandler)
-	routes.AdminRoutes(engine.Group("/admin"), adminHandler, productHandler)
+	routes.UserRoutes(engine.Group("/"), userHandler, productHandler, paymentHandler, orderHandler, couponHandler)
+	routes.AdminRoutes(engine.Group("/admin"), adminHandler, productHandler, orderHandler, couponHandler)
 
 	return &ServerHTTP{engine: engine}
 }

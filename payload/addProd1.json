@@ -1,0 +1,55 @@
+{
+    "name": "Samsung Galaxy S21",
+    "description": "The Samsung Galaxy S21 is a powerful and feature-packed smartphone that boasts a stunning display and impressive camera capabilities.",
+    "category_id": 1,
+    "price": 999,
+    "image": "https://example.com/samsung-galaxy-s21.jpg",
+    "items": [
+      {
+        "qty_in_stock": 50,
+        "price": 999,
+        "sku": "SGS21-128GB-BLK",
+        "configurations": [
+          {
+            "variation_id": 1,
+            "variation_option_id": 1
+          },
+          {
+            "variation_id": 2,
+            "variation_option_id": 4
+          }
+        ],
+        "images": [
+          {
+            "image": "https://example.com/samsung-galaxy-s21-black.jpg"
+          },
+          {
+            "image": "https://example.com/samsung-galaxy-s21-back.jpg"
+          }
+        ]
+      },
+      {
+        "qty_in_stock": 25,
+        "price": 1199,
+        "sku": "SGS21-256GB-GRY",
+        "configurations": [
+          {
+            "variation_id": 1,
+            "variation_option_id": 2
+          },
+          {
+            "variation_id": 2,
+            "variation_option_id": 5
+          }
+        ],
+        "images": [
+          {
+            "image": "https://example.com/samsung-galaxy-s21-gray.jpg"
+          },
+          {
+            "image": "https://example.com/samsung-galaxy-s21-side.jpg"
+          }
+        ]
+      }
+    ]
+  }

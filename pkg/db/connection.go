@@ -34,7 +34,6 @@ func ConnToDB(cfg config.Config) (*gorm.DB, error) {
 		domain.Users{},
 		domain.Admin{},
 		domain.Address{},
-		domain.UserAddress{},
 
 		// Product tables
 		domain.Category{},
@@ -49,13 +48,29 @@ func ConnToDB(cfg config.Config) (*gorm.DB, error) {
 		domain.Cart{},
 		domain.CartItem{},
 
+		// wishlist
+		domain.Wishlist{},
+
 		// payment tables
-		domain.PaymentOption{},
+		domain.PaymentDetails{},
 		domain.PaymentMethod{},
+		domain.PaymentStatus{},
 
 		// Order tables
 		domain.ShopOrder{},
 		domain.OrderStatus{},
+		domain.OrderLine{},
+		domain.ShopOrder{},
+		domain.DeliveryStatus{},
+
+		// Coupon
+		domain.Coupon{},
+
+		// Return
+		domain.Return{},
+
+		// wallet
+		domain.Wallet{},
 	)
 	if err != nil {
 		log.Fatal("Migration failed")

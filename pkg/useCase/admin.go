@@ -14,11 +14,15 @@ import (
 )
 
 type adminService struct {
-	adminRepository interfaces.AdminRepository
+	adminRepository   interfaces.AdminRepository
+	orderRepositoty   interfaces.OrderRepository
+	PaymentRepository interfaces.PaymentRepository
 }
 
-func NewAdminService(repo interfaces.AdminRepository) service.AdminService {
-	return &adminService{adminRepository: repo}
+func NewAdminService(repo interfaces.AdminRepository, orderRepo interfaces.OrderRepository, PaymentRepo interfaces.PaymentRepository) service.AdminService {
+	return &adminService{adminRepository: repo,
+		orderRepositoty:   orderRepo,
+		PaymentRepository: PaymentRepo}
 }
 func (a *adminService) Signup(c context.Context, admin domain.Admin) error {
 	if dbAdmin, err := a.adminRepository.GetAdmin(c, admin); err != nil {
@@ -70,4 +74,52 @@ func (a *adminService) GetAllUser(c context.Context, page request.ReqPagination)
 func (a *adminService) BlockUser(c context.Context, userID uint) error {
 
 	return a.adminRepository.BlockUser(c, userID)
+}
+
+// Get user order history
+func (a *adminService) GetUserOrderHistory(c context.Context, userId uint) (orderHistory []domain.ShopOrder, err error) {
+	orderHistory, err = a.adminRepository.GetUserOrderHistory(c, userId)
+	if err != nil {
+		return orderHistory, err
+	}
+	return orderHistory, err
+}
+
+// Generate sales report
+func (a *adminService) SalesReport(c context.Context, daterange request.DateRange) (salesReport []domain.SalesReport, err error) {
+
+	salesReport, err = a.adminRepository.GenerateSalesReport(c, daterange)
+	if err != nil {
+		return salesReport, err
+	}
+	return salesReport, nil
+}
+
+func (a *adminService) GetAllReturnOrders(c context.Context) {
+
+}
+
+func (o *adminService) UpdateDeliveryStatus(c context.Context, UpdateData request.UpdateStatus) error {
+	err := o.orderRepositoty.UpdateDeliveryStatus(c, UpdateData)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (o *adminService) ApproveReturnOrder(c context.Context, data request.ApproveReturnRequest) error {
+	// get payment data
+	// ID 2 is for status "Paid"
+	payment, err := o.PaymentRepository.GetPaymentDataByOrderId(c, data.OrderID)
+
+	if err != nil {
+		return err
+	}
+
+	data.OrderTotal = payment.OrderTotal
+	err = o.adminRepository.ApproveReturnOrder(c, data)
+	if err != nil {
+		return err
+	}
+	return nil
 }

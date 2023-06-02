@@ -2,4 +2,15 @@
 .env
 
 # payload excluding
-/payload/
+.vscode
+payload/
+postman_collection/
+temp/
+
+# Executables
+bin/
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib

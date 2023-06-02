@@ -16,6 +16,9 @@ type ProductRepository interface {
 	FindProductByID(ctx context.Context, productID uint) (product domain.Product, err error)
 	UpdateProduct(ctx context.Context, product domain.Product) error
 	DeleteProduct(ctx context.Context, productID uint) (domain.Product, error)
+	GetStockStatusByProductId(c context.Context, productId uint) (qtyLeft uint, err error)
+
+	UpdateProductItem(ctx context.Context, UpdateData request.UpdateProductItemReq) error
 
 	AddProductItem(ctx context.Context, productItem request.ProductItemReq) error
 	GetProductItems(ctx context.Context, productId uint) ([]response.ProductItemResp, error)

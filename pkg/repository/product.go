@@ -146,6 +146,27 @@ func (p *productDatabase) UpdateProduct(ctx context.Context, product domain.Prod
 
 	return nil
 }
+func (p *productDatabase) UpdateProductItem(ctx context.Context, UpdateData request.UpdateProductItemReq) error {
+	// Update query
+	query := `UPDATE product_items
+	SET qty_in_stock = COALESCE(NULLIF($1, ''), qty_in_stock),
+	price = COALESCE(NULLIF($2, ''), price),
+	sku = COALESCE(NULLIF($3, ''), sku),
+	discount_price = COALESCE(NULLIF($4, ''), discount_price),
+	updated_at = $5
+	WHERE product_id = $6 AND id = $7`
+
+	// update time
+	updatedAt := time.Now()
+
+	if err := p.DB.Exec(query, UpdateData.QtyInStock, UpdateData.Price, UpdateData.SKU,
+		UpdateData.DiscountPrice, updatedAt, UpdateData.ProductId, UpdateData.ID).Error; err != nil {
+		return err
+	}
+	return nil
+
+	// update images
+}
 
 func (p *productDatabase) DeleteProduct(ctx context.Context, productID uint) (domain.Product, error) {
 	// Check requested product is exist or not
@@ -293,4 +314,12 @@ WHERE
 	// 	ProductItems[i].Images = append(ProductItems[i].Images, dbProd.Image)
 	// }
 	return ProductItems, nil
+}
+
+func (p *productDatabase) GetStockStatusByProductId(c context.Context, productId uint) (qtyLeft uint, err error) {
+	query := `SELECT qty_in_stock FROM product_items WHERE id = ?`
+	if err := p.DB.Raw(query, productId).Scan(&qtyLeft).Error; err != nil {
+		return qtyLeft, err
+	}
+	return qtyLeft, nil
 }

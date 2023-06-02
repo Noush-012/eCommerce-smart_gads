@@ -1,0 +1,528 @@
+{
+	"info": {
+		"_postman_id": "782c8176-bbe6-411e-8b19-d18c8642fbac",
+		"name": "Smart_Gads Admin API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "26478208",
+		"_collection_link": "https://galactic-space-320471.postman.co/workspace/SMART-GADS~5739b972-ba93-4e12-9ab7-c9ad87e77bfd/collection/26478208-782c8176-bbe6-411e-8b19-d18c8642fbac?action=share&creator=26478208&source=collection_link"
+	},
+	"item": [
+		{
+			"name": "Admin Sign up",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"user_name\": \"admin\",\n    \"email\": \"admin@abc.com\",\n    \"password\": \"passsword\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/admin/signup",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"admin",
+						"signup"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Admin login",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"user_name\": \"\",\n  \"email\": \"admin@abc.com\",\n  \"password\": \"passsword\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/admin/login",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"admin",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Admin Home",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/admin/",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"admin",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Admin logout",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/admin/logout",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"admin",
+						"logout"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add product -admin",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "// BRAND ID //\n// APPLE - 2 //\n// Samsung - 3 //\n// Realme - 4 //\n// OnePlus - 5 //\n// Xiaomi - 6 //\n// iQoo - 7 //\n{\n    \"product_name\": \"Apple iPhone \",\n    \"description\": \"Apple iPhone 14 Pro model comes with an upgraded 48MP triple-rear camera setup, a powerful Bionic A16 chipset, a 6.1-inches OLED Retina display with Dolby Vision\",\n    \"brand_id\": 2,\n    \"price\": 119999,\n    \"image\": \"https://cdn1.smartprix.com/rx-ijPVHCwfx-w420-h420/apple-iphone-14-pro.webp\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/admin/products",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"admin",
+						"products"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add brand / Category -admin",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"id\": 0,\n    \"parent_id\": 0,\n    \"brand_name\": \"Samsung\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/admin/brands",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"admin",
+						"brands"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get all users -admin",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/admin/users?count=6&page_number=1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"admin",
+						"users"
+					],
+					"query": [
+						{
+							"key": "count",
+							"value": "6"
+						},
+						{
+							"key": "page_number",
+							"value": "1"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Blocking user -admin",
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"user_id\": 16\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/admin/users/block",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"admin",
+						"users",
+						"block"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get & list products -admin // count",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://localhost:3000/admin/products?count=10&page_number=1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"admin",
+						"products"
+					],
+					"query": [
+						{
+							"key": "count",
+							"value": "10"
+						},
+						{
+							"key": "page_number",
+							"value": "1"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Product update -admin",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"id\": 2,\n    \"product_name\": \"Xiaomi Redmi Note 12 Pro\",\n    \"description\": \"\",\n    \"brand_id\": 0,\n    \"price\": 0,\n    \"image\": \"\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/admin/products",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"admin",
+						"products"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete product -admin",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"Prod_id\": 3\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/admin/products",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"admin",
+						"products"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get all brands -admin",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/admin/brands",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"admin",
+						"brands"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add product variant -admin",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"product_id\": 5,\n    \"qty_in_stock\": 10,\n    \"price\": 115999,\n    \"discount_price\": 115999,\n    \"SKU\": \"APL14P-512GB-BLK\",\n    \"configurations\": {\n        \"color\": {\n            \"variation_option_id\": 2\n        },\n        \"storage\": {\n            \"variation_option_id\": 11\n        }\n    },\n    \"images\": [\n        \"https://store.storeimages.cdn-apple.com/4668/as-images.apple.com/is/iphone-14-pro-finish-select-202209-6-1inch-spaceblack?wid=2560&hei=1440&fmt=p-jpg&qlt=80&.v=1663703840510\",\n        \"https://cdn1.smartprix.com/rx-i4CFrVmsf-w420-h420/apple-iphone-14-pro.webp\",\n        \"https://cdn1.smartprix.com/rx-ijPVHCwfx-w420-h420/apple-iphone-14-pro.webp\"\n    ]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/admin/products/product-item",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"admin",
+						"products",
+						"product-item"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Product Items -admin",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/admin/products/product-item/:5",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"admin",
+						"products",
+						"product-item",
+						":5"
+					],
+					"variable": [
+						{
+							"key": "5",
+							"value": null
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Order history of user -admin",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/admin/users/orders?userId=17&count=5&page_number=1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"admin",
+						"users",
+						"orders"
+					],
+					"query": [
+						{
+							"key": "userId",
+							"value": "17"
+						},
+						{
+							"key": "count",
+							"value": "5"
+						},
+						{
+							"key": "page_number",
+							"value": "1"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Order status change -admin",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "// 1. Pending\n// 2. Placed\n// 3. Shipped\n// 4. Delivered\n// 5. Cancelled\n// 6. Declined\n// 7. Refunded\n{\n    \"user_id\": 15,\n    \"order_id\": 14,\n    \"status_id\": 5\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/admin/users/orders",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"admin",
+						"users",
+						"orders"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
