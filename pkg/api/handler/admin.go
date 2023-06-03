@@ -236,7 +236,7 @@ func (a *AdminHandler) ChangeOrderStatus(c *gin.Context) {
 // SalesReport godoc
 // @summary api for admin to download sales report as csv format
 // @id SalesReport
-// @tags Business Reports
+// @tags Admin
 // @Router /admin/sales-report [get]
 // @Success 500 {object} response.Response{} "Something went wrong!"
 // @Failure 500 {object} response.Response{} "Something went wrong! failed to generate sales report"
@@ -291,7 +291,7 @@ func (a *AdminHandler) SalesReport(c *gin.Context) {
 // GetAllReturnRequest godoc
 // @Summary List all return request
 // @Description List all return request
-// @tags Order Controlls
+// @tags Admin
 // @Accept  json
 // @Produce  json
 // @Router /admin/return-request [get]
