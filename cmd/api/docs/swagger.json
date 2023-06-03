@@ -13,7 +13,7 @@
                 ],
                 "description": "after user login user will seen this page with user informations",
                 "tags": [
-                    "Home"
+                    "User"
                 ],
                 "summary": "api for user home page",
                 "operationId": "User Home",
@@ -32,7 +32,7 @@
                     }
                 ],
                 "tags": [
-                    "User Account"
+                    "User"
                 ],
                 "summary": "api for see user details",
                 "operationId": "Account",
@@ -58,7 +58,7 @@
                 ],
                 "description": "get a new address from user to store the the database",
                 "tags": [
-                    "User Address"
+                    "User"
                 ],
                 "summary": "api for adding a new address for user",
                 "operationId": "AddAddress",
@@ -69,7 +69,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/domain.Address"
+                            "$ref": "#/definitions/request.Address"
                         }
                     }
                 ],
@@ -98,7 +98,7 @@
                 ],
                 "description": "user can get address",
                 "tags": [
-                    "User GetAllAddress"
+                    "User"
                 ],
                 "summary": "api for user to get all address",
                 "operationId": "GetAllAddress",
@@ -133,7 +133,7 @@
                 ],
                 "description": "user can update a address",
                 "tags": [
-                    "User Address"
+                    "User"
                 ],
                 "summary": "api for update user address",
                 "operationId": "UpdateAddress",
@@ -171,7 +171,7 @@
                 ],
                 "description": "user can delete a address",
                 "tags": [
-                    "User Address"
+                    "User"
                 ],
                 "summary": "api for delete user address",
                 "operationId": "DeleteAddress",
@@ -203,7 +203,7 @@
         "/admin": {
             "get": {
                 "tags": [
-                    "Admin Home"
+                    "Admin"
                 ],
                 "summary": "api admin home",
                 "operationId": "AdminHome",
@@ -220,9 +220,10 @@
         "/admin/coupons": {
             "get": {
                 "tags": [
-                    "Admin ListAllCoupons"
+                    "Admin",
+                    "User"
                 ],
-                "summary": "api for admin to list all coupons",
+                "summary": "api for admin and user to list all coupons",
                 "operationId": "ListAllCoupons",
                 "parameters": [
                     {
@@ -261,7 +262,7 @@
             },
             "put": {
                 "tags": [
-                    "Admin UpdateCoupon"
+                    "Admin"
                 ],
                 "summary": "api for admin to update a cooupon",
                 "operationId": "UpdateCoupon",
@@ -299,7 +300,7 @@
             },
             "post": {
                 "tags": [
-                    "Admin CreateNewCoupon"
+                    "Admin"
                 ],
                 "summary": "api for admin to create a cooupon",
                 "operationId": "CreateNewCoupon",
@@ -339,7 +340,7 @@
         "/admin/coupons/{id}": {
             "delete": {
                 "tags": [
-                    "Admin DeleteCoupon"
+                    "Admin"
                 ],
                 "summary": "api for admin to delete a cooupon",
                 "operationId": "DeleteCoupon",
@@ -377,7 +378,7 @@
         "/admin/login": {
             "post": {
                 "tags": [
-                    "Admin Login / Signup"
+                    "Admin"
                 ],
                 "summary": "api for admin to login",
                 "operationId": "AdminLogin",
@@ -417,7 +418,7 @@
         "/admin/products": {
             "put": {
                 "tags": [
-                    "Admin Product"
+                    "Admin"
                 ],
                 "summary": "api for admin to delete a product",
                 "operationId": "UpdateProduct",
@@ -455,7 +456,7 @@
             },
             "post": {
                 "tags": [
-                    "Admin Brand / Category"
+                    "Admin"
                 ],
                 "summary": "api for admin to add a parent category or child brand",
                 "operationId": "AddCategory",
@@ -489,7 +490,7 @@
         "/admin/products/product-item": {
             "post": {
                 "tags": [
-                    "Admin Product"
+                    "Admin"
                 ],
                 "summary": "api for admin to add product item for particular product",
                 "operationId": "AddProductItem",
@@ -536,7 +537,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "Order Controlls"
+                    "Admin"
                 ],
                 "summary": "List all return request",
                 "responses": {
@@ -564,7 +565,7 @@
         "/admin/sales-report": {
             "get": {
                 "tags": [
-                    "Business Reports"
+                    "Admin"
                 ],
                 "summary": "api for admin to download sales report as csv format",
                 "operationId": "SalesReport",
@@ -587,7 +588,7 @@
         "/admin/users": {
             "get": {
                 "tags": [
-                    "User Controlls"
+                    "Admin"
                 ],
                 "summary": "api for admin to list users",
                 "operationId": "ListUsers",
@@ -630,7 +631,7 @@
         "/admin/users/block": {
             "patch": {
                 "tags": [
-                    "User Controlls"
+                    "Admin"
                 ],
                 "summary": "api for admin to block or unblock user",
                 "operationId": "BlockUser",
@@ -664,7 +665,7 @@
         "/admin/users/orders": {
             "patch": {
                 "tags": [
-                    "Order Controlls"
+                    "Admin"
                 ],
                 "summary": "api for admin to change order status of user",
                 "operationId": "ChangeOrderStatus",
@@ -711,7 +712,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "Order Controlls"
+                    "Admin"
                 ],
                 "summary": "Update delivery status of user orders",
                 "parameters": [
@@ -757,7 +758,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "Order Controlls"
+                    "Admin"
                 ],
                 "summary": "Approve return order",
                 "parameters": [
@@ -801,9 +802,10 @@
                     }
                 ],
                 "tags": [
-                    "Product brands"
+                    "Admin",
+                    "User"
                 ],
-                "summary": "api for admin to list all brands",
+                "summary": "api for admin and user to list all brands",
                 "operationId": "ListBrands-admin",
                 "responses": {
                     "200": {
@@ -830,7 +832,7 @@
                 ],
                 "description": "user can get cart items",
                 "tags": [
-                    "User GetCartItems"
+                    "User"
                 ],
                 "summary": "api for user to get cart items",
                 "operationId": "UserGetCartItems",
@@ -862,7 +864,7 @@
                 ],
                 "description": "user can update a stock in product to cart",
                 "tags": [
-                    "User Cart"
+                    "User"
                 ],
                 "summary": "api for update user cart",
                 "operationId": "UpdateCart",
@@ -894,7 +896,7 @@
                 ],
                 "description": "user can delete a stock in product to cart",
                 "tags": [
-                    "User Cart"
+                    "User"
                 ],
                 "summary": "api for delete product item from cart",
                 "operationId": "DeleteCartItem",
@@ -927,7 +929,7 @@
                     }
                 ],
                 "tags": [
-                    "User Cart"
+                    "User"
                 ],
                 "summary": "api for user to checkout cart, apply voucher and proceed for payment",
                 "operationId": "CheckoutCart",
@@ -955,7 +957,7 @@
                     }
                 ],
                 "tags": [
-                    "User Cart"
+                    "User"
                 ],
                 "summary": "api for create an razorpay order",
                 "operationId": "RazorpayPage",
@@ -994,7 +996,7 @@
                     }
                 ],
                 "tags": [
-                    "User Cart"
+                    "User"
                 ],
                 "summary": "api user for verify razorpay payment",
                 "operationId": "RazorpayVerify",
@@ -1031,9 +1033,10 @@
                     }
                 ],
                 "tags": [
-                    "User orderHistory"
+                    "User",
+                    "Admin"
                 ],
-                "summary": "api for user to get all order history made",
+                "summary": "api for admin and user to get all order history made",
                 "operationId": "orderHistory",
                 "responses": {
                     "200": {
@@ -1065,7 +1068,7 @@
                     }
                 ],
                 "tags": [
-                    "User Cart"
+                    "User"
                 ],
                 "summary": "api for user to place an order on cart with COD",
                 "operationId": "PlaceCODOrder",
@@ -1108,7 +1111,7 @@
                     }
                 ],
                 "tags": [
-                    "User Login"
+                    "User"
                 ],
                 "summary": "api for user login",
                 "operationId": "UserLogin",
@@ -1154,7 +1157,7 @@
                 ],
                 "description": "user can logout",
                 "tags": [
-                    "User Logout"
+                    "User"
                 ],
                 "summary": "api for user to logout",
                 "operationId": "UserLogout",
@@ -1173,7 +1176,7 @@
                     }
                 ],
                 "tags": [
-                    "User OTP verification"
+                    "User"
                 ],
                 "summary": "api for user otp verification",
                 "operationId": "UserOtpVerify",
@@ -1218,9 +1221,10 @@
                     }
                 ],
                 "tags": [
-                    "User Products"
+                    "User",
+                    "Admin"
                 ],
-                "summary": "api for user to list all products",
+                "summary": "api for user and admin to list all products",
                 "operationId": "ListProducts-User",
                 "parameters": [
                     {
@@ -1260,7 +1264,7 @@
                     }
                 ],
                 "tags": [
-                    "User Signup"
+                    "User"
                 ],
                 "summary": "api for register user",
                 "operationId": "UserSignUp",
@@ -1294,7 +1298,7 @@
                 ],
                 "description": "user can get wallet history",
                 "tags": [
-                    "User GetWalletHistory"
+                    "User"
                 ],
                 "summary": "api for user to get wallet history",
                 "operationId": "GetWalletHistory",
@@ -1323,7 +1327,7 @@
                 ],
                 "description": "user can get wishlist",
                 "tags": [
-                    "User GetWishlist"
+                    "User"
                 ],
                 "summary": "api for user to get wishlist",
                 "operationId": "GetWishlist",
@@ -1352,7 +1356,7 @@
                 ],
                 "description": "user can delete product from wishlist",
                 "tags": [
-                    "User DeleteFromWishlist"
+                    "User"
                 ],
                 "summary": "api for user to delete product from wishlist",
                 "operationId": "DeleteFromWishlist",
@@ -1390,7 +1394,7 @@
                 ],
                 "description": "user can add product to wishlist",
                 "tags": [
-                    "User AddToWishlist"
+                    "User"
                 ],
                 "summary": "api for user to add product to wishlist",
                 "operationId": "AddToWishlist",
@@ -1423,61 +1427,6 @@
         }
     },
     "definitions": {
-        "domain.Address": {
-            "type": "object",
-            "required": [
-                "address_line_1",
-                "address_line_2",
-                "city",
-                "country",
-                "state",
-                "zip_code"
-            ],
-            "properties": {
-                "address_line_1": {
-                    "type": "string",
-                    "maxLength": 40,
-                    "minLength": 2
-                },
-                "address_line_2": {
-                    "type": "string",
-                    "maxLength": 40,
-                    "minLength": 2
-                },
-                "city": {
-                    "type": "string",
-                    "maxLength": 20,
-                    "minLength": 2
-                },
-                "country": {
-                    "type": "string",
-                    "maxLength": 20,
-                    "minLength": 2
-                },
-                "createdAt": {
-                    "type": "string"
-                },
-                "house": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "state": {
-                    "type": "string",
-                    "maxLength": 20,
-                    "minLength": 2
-                },
-                "updatedAt": {
-                    "type": "string"
-                },
-                "zip_code": {
-                    "type": "string",
-                    "maxLength": 10,
-                    "minLength": 2
-                }
-            }
-        },
         "domain.Admin": {
             "type": "object",
             "required": [
@@ -1538,6 +1487,38 @@
                 },
                 "quantity": {
                     "type": "integer"
+                }
+            }
+        },
+        "request.Address": {
+            "type": "object",
+            "properties": {
+                "address_id": {
+                    "type": "integer"
+                },
+                "address_line_1": {
+                    "type": "string"
+                },
+                "address_line_2": {
+                    "type": "string"
+                },
+                "city": {
+                    "type": "string"
+                },
+                "country": {
+                    "type": "string"
+                },
+                "house": {
+                    "type": "string"
+                },
+                "is_default": {
+                    "type": "boolean"
+                },
+                "state": {
+                    "type": "string"
+                },
+                "zip_code": {
+                    "type": "string"
                 }
             }
         },

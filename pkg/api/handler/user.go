@@ -32,7 +32,7 @@ func (u *UserHandler) LoginPage(c *gin.Context) {
 // @summary api for register user
 // @security ApiKeyAuth
 // @id UserSignUp
-// @tags User Signup
+// @tags User
 // @Param input body request.SignupUserData{} true "Input Fields"
 // @Router /signup [post]
 // @Success 200 "Account created successfuly"
@@ -66,7 +66,7 @@ func (u *UserHandler) UserSignup(c *gin.Context) {
 // @summary api for user login
 // @security ApiKeyAuth
 // @id UserLogin
-// @tags User Login
+// @tags User
 // @Param input body request.LoginData{} true "Input Fields"
 // @Router /login [post]
 // @Success 200 {object} response.Response{} "Login successful"
@@ -104,7 +104,7 @@ func (u *UserHandler) LoginSubmit(c *gin.Context) {
 // @summary api for user otp verification
 // @security ApiKeyAuth
 // @id UserOtpVerify
-// @tags User OTP verification
+// @tags User
 // @Param input body request.OTPVerify{} true "Input Fields"
 // @Router /otp-verify [post]
 // @Success 200 {object} response.Response{} "Login successful"
@@ -153,7 +153,7 @@ func (u *UserHandler) UserOTPVerify(c *gin.Context) {
 // @description after user login user will seen this page with user informations
 // @security ApiKeyAuth
 // @id User Home
-// @tags Home
+// @tags User
 // @Router / [get]
 // @Success 200 "Welcome to home !"
 func (u *UserHandler) Home(c *gin.Context) {
@@ -167,7 +167,7 @@ func (u *UserHandler) Home(c *gin.Context) {
 // @description user can logout
 // @security ApiKeyAuth
 // @id UserLogout
-// @tags User Logout
+// @tags User
 // @Router /logout [post]
 // @Success 200 "Log out successful"
 func (u *UserHandler) LogoutUser(c *gin.Context) {
@@ -183,7 +183,7 @@ func (u *UserHandler) LogoutUser(c *gin.Context) {
 // @id UserGetCartItems
 // @Param page_number query int false "Page Number"
 // @Param count query int false "Count Of Order"
-// @tags User GetCartItems
+// @tags User
 // @Router /cart [get]
 // @Success 200 "Successfuly get cart items"
 func (u *UserHandler) GetcartItems(c *gin.Context) {
@@ -215,7 +215,7 @@ func (u *UserHandler) GetcartItems(c *gin.Context) {
 // @description user can add a stock in product to cart
 // @security ApiKeyAuth
 // @id AddToCart
-// @tags User Cart
+// @tags User
 // @Param input body request.AddToCartReq{} true "Input Field"
 // @Router /cart [post]
 // @Success 200 "Successfuly added product item to cart "
@@ -249,7 +249,7 @@ func (u *UserHandler) AddToCart(c *gin.Context) {
 // @description user can update a stock in product to cart
 // @security ApiKeyAuth
 // @id UpdateCart
-// @tags User Cart
+// @tags User
 // @Param input body request.UpdateCartReq{} true "Input Field"
 // @Router /cart [post]
 // @Success 200 "Successfuly updated product item in cart"
@@ -284,7 +284,7 @@ func (u *UserHandler) UpdateCart(c *gin.Context) {
 // @description user can delete a stock in product to cart
 // @security ApiKeyAuth
 // @id DeleteCartItem
-// @tags User Cart
+// @tags User
 // @Param input body request.DeleteCartItemReq{} true "Input Field"
 // @Router /cart [delete]
 // @Success 200 "Successfuly deleted product item from cart"
@@ -312,7 +312,7 @@ func (u *UserHandler) DeleteCartItem(c *gin.Context) {
 // @summary api for see user details
 // @security ApiKeyAuth
 // @id Account
-// @tags User Account
+// @tags User
 // @Router /account [get]
 // @Success 200 "Successfully user account details found"
 // @Failure 500 {object} response.Response{} "faild to show user details"
@@ -335,7 +335,7 @@ func (u *UserHandler) Profile(c *gin.Context) {
 // @description get a new address from user to store the the database
 // @security ApiKeyAuth
 // @id AddAddress
-// @tags User Address
+// @tags User
 // @Param inputs body request.Address{} true "Input Field"
 // @Router /account/address [post]
 // @Success 200 {object} response.Response{} "Successfully address added"
@@ -366,7 +366,7 @@ func (u *UserHandler) AddAddress(c *gin.Context) {
 // @description user can update a address
 // @security ApiKeyAuth
 // @id UpdateAddress
-// @tags User Address
+// @tags User
 // @Param input body request.AddressPatchReq{} true "Input Field"
 // @Router /address [put]
 // @Success 200 {object} response.Response{} "Address updated successfuly"
@@ -397,7 +397,7 @@ func (u *UserHandler) UpdateAddress(c *gin.Context) {
 // @description user can delete a address
 // @security ApiKeyAuth
 // @id DeleteAddress
-// @tags User Address
+// @tags User
 // @Param id path string true "id"
 // @Router /address [delete]
 // @Success 200 {object} response.Response{} "Address deleted successfuly"
@@ -426,7 +426,7 @@ func (u *UserHandler) DeleteAddress(c *gin.Context) {
 // @security ApiKeyAuth
 // @id GetAllAddress
 // @Param page_number query int false "Page Number"
-// @tags User GetAllAddress
+// @tags User
 // @Router /address [get]
 // @Success 200 {object} response.Response{} "Get all address successful"
 // @Failure 500 {object} response.Response{} "Something went wrong!"
@@ -454,7 +454,7 @@ func (u *UserHandler) GetAllAddress(c *gin.Context) {
 // @security ApiKeyAuth
 // @id AddToWishlist
 // @Param input body request.AddToWishlist{} true "Input Field"
-// @tags User AddToWishlist
+// @tags User
 // @Router /wishlist/{product_id} [post]
 // @Success 200 {object} response.Response{} "Add product to wishlist successful"
 // @Failure 500 {object} response.Response{}  "Something went wrong!"
@@ -486,7 +486,7 @@ func (u *UserHandler) AddToWishlist(c *gin.Context) {
 // @description user can get wishlist
 // @security ApiKeyAuth
 // @id GetWishlist
-// @tags User GetWishlist
+// @tags User
 // @Router /wishlist [get]
 // @Success 200 {object} response.Response{} "Get wishlist successful"
 // @Failure 500 {object} response.Response{}  "Something went wrong!"
@@ -509,7 +509,7 @@ func (u *UserHandler) GetWishlist(c *gin.Context) {
 // @description user can delete product from wishlist
 // @security ApiKeyAuth
 // @id DeleteFromWishlist
-// @tags User DeleteFromWishlist
+// @tags User
 // @Router /wishlist/{id} [delete]
 // @Param id path string true "id"
 // @Success 200 {object} response.Response{} "Delete product from wishlist successful"
@@ -539,7 +539,7 @@ func (u *UserHandler) DeleteFromWishlist(c *gin.Context) {
 // @description user can get wallet history
 // @security ApiKeyAuth
 // @id GetWalletHistory
-// @tags User GetWalletHistory
+// @tags User
 // @Router /wallet/history [get]
 // @Success 200 {object} response.Response{} "Get wallet history successful"
 // @Failure 500 {object} response.Response{}  "Something went wrong!"

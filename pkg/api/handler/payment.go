@@ -21,7 +21,7 @@ func NewPaymentHandler(payUseCase service.PaymentService) *PaymentHandler {
 // GetAllPaymentOptions godoc
 // @summary api for user to get all options for payment
 // @security ApiKeyAuth
-// @tags User Payment
+// @tags User
 // @id AllPayment
 // @Success 200 {object} response.Response{} "Payment option successfull"
 // @Failure 500 {object} response.Response{}  "Something went wrong!"

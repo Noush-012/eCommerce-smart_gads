@@ -25,7 +25,7 @@ func NewCouponHandler(CouponUseCase service.CouponService) *CouponHandler {
 // CreateNewCoupon godoc
 // @summary api for admin to create a cooupon
 // @id CreateNewCoupon
-// @tags Admin CreateNewCoupon
+// @tags Admin
 // @Param input body   request.CreateCoupon{} true "inputs"
 // @Router /admin/coupons [post]
 // @Success 200 {object} response.Response{} "Coupon created successfully"
@@ -52,7 +52,7 @@ func (c *CouponHandler) CreateNewCoupon(ctx *gin.Context) {
 // UpdateCoupon godoc
 // @summary api for admin to update a cooupon
 // @id UpdateCoupon
-// @tags Admin UpdateCoupon
+// @tags Admin
 // @Param input body   request.UpdateCoupon{} true "inputs"
 // @Router /admin/coupons [put]
 // @Success 200 {object} response.Response{} "Coupon updated successfully"
@@ -80,7 +80,7 @@ func (c *CouponHandler) UpdateCoupon(ctx *gin.Context) {
 // DeleteCoupon godoc
 // @summary api for admin to delete a cooupon
 // @id DeleteCoupon
-// @tags Admin DeleteCoupon
+// @tags Admin
 // @Param id path int true "id"
 // @Router /admin/coupons/{id} [delete]
 // @Success 200 {object} response.Response{} "Coupon deleted successfully"
@@ -103,9 +103,10 @@ func (c *CouponHandler) DeleteCoupon(ctx *gin.Context) {
 }
 
 // LisAllCoupon godoc
-// @summary api for admin to list all coupons
+// @summary api for admin and user to list all coupons
 // @id ListAllCoupons
-// @tags Admin ListAllCoupons
+// @tags Admin
+// @tags User
 // @Param page_number query int false "Page Number"
 // @Param count query int false "Count Of Order"
 // @Router /admin/coupons [get]
