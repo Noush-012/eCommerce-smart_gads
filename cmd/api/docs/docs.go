@@ -1160,27 +1160,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/logout": {
-            "post": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
-                "description": "user can logout",
-                "tags": [
-                    "User"
-                ],
-                "summary": "api for user to logout",
-                "operationId": "UserLogout",
-                "responses": {
-                    "200": {
-                        "description": "Log out successful"
-                    }
-                }
-            }
-        },
-        "/otp-verify": {
+        "/login/otp-verify": {
             "post": {
                 "security": [
                     {
@@ -1221,6 +1201,26 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/response.Response"
                         }
+                    }
+                }
+            }
+        },
+        "/logout": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "user can logout",
+                "tags": [
+                    "User"
+                ],
+                "summary": "api for user to logout",
+                "operationId": "UserLogout",
+                "responses": {
+                    "200": {
+                        "description": "Log out successful"
                     }
                 }
             }

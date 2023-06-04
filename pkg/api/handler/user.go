@@ -106,7 +106,7 @@ func (u *UserHandler) LoginSubmit(c *gin.Context) {
 // @id UserOtpVerify
 // @tags User
 // @Param input body request.OTPVerify{} true "Input Fields"
-// @Router /otp-verify [post]
+// @Router /login/otp-verify [post]
 // @Success 200 {object} response.Response{} "Login successful"
 // @Failure 400  {object} response.Response{} "Missing or invalid entry"
 // @Failure 500 {object} response.Response{}  "failed to send OTP"
