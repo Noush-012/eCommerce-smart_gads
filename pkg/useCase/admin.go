@@ -100,10 +100,25 @@ func (a *adminService) GetAllReturnOrders(c context.Context) {
 }
 
 func (o *adminService) UpdateDeliveryStatus(c context.Context, UpdateData request.UpdateStatus) error {
+
 	err := o.orderRepositoty.UpdateDeliveryStatus(c, UpdateData)
 	if err != nil {
 		return err
 	}
+	// get payment method for order id
+	order, err := o.orderRepositoty.GetOrderByOrderId(c, UpdateData.OrderId)
+	if err != nil {
+		return err
+	}
+	// update payment data as paid for COD orders if status delivered
+	if UpdateData.StatusId == 2 && order.PaymentMethod == "Cash on delivery COD" {
+		// ID 2 is for status "PAID"
+		err = o.PaymentRepository.UpdatePaymentStatus(c, 2, UpdateData.OrderId)
+		if err != nil {
+			return err
+		}
+	}
+
 	return nil
 }
 
