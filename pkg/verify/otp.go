@@ -45,6 +45,8 @@ func TwilioSendOTP(phoneNumber string) (string, error) {
 	})
 	if client != nil {
 		fmt.Println("Twilio connected")
+	} else {
+		fmt.Println("Twilio connection error")
 	}
 
 	params := &twilioApi.CreateVerificationParams{}
