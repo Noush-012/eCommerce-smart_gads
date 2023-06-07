@@ -30,7 +30,7 @@ func (u *UserUseCase) SignUp(ctx context.Context, user domain.Users) error {
 	if err != nil {
 		return err
 	}
-
+	//
 	if DBUser.ID == 0 {
 		// Hash user password
 		hashedPass, err := bcrypt.GenerateFromPassword([]byte(user.Password), 10)

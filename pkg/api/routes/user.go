@@ -23,6 +23,14 @@ func UserRoutes(api *gin.RouterGroup, userHandler *handler.UserHandler, productH
 		// OTP verfication
 		login.POST("/otp-verify", userHandler.UserOTPVerify)
 	}
+	// removing product from middleware for test purpose
+	// products routes
+	products := api.Group("/products")
+	{
+		products.GET("/brands", productHandler.GetAllBrands)
+		products.GET("/", productHandler.ListProducts)                           // show products
+		products.GET("/product-item/:product_id", productHandler.GetProductItem) // show product items of a product
+	}
 
 	// Middleware routes
 	api.Use(middleware.AuthenticateUser)
@@ -31,13 +39,6 @@ func UserRoutes(api *gin.RouterGroup, userHandler *handler.UserHandler, productH
 		api.GET("/", userHandler.Home)
 		api.GET("/logout", userHandler.LogoutUser)
 
-		// products routes
-		products := api.Group("/products")
-		{
-			products.GET("/brands", productHandler.GetAllBrands)
-			products.GET("/", productHandler.ListProducts)                           // show products
-			products.GET("/product-item/:product_id", productHandler.GetProductItem) // show product items of a product
-		}
 		// cart routes
 		cart := api.Group("/cart")
 		{
