@@ -14,21 +14,21 @@ func AdminRoutes(api *gin.RouterGroup, adminHandler *handler.AdminHandler, produ
 	{
 		login.POST("/", adminHandler.AdminLoginSubmit)
 	}
-
 	// Signup
 	signup := api.Group("/signup", adminHandler.AdminSignUp)
 	{
 		signup.POST("/")
 	}
-	// for testing purpose sales report route removed from middleware
-	api.GET("/sales-report", adminHandler.SalesReport)
 
-	// Middleware
+	// Middleware routes
 	api.Use(middleware.AuthenticateAdmin)
 	{
+		// Home
 		api.GET("/", adminHandler.AdminHome)
+		// Logout
 		api.GET("/logout", adminHandler.LogoutAdmin)
 		// Sales report
+		api.GET("/sales-report", adminHandler.SalesReport)
 
 		// Users dashboard
 		user := api.Group("/users")
@@ -74,5 +74,6 @@ func AdminRoutes(api *gin.RouterGroup, adminHandler *handler.AdminHandler, produ
 			coupons.PATCH("/", couponHandler.UpdateCoupon)
 			coupons.DELETE("/:id", couponHandler.DeleteCoupon)
 		}
+
 	}
 }

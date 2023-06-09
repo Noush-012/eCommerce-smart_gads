@@ -7,10 +7,6 @@ import (
 	"github.com/Noush-012/Project-eCommerce-smart_gads/pkg/di"
 )
 
-// func init() {
-// 	verify.SetClient()
-// }
-
 func main() {
 	config, err := config.LoadConfig()
 	if err != nil {
