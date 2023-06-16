@@ -21,12 +21,6 @@ type Users struct {
 	UpdatedAt   time.Time `json:"updated_at"`
 }
 
-//	type UserAddress struct {
-//		UserID    uint    `gorm:"not null;unique"`
-//		AddressID uint    `gorm:"not null;unique"`
-//		IsDefault bool    `gorm:"not null"`
-//		Address   Address `gorm:"foreignKey:AddressID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL"`
-//	}
 type Address struct {
 	ID           uint      `json:"id" gorm:"primaryKey;unique;autoIncrement"`
 	UserID       uint      `json:"-"`

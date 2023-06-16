@@ -36,12 +36,13 @@ func (u *UserHandler) LoginPage(c *gin.Context) {
 // @tags User Signup
 // @Param input body request.SignupUserData{} true "Input Fields"
 // @Router /signup [post]
-// @Success 200 "Account created successfuly"
-// @Failure 400 "invalid entry"
+// @Success 200 {object} response.Response{} "Account created successfuly"
+// @Failure 400  {object} response.Response{} ""invalid entry"
+// @Failure 400 {object} response.Response{}  "user already exist"
 func (u *UserHandler) UserSignup(c *gin.Context) {
 	var body request.SignupUserData
 	if err := c.ShouldBindJSON(&body); err != nil {
-		response := "invalid input"
+		response := response.ErrorResponse(400, "Invalid input", "", nil)
 		c.JSON(http.StatusBadRequest, response)
 		return
 	}
@@ -54,12 +55,14 @@ func (u *UserHandler) UserSignup(c *gin.Context) {
 
 	// Check the user already exist in DB and save user if not
 	if err := u.userService.SignUp(c, user); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		response := response.ErrorResponse(400, "User already exist", "", nil)
+		c.JSON(http.StatusBadRequest, response)
 		return
 	}
 
 	// success response
-	c.JSON(http.StatusOK, gin.H{"success": "Account created successfuly"})
+	response := response.SuccessResponse(200, "Account created successfuly", nil)
+	c.JSON(http.StatusOK, response)
 
 }
 
