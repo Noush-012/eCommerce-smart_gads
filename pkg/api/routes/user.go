@@ -2,11 +2,12 @@ package routes
 
 import (
 	"github.com/Noush-012/Project-eCommerce-smart_gads/pkg/api/handler"
+	"github.com/Noush-012/Project-eCommerce-smart_gads/pkg/api/handler/interfaces"
 	"github.com/Noush-012/Project-eCommerce-smart_gads/pkg/api/middleware"
 	"github.com/gin-gonic/gin"
 )
 
-func UserRoutes(api *gin.RouterGroup, userHandler *handler.UserHandler, productHandler *handler.ProductHandler,
+func UserRoutes(api *gin.RouterGroup, userHandler interfaces.UserHandler, productHandler *handler.ProductHandler,
 	paymentHandler *handler.PaymentHandler, orderHandler *handler.OrderHandler, couponHandler *handler.CouponHandler) {
 
 	// Signup

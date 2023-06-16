@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/Noush-012/Project-eCommerce-smart_gads/pkg/api/auth"
+	handler "github.com/Noush-012/Project-eCommerce-smart_gads/pkg/api/handler/interfaces"
 	"github.com/Noush-012/Project-eCommerce-smart_gads/pkg/domain"
 	"github.com/Noush-012/Project-eCommerce-smart_gads/pkg/useCase/interfaces"
 	"github.com/Noush-012/Project-eCommerce-smart_gads/pkg/utils"
@@ -21,7 +22,7 @@ type UserHandler struct {
 	userService interfaces.UserService
 }
 
-func NewUserHandler(userUsecase interfaces.UserService) *UserHandler {
+func NewUserHandler(userUsecase interfaces.UserService) handler.UserHandler {
 	return &UserHandler{userService: userUsecase}
 }
 func (u *UserHandler) LoginPage(c *gin.Context) {

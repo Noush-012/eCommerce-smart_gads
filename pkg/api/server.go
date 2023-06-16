@@ -3,6 +3,7 @@ package http
 import (
 	_ "github.com/Noush-012/Project-eCommerce-smart_gads/cmd/api/docs"
 	"github.com/Noush-012/Project-eCommerce-smart_gads/pkg/api/handler"
+	"github.com/Noush-012/Project-eCommerce-smart_gads/pkg/api/handler/interfaces"
 	"github.com/Noush-012/Project-eCommerce-smart_gads/pkg/api/routes"
 
 	"github.com/gin-gonic/gin"
@@ -14,7 +15,7 @@ type ServerHTTP struct {
 	engine *gin.Engine
 }
 
-func NewServerHTTP(adminHandler *handler.AdminHandler, userHandler *handler.UserHandler,
+func NewServerHTTP(adminHandler *handler.AdminHandler, userHandler interfaces.UserHandler,
 	productHandler *handler.ProductHandler, paymentHandler *handler.PaymentHandler,
 	orderHandler *handler.OrderHandler, couponHandler *handler.CouponHandler) *ServerHTTP {
 
