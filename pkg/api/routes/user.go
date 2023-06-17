@@ -7,22 +7,22 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func UserRoutes(api *gin.RouterGroup, userHandler interfaces.UserHandler, productHandler *handler.ProductHandler,
+func UserRoutes(api *gin.RouterGroup, userHandler interfaces.UserHandler, authHandler interfaces.AuthHandler, productHandler *handler.ProductHandler,
 	paymentHandler *handler.PaymentHandler, orderHandler *handler.OrderHandler, couponHandler *handler.CouponHandler) {
 
 	// Signup
 	signup := api.Group("/signup")
 	{
-		signup.POST("/", userHandler.UserSignup)
+		signup.POST("/", authHandler.UserSignup)
 	}
 	// Login
 	login := api.Group("/login")
 	{
-		login.GET("/", userHandler.LoginPage)
+		login.GET("/", authHandler.LoginPage)
 		// Login with otp
-		login.POST("/", userHandler.LoginSubmit)
+		login.POST("/", authHandler.LoginSubmit)
 		// OTP verfication
-		login.POST("/otp-verify", userHandler.UserOTPVerify)
+		login.POST("/otp-verify", authHandler.UserOTPVerify)
 	}
 
 	// Middleware routes

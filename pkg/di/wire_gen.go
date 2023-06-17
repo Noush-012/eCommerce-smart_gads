@@ -32,6 +32,9 @@ func InitiateAPI(cfg config.Config) (*http.ServerHTTP, error) {
 	adminHandler := handler.NewAdminHandler(adminService, orderService)
 	userService := usecase.NewUserUseCase(userRepository, orderRepository)
 	userHandler := handler.NewUserHandler(userService)
+	authRepository := repository.NewAuthRepository(gormDB)
+	authService := usecase.NewAuthUseCase(authRepository, userRepository)
+	authHandler := handler.NewAuthHandler(authService)
 	productRepository := repository.NewProductRepository(gormDB)
 	productService := usecase.NewProductUseCase(productRepository)
 	productHandler := handler.NewProductHandler(productService)
@@ -40,6 +43,6 @@ func InitiateAPI(cfg config.Config) (*http.ServerHTTP, error) {
 	orderHandler := handler.NewOrderHandler(orderService)
 	couponService := usecase.NewCouponUseCase(couponRepository)
 	couponHandler := handler.NewCouponHandler(couponService)
-	serverHTTP := http.NewServerHTTP(adminHandler, userHandler, productHandler, paymentHandler, orderHandler, couponHandler)
+	serverHTTP := http.NewServerHTTP(adminHandler, userHandler, authHandler, productHandler, paymentHandler, orderHandler, couponHandler)
 	return serverHTTP, nil
 }

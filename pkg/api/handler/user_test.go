@@ -16,7 +16,7 @@ import (
 func TestUserSignup(t *testing.T) {
 
 	// Create a new instance of the user handler
-	userHandler := NewUserHandler(nil)
+	authHandler := NewAuthHandler(nil)
 
 	testCases := []struct {
 		name           string
@@ -78,7 +78,7 @@ func TestUserSignup(t *testing.T) {
 				}
 
 				// Invoke the UserSignup handler with the mock gin.Context
-				userHandler.UserSignup(c)
+				authHandler.UserSignup(c)
 			})
 
 			// Create a new HTTP request with the JSON body

@@ -3,10 +3,6 @@ package interfaces
 import "github.com/gin-gonic/gin"
 
 type UserHandler interface {
-	LoginPage(c *gin.Context)
-	UserSignup(c *gin.Context)
-	LoginSubmit(c *gin.Context)
-	UserOTPVerify(c *gin.Context)
 	Home(c *gin.Context)
 	GetcartItems(c *gin.Context)
 	AddToCart(c *gin.Context)
