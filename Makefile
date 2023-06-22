@@ -64,6 +64,10 @@ wire:
 ## Generate swagger docs
 swag: 
 	swag init -g pkg/api/server.go -o ./cmd/api/docs
+
+mockgen: ## Generate mock repository and usecase functions 
+	mockgen -source=pkg/repository/interfaces/authRepo.go -destination=pkg/mock/repoMock/authRepMock.go -package=mock
+	mockgen -source=pkg/useCase/interfaces/authInterface.go -destination=pkg/mock/useCaseMock/authUseCaseMock.go -package=mock
  
 ## Display this help screen
 help:

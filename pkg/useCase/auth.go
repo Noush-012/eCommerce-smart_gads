@@ -40,7 +40,7 @@ func (u *AuthUseCase) SignUp(ctx context.Context, user domain.Users) error {
 		user.Password = string(hashedPass)
 
 		// Save user if not exist
-		err = u.userRepository.SaveUser(ctx, user)
+		err = u.AuthRepository.SaveUser(ctx, user)
 		if err != nil {
 			return err
 		}

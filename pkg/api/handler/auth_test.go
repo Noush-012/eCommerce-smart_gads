@@ -129,13 +129,12 @@ func TestUserSignup(t *testing.T) {
 			// Create a new response recorder
 			recorder := httptest.NewRecorder()
 
-			// Serve the HTTP request
 			engine.ServeHTTP(recorder, req)
 
 			// Check the response status code
 			assert.Equal(t, tc.expectedStatus, recorder.Code)
 
-			// Decode the response body into a response.Response object
+			// Decode the response body into a response.Response
 			var resp response.Response
 			err := json.Unmarshal(recorder.Body.Bytes(), &resp)
 			assert.NoError(t, err)

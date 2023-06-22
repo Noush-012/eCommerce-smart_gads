@@ -9,7 +9,6 @@ import (
 )
 
 type UserRepository interface {
-	SaveUser(ctx context.Context, user domain.Users) error
 	FindUser(ctx context.Context, user domain.Users) (domain.Users, error)
 	GetUserbyID(ctx context.Context, userId uint) (domain.Users, error)
 	SaveAddress(ctx context.Context, userAddress request.Address) error

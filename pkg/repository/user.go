@@ -39,18 +39,6 @@ func (i *userDatabase) GetUserbyID(ctx context.Context, userId uint) (domain.Use
 	return user, nil
 }
 
-func (i *userDatabase) SaveUser(ctx context.Context, user domain.Users) error {
-	query := `INSERT INTO users (user_name, first_name, last_name, age, email, phone, password,created_at) 
-			  VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`
-	createdAt := time.Now()
-	err := i.DB.Exec(query, user.UserName, user.FirstName, user.LastName, user.Age,
-		user.Email, user.Phone, user.Password, createdAt).Error
-	if err != nil {
-		return fmt.Errorf("failed to save user %s", user.UserName)
-	}
-	return nil
-}
-
 func (i *userDatabase) SaveAddress(ctx context.Context, userAddress request.Address) error {
 	var defaultAddressID uint
 	userAddress.CreatedAt = time.Now()
