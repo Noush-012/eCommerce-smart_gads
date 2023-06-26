@@ -24,7 +24,7 @@ type Users struct {
 type Address struct {
 	ID           uint      `json:"id" gorm:"primaryKey;unique;autoIncrement"`
 	UserID       uint      `json:"-"`
-	Users        Users     `gorm:"foreignKey:UserID" json:"-"`
+	Users        Users     `gorm:"foreignKey:UserID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL" json:"-"`
 	House        string    `json:"house" gorm:"not null"`
 	AddressLine1 string    `json:"address_line_1" gorm:"not null" binding:"required,min=2,max=40"`
 	AddressLine2 string    `json:"address_line_2" gorm:"not null" binding:"required,min=2,max=40"`

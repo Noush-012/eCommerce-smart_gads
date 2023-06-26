@@ -68,6 +68,8 @@ swag:
 mockgen: ## Generate mock repository and usecase functions 
 	mockgen -source=pkg/repository/interfaces/authRepo.go -destination=pkg/mock/repoMock/authRepMock.go -package=mock
 	mockgen -source=pkg/useCase/interfaces/authInterface.go -destination=pkg/mock/useCaseMock/authUseCaseMock.go -package=mock
+	mockgen -source=pkg/repository/interfaces/userRepo.go -destination=pkg/mock/repoMock/userRepMock.go -package=mock
+	mockgen -source=pkg/useCase/interfaces/userInterface.go -destination=pkg/mock/useCaseMock/userUseCaseMock.go -package=mock
  
 ## Display this help screen
 help:

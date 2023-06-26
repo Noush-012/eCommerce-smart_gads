@@ -27,6 +27,7 @@ func (i *userDatabase) FindUser(ctx context.Context, user domain.Users) (domain.
 	if err := i.DB.Raw(query, user.ID, user.Email, user.Phone, user.UserName).Scan(&user).Error; err != nil {
 		return user, errors.New("failed to get user")
 	}
+	fmt.Println("----------------------------->", user)
 	return user, nil
 }
 

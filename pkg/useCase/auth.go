@@ -26,6 +26,7 @@ func NewAuthUseCase(repo interfaces.AuthRepository, userRepo interfaces.UserRepo
 func (u *AuthUseCase) SignUp(ctx context.Context, user domain.Users) error {
 	// Check if user already exist
 	DBUser, err := u.userRepository.FindUser(ctx, user)
+
 	if err != nil {
 		return err
 	}
@@ -42,7 +43,7 @@ func (u *AuthUseCase) SignUp(ctx context.Context, user domain.Users) error {
 		// Save user if not exist
 		err = u.AuthRepository.SaveUser(ctx, user)
 		if err != nil {
-			return err
+			return errors.New("failed to save user")
 		}
 
 	} else {
