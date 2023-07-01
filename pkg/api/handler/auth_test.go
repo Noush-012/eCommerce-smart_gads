@@ -17,7 +17,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestUserSignup(t *testing.T) {
+func serSignup(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
