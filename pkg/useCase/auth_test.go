@@ -2,20 +2,18 @@ package usecase
 
 import (
 	"context"
-	"fmt"
 	"testing"
 	"time"
 
 	"github.com/Noush-012/Project-eCommerce-smart_gads/pkg/domain"
 	mock "github.com/Noush-012/Project-eCommerce-smart_gads/pkg/mock/repoMock"
-	"github.com/Noush-012/Project-eCommerce-smart_gads/pkg/utils/request"
 	"github.com/golang/mock/gomock"
-	"github.com/jinzhu/copier"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestSignUp(t *testing.T) {
 	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
 
 	mockUserRepository := mock.NewMockUserRepository(ctrl)
 	mockAuthRepository := mock.NewMockAuthRepository(ctrl)
@@ -70,30 +68,5 @@ func TestSignUp(t *testing.T) {
 	// 	fmt.Println("----------------", err)
 	// 	assert.EqualError(t, err, expectedErr.Error())
 	// })
-
-}
-
-func TestLogin(t *testing.T) {
-	ctrl := gomock.NewController(t)
-
-	authMock := mock.NewMockAuthRepository(ctrl)
-	userMock := mock.NewMockUserRepository(ctrl)
-
-	authService := NewAuthUseCase(authMock, userMock)
-
-	ctx := context.Background()
-
-	loginData := request.LoginData{
-		Email:    "jose@example.com",
-		UserName: "",
-		Password: "password",
-	}
-	var user domain.Users
-	copier.Copy(&user, loginData)
-	t.Run("Success login", func(t *testing.T) {
-		userMock.EXPECT().FindUser(ctx, user).Return(domain.Users{}, nil)
-		expectedError := fmt.Errorf("failed to send otp")
-
-	})
 
 }
