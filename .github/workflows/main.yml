@@ -1,6 +1,12 @@
-name: CI -Project_Go
+name: CI -Project_Go_Test
 
-on: [push]
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
 
 jobs:
     build:
@@ -17,5 +23,5 @@ jobs:
               run: go build -v ./...
 
             - name: Test
-              run:  go test -v ./...
+              run:  go test ./... -cover
 
