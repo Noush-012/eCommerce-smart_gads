@@ -6,35 +6,28 @@ import (
 	"fmt"
 	"net/http"
 	"net/http/httptest"
-	"reflect"
 	"testing"
 
+	"github.com/Noush-012/Project-eCommerce-smart_gads/pkg/domain"
 	mock "github.com/Noush-012/Project-eCommerce-smart_gads/pkg/mock/useCaseMock"
 	"github.com/Noush-012/Project-eCommerce-smart_gads/pkg/utils/request"
-	"github.com/Noush-012/Project-eCommerce-smart_gads/pkg/utils/response"
 	"github.com/gin-gonic/gin"
 	"github.com/golang/mock/gomock"
+	"github.com/jinzhu/copier"
 	"github.com/stretchr/testify/assert"
 )
 
-func serSignup(t *testing.T) {
-	ctrl := gomock.NewController(t)
-	defer ctrl.Finish()
+func TestUserSignup(t *testing.T) {
 
-	c := mock.NewMockAuthService(ctrl)
-	// Create a new instance of the user handler
-	authHandler := NewAuthHandler(c)
+	// ctx := context.Background()
 
-	testCases := []struct {
-		name           string
-		requestBody    request.SignupUserData
-		buildStub      func(authUsecase mock.MockAuthService)
-		expectedStatus int
-		expectedResp   response.Response
+	testCase := map[string]struct {
+		signupData    request.SignupUserData
+		buildStub     func(useCaseMock *mock.MockAuthService, signupData request.SignupUserData)
+		checkResponse func(t *testing.T, responseRecorder *httptest.ResponseRecorder)
 	}{
-		{
-			name: "Success signup",
-			requestBody: request.SignupUserData{
+		"Valid Signup": {
+			signupData: request.SignupUserData{
 				UserName:        "noush",
 				FirstName:       "Noushad",
 				LastName:        "Ibrahim",
@@ -44,120 +37,70 @@ func serSignup(t *testing.T) {
 				Password:        "password",
 				ConfirmPassword: "password",
 			},
-			buildStub: func(authUsecase mock.MockAuthService) {
-				authUsecase.EXPECT().SignUp(gomock.Any(), request.SignupUserData{
-					UserName:        "noush",
-					FirstName:       "Noushad",
-					LastName:        "Ibrahim",
-					Age:             24,
-					Phone:           "8606879012",
-					Email:           "noush@abc.com",
-					Password:        "password",
-					ConfirmPassword: "password",
-				}).Times(1).Return(response.Response{
-					Message: "Account created successfuly",
-					Errors:  nil,
-				})
+			buildStub: func(useCaseMock *mock.MockAuthService, signupData request.SignupUserData) {
+				// copying signupData to domain.user for pass to Mock usecase
+				var user domain.Users
+				if err := copier.Copy(&user, signupData); err != nil {
+					fmt.Println("Copy failed")
+				}
+				useCaseMock.EXPECT().SignUp(gomock.Any(), user).Times(1).Return(nil)
 			},
-			expectedStatus: http.StatusOK,
-			expectedResp: response.Response{
-				Message: "Account created successfuly",
-				Errors:  nil,
+			checkResponse: func(t *testing.T, responseRecorder *httptest.ResponseRecorder) {
+				assert.Equal(t, http.StatusOK, responseRecorder.Code)
+
 			},
 		},
-		{
-			name: "Empty username",
-			requestBody: request.SignupUserData{
-				UserName:        "",
+		"Without email": {
+			signupData: request.SignupUserData{
+				UserName:        "noush",
 				FirstName:       "Noushad",
 				LastName:        "Ibrahim",
 				Age:             24,
 				Phone:           "8606879012",
-				Email:           "noush@abc.com",
+				Email:           "",
 				Password:        "password",
 				ConfirmPassword: "password",
 			},
-			buildStub: func(authUsecase mock.MockAuthService) {
-				authUsecase.EXPECT().SignUp(gomock.Any(), request.SignupUserData{
-					UserName:        "",
-					FirstName:       "Noushad",
-					LastName:        "Ibrahim",
-					Age:             24,
-					Phone:           "8606879012",
-					Email:           "noush@abc.com",
-					Password:        "password",
-					ConfirmPassword: "password",
-				}).Times(1).Return(response.Response{
-					Message: "Invalid input",
-					Errors:  "",
-				})
+			buildStub: func(useCaseMock *mock.MockAuthService, signupData request.SignupUserData) {
+				// // copying signupData to domain.user for pass to Mock usecase
+				// var user domain.Users
+				// if err := copier.Copy(&user, signupData); err != nil {
+				// 	fmt.Println("Copy failed")
+				// }
+				// useCaseMock.EXPECT().SignUp(gomock.Any(), user).Times(1).Return(nil)
 			},
-			expectedStatus: http.StatusBadRequest,
-			expectedResp: response.Response{
-				Message: "Invalid input",
-				Errors:  "",
+			checkResponse: func(t *testing.T, responseRecorder *httptest.ResponseRecorder) {
+				assert.Equal(t, http.StatusBadRequest, responseRecorder.Code)
+
 			},
 		},
 	}
 
-	// Iterate over the test cases
-	for _, tc := range testCases {
-		t.Run(tc.name, func(t *testing.T) {
-			// passing mock use case to buildStub function which is
-			tc.buildStub(*c)
-			// Create a new Gin router
-			engine := gin.Default()
-			// Define a route to handle the test request
-			// engine.POST("/signup", func(c *gin.Context) {
-			// 	// Bind the request body to the specified type
-			// 	var requestBody request.SignupUserData
-			// 	if err := c.ShouldBindJSON(&requestBody); err != nil {
-			// 		// Handle invalid input
-			// 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
-			// 		return
-			// 	}
+	for testName, test := range testCase {
+		test := test
+		t.Run(testName, func(t *testing.T) {
+			t.Parallel()
+			ctrl := gomock.NewController(t)
+			mockUseCase := mock.NewMockAuthService(ctrl)
+			test.buildStub(mockUseCase, test.signupData)
 
-			// 	// Invoke the UserSignup handler with the mock gin.Context
-			// 	authHandler.UserSignup(c)
-			// })
-			engine.POST("/signup", authHandler.UserSignup)
+			AuthHandler := NewAuthHandler(mockUseCase)
 
-			// Create a new HTTP request with the JSON body
-			jsonData, _ := json.Marshal(tc.requestBody)
-			req, _ := http.NewRequest("POST", "/signup", bytes.NewBuffer(jsonData))
+			server := gin.Default()
+			server.POST("/signup", AuthHandler.UserSignup)
 
-			// Create a new response recorder
-			recorder := httptest.NewRecorder()
-
-			engine.ServeHTTP(recorder, req)
-
-			// Check the response status code
-			assert.Equal(t, tc.expectedStatus, recorder.Code)
-
-			// Decode the response body into a response.Response
-			var resp response.Response
-			err := json.Unmarshal(recorder.Body.Bytes(), &resp)
+			jsonData, err := json.Marshal(test.signupData)
 			assert.NoError(t, err)
-			fmt.Printf("type of actual data %t\n", resp.Data)
-			data, ok := resp.Data.(map[string]interface{})
-			if ok {
-				userData := request.SignupUserData{
-					UserName:  data["user_name"].(string),
-					FirstName: data["f_name"].(string),
-					LastName:  data["l_name"].(string),
-					Email:     data["email"].(string),
-					Phone:     data["phone"].(string),
-				}
-				if !reflect.DeepEqual(tc.expectedResp, userData) {
-					t.Errorf("got %q,but want %q", userData, tc.expectedResp)
-				}
-			} else {
-				t.Errorf("actual.Data is not of type map[string]interface{}")
-			}
+			body := bytes.NewBuffer(jsonData)
 
-			// Assert the expected response properties
-			assert.Equal(t, tc.expectedResp.Message, resp.Message)
-			assert.Equal(t, tc.expectedResp.Errors, resp.Errors)
+			mockRequest, err := http.NewRequest(http.MethodPost, "/signup", body)
+			assert.NoError(t, err)
+			responseRecorder := httptest.NewRecorder()
+
+			server.ServeHTTP(responseRecorder, mockRequest)
+			test.checkResponse(t, responseRecorder)
+
 		})
+
 	}
 }
