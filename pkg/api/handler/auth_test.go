@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -11,6 +12,7 @@ import (
 	"github.com/Noush-012/Project-eCommerce-smart_gads/pkg/domain"
 	mock "github.com/Noush-012/Project-eCommerce-smart_gads/pkg/mock/useCaseMock"
 	"github.com/Noush-012/Project-eCommerce-smart_gads/pkg/utils/request"
+	"github.com/Noush-012/Project-eCommerce-smart_gads/pkg/utils/response"
 	"github.com/gin-gonic/gin"
 	"github.com/golang/mock/gomock"
 	"github.com/jinzhu/copier"
@@ -62,14 +64,13 @@ func TestUserSignup(t *testing.T) {
 				ConfirmPassword: "password",
 			},
 			buildStub: func(useCaseMock *mock.MockAuthService, signupData request.SignupUserData) {
-				// // copying signupData to domain.user for pass to Mock usecase
-				// var user domain.Users
-				// if err := copier.Copy(&user, signupData); err != nil {
-				// 	fmt.Println("Copy failed")
-				// }
-				// useCaseMock.EXPECT().SignUp(gomock.Any(), user).Times(1).Return(nil)
+				// not expecting calls to usecase
 			},
 			checkResponse: func(t *testing.T, responseRecorder *httptest.ResponseRecorder) {
+				responseStruct, err := getResponseStructFromResponseBody(responseRecorder.Body)
+				assert.Nil(t, err)
+				expectedMessage := "Invalid entry"
+				assert.Equal(t, expectedMessage, responseStruct.Message)
 				assert.Equal(t, http.StatusBadRequest, responseRecorder.Code)
 
 			},
@@ -103,4 +104,11 @@ func TestUserSignup(t *testing.T) {
 		})
 
 	}
+}
+
+// convert / un marshal response body to response.Response struct
+func getResponseStructFromResponseBody(responseBody *bytes.Buffer) (responseStruct response.Response, err error) {
+	data, err := io.ReadAll(responseBody)
+	json.Unmarshal(data, &responseStruct)
+	return
 }
