@@ -69,7 +69,7 @@ func TestUserSignup(t *testing.T) {
 			checkResponse: func(t *testing.T, responseRecorder *httptest.ResponseRecorder) {
 				responseStruct, err := getResponseStructFromResponseBody(responseRecorder.Body)
 				assert.Nil(t, err)
-				expectedMessage := "Invalid entry"
+				expectedMessage := "Invalid input"
 				assert.Equal(t, expectedMessage, responseStruct.Message)
 				assert.Equal(t, http.StatusBadRequest, responseRecorder.Code)
 
