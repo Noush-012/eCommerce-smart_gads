@@ -2,8 +2,9 @@ package usecase
 
 import (
 	"context"
+	"errors"
+	"fmt"
 	"testing"
-	"time"
 
 	"github.com/Noush-012/Project-eCommerce-smart_gads/pkg/domain"
 	mock "github.com/Noush-012/Project-eCommerce-smart_gads/pkg/mock/repoMock"
@@ -13,7 +14,6 @@ import (
 
 func TestSignUp(t *testing.T) {
 	ctrl := gomock.NewController(t)
-	defer ctrl.Finish()
 
 	mockUserRepository := mock.NewMockUserRepository(ctrl)
 	mockAuthRepository := mock.NewMockAuthRepository(ctrl)
@@ -23,15 +23,13 @@ func TestSignUp(t *testing.T) {
 
 	// Test data
 	user := domain.Users{
-		UserName:    "Jose",
-		FirstName:   "Jose",
-		LastName:    "kutty",
-		Age:         30,
-		Email:       "jose@example.com",
-		Phone:       "1234567890",
-		Password:    "password",
-		BlockStatus: false,
-		CreatedAt:   time.Now(),
+		UserName:  "Jose",
+		FirstName: "Jose",
+		LastName:  "kutty",
+		Age:       30,
+		Email:     "jose@example.com",
+		Phone:     "1234567890",
+		Password:  "password",
 	}
 
 	// Test case : 1 "Success"
@@ -57,16 +55,25 @@ func TestSignUp(t *testing.T) {
 
 	// Test case : 1 "Failed to save"
 	// Passing null value to produce database error
-	// user.Email = ""
-	// t.Run("Error saving user, should return the error", func(t *testing.T) {
-	// 	expectedErr := errors.New("failed to save user")
-	// 	mockUserRepository.EXPECT().FindUser(ctx, user).Return(domain.Users{}, nil)
-	// 	fmt.Println("------------------------", user)
-	// 	mockAuthRepository.EXPECT().SaveUser(ctx, user).Return(expectedErr)
+	user.Email = ""
+	t.Run("Error saving user, should return the error", func(t *testing.T) {
+		expectedErr := errors.New("failed to save user")
+		mockUserRepository.EXPECT().FindUser(ctx, user).Return(domain.Users{}, nil)
+		fmt.Println("------------------------", user)
+		mockAuthRepository.EXPECT().SaveUser(ctx, user).Return(expectedErr)
 
-	// 	err := authUsecase.SignUp(ctx, user)
-	// 	fmt.Println("----------------", err)
-	// 	assert.EqualError(t, err, expectedErr.Error())
-	// })
+		err := authUsecase.SignUp(ctx, user)
+		fmt.Println("----------------", err)
+		assert.EqualError(t, err, expectedErr.Error())
+	})
 
 }
+
+// func TestOTPLogin(t *testing.T) {
+// 	ctrl := gomock.NewController(t)
+
+// 	userRepoMock := mock.NewMockUserRepository(ctrl)
+// 	authRepoMock := mock.NewMockAuthRepository(ctrl)
+// 	AuthUseCase := NewAuthUseCase(authRepoMock, userRepoMock)
+
+// }
