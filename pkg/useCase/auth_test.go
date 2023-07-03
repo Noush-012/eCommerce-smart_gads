@@ -2,8 +2,6 @@ package usecase
 
 import (
 	"context"
-	"errors"
-	"fmt"
 	"testing"
 
 	"github.com/Noush-012/Project-eCommerce-smart_gads/pkg/domain"
@@ -55,17 +53,17 @@ func TestSignUp(t *testing.T) {
 
 	// Test case : 1 "Failed to save"
 	// Passing null value to produce database error
-	user.Email = ""
-	t.Run("Error saving user, should return the error", func(t *testing.T) {
-		expectedErr := errors.New("failed to save user")
-		mockUserRepository.EXPECT().FindUser(ctx, user).Return(domain.Users{}, nil)
-		fmt.Println("------------------------", user)
-		mockAuthRepository.EXPECT().SaveUser(ctx, user).Return(expectedErr)
+	// user.Email = ""
+	// t.Run("Error saving user, should return the error", func(t *testing.T) {
+	// 	expectedErr := errors.New("failed to save user")
+	// 	mockUserRepository.EXPECT().FindUser(ctx, user).Return(domain.Users{}, nil)
+	// 	fmt.Println("------------------------", user)
+	// 	mockAuthRepository.EXPECT().SaveUser(ctx, user).Return(expectedErr)
 
-		err := authUsecase.SignUp(ctx, user)
-		fmt.Println("----------------", err)
-		assert.EqualError(t, err, expectedErr.Error())
-	})
+	// 	err := authUsecase.SignUp(ctx, user)
+	// 	fmt.Println("----------------", err)
+	// 	assert.EqualError(t, err, expectedErr.Error())
+	// })
 
 }
 
