@@ -2,6 +2,20 @@ package request
 
 import "time"
 
+type Users struct {
+	ID          uint      `json:"id"`
+	UserName    string    `json:"user_name"`
+	FirstName   string    `json:"first_name"`
+	LastName    string    `json:"last_name"`
+	Age         uint      `json:"age"`
+	Email       string    `json:"email"`
+	Phone       string    `json:"phone"`
+	Password    string    `json:"password"`
+	BlockStatus bool      `json:"block_status" `
+	CreatedAt   time.Time `json:"created_at"`
+	UpdatedAt   time.Time `json:"updated_at"`
+}
+
 type AddressPatchReq struct {
 	ID           uint      `json:"address_id"`
 	UserID       uint      `json:"-"`

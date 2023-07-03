@@ -61,7 +61,6 @@ func AdminRoutes(api *gin.RouterGroup, adminHandler *handler.AdminHandler, produ
 			// To update product
 			product.PUT("/", productHandler.UpdateProduct)
 			// To delete product
-			product.DELETE("/", productHandler.DeleteProduct)
 			// Add product item
 			product.POST("/product-item", productHandler.AddProductItem)
 

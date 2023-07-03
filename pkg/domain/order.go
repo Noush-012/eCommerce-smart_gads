@@ -8,7 +8,7 @@ import (
 type ShopOrder struct {
 	ID         uint      `json:"id" gorm:"primaryKey"`
 	UserID     uint      `json:"-" gorm:"not null"`
-	Users      Users     `gorm:"foreignKey:UserID" json:"-"`
+	Users      Users     `gorm:"foreignKey:UserID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL" json:"-"`
 	OrderDate  time.Time `json:"order_date" gorm:"not null"`
 	OrderTotal uint      `json:"order_total" gorm:"not null"`
 	ShippingID uint      `json:"shipping_id" gorm:"not null"`
