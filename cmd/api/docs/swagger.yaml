@@ -1,46 +1,4 @@
 definitions:
-  domain.Address:
-    properties:
-      address_line_1:
-        maxLength: 40
-        minLength: 2
-        type: string
-      address_line_2:
-        maxLength: 40
-        minLength: 2
-        type: string
-      city:
-        maxLength: 20
-        minLength: 2
-        type: string
-      country:
-        maxLength: 20
-        minLength: 2
-        type: string
-      createdAt:
-        type: string
-      house:
-        type: string
-      id:
-        type: integer
-      state:
-        maxLength: 20
-        minLength: 2
-        type: string
-      updatedAt:
-        type: string
-      zip_code:
-        maxLength: 10
-        minLength: 2
-        type: string
-    required:
-    - address_line_1
-    - address_line_2
-    - city
-    - country
-    - state
-    - zip_code
-    type: object
   domain.Admin:
     properties:
       created_at:
@@ -83,6 +41,27 @@ definitions:
     required:
     - product_item_id
     - quantity
+    type: object
+  request.Address:
+    properties:
+      address_id:
+        type: integer
+      address_line_1:
+        type: string
+      address_line_2:
+        type: string
+      city:
+        type: string
+      country:
+        type: string
+      house:
+        type: string
+      is_default:
+        type: boolean
+      state:
+        type: string
+      zip_code:
+        type: string
     type: object
   request.AddressPatchReq:
     properties:
@@ -360,7 +339,7 @@ paths:
       - ApiKeyAuth: []
       summary: api for user home page
       tags:
-      - Home
+      - User
   /account:
     get:
       operationId: Account
@@ -375,7 +354,7 @@ paths:
       - ApiKeyAuth: []
       summary: api for see user details
       tags:
-      - User Account
+      - User
   /account/address:
     post:
       description: get a new address from user to store the the database
@@ -386,7 +365,7 @@ paths:
         name: inputs
         required: true
         schema:
-          $ref: '#/definitions/domain.Address'
+          $ref: '#/definitions/request.Address'
       responses:
         "200":
           description: Successfully address added
@@ -400,7 +379,7 @@ paths:
       - ApiKeyAuth: []
       summary: api for adding a new address for user
       tags:
-      - User Address
+      - User
   /address:
     delete:
       description: user can delete a address
@@ -424,7 +403,7 @@ paths:
       - ApiKeyAuth: []
       summary: api for delete user address
       tags:
-      - User Address
+      - User
     get:
       description: user can get address
       operationId: GetAllAddress
@@ -446,7 +425,7 @@ paths:
       - ApiKeyAuth: []
       summary: api for user to get all address
       tags:
-      - User GetAllAddress
+      - User
     put:
       description: user can update a address
       operationId: UpdateAddress
@@ -470,7 +449,7 @@ paths:
       - ApiKeyAuth: []
       summary: api for update user address
       tags:
-      - User Address
+      - User
   /admin:
     get:
       operationId: AdminHome
@@ -481,7 +460,7 @@ paths:
             $ref: '#/definitions/response.Response'
       summary: api admin home
       tags:
-      - Admin Home
+      - Admin
   /admin/coupons:
     get:
       operationId: ListAllCoupons
@@ -507,9 +486,10 @@ paths:
           description: Internal server error
           schema:
             $ref: '#/definitions/response.Response'
-      summary: api for admin to list all coupons
+      summary: api for admin and user to list all coupons
       tags:
-      - Admin ListAllCoupons
+      - Admin
+      - User
     post:
       operationId: CreateNewCoupon
       parameters:
@@ -534,7 +514,7 @@ paths:
             $ref: '#/definitions/response.Response'
       summary: api for admin to create a cooupon
       tags:
-      - Admin CreateNewCoupon
+      - Admin
     put:
       operationId: UpdateCoupon
       parameters:
@@ -559,7 +539,7 @@ paths:
             $ref: '#/definitions/response.Response'
       summary: api for admin to update a cooupon
       tags:
-      - Admin UpdateCoupon
+      - Admin
   /admin/coupons/{id}:
     delete:
       operationId: DeleteCoupon
@@ -584,7 +564,7 @@ paths:
             $ref: '#/definitions/response.Response'
       summary: api for admin to delete a cooupon
       tags:
-      - Admin DeleteCoupon
+      - Admin
   /admin/login:
     post:
       operationId: AdminLogin
@@ -610,7 +590,7 @@ paths:
             $ref: '#/definitions/response.Response'
       summary: api for admin to login
       tags:
-      - Admin Login / Signup
+      - Admin
   /admin/products:
     post:
       operationId: AddCategory
@@ -632,7 +612,7 @@ paths:
             $ref: '#/definitions/response.Response'
       summary: api for admin to add a parent category or child brand
       tags:
-      - Admin Brand / Category
+      - Admin
     put:
       operationId: UpdateProduct
       parameters:
@@ -657,7 +637,7 @@ paths:
             $ref: '#/definitions/response.Response'
       summary: api for admin to delete a product
       tags:
-      - Admin Product
+      - Admin
   /admin/products/product-item:
     post:
       operationId: AddProductItem
@@ -683,7 +663,7 @@ paths:
             $ref: '#/definitions/response.Response'
       summary: api for admin to add product item for particular product
       tags:
-      - Admin Product
+      - Admin
   /admin/return-request:
     get:
       consumes:
@@ -706,7 +686,7 @@ paths:
             $ref: '#/definitions/response.Response'
       summary: List all return request
       tags:
-      - Order Controlls
+      - Admin
   /admin/sales-report:
     get:
       operationId: SalesReport
@@ -721,7 +701,7 @@ paths:
             $ref: '#/definitions/response.Response'
       summary: api for admin to download sales report as csv format
       tags:
-      - Business Reports
+      - Admin
   /admin/users:
     get:
       operationId: ListUsers
@@ -749,7 +729,7 @@ paths:
             $ref: '#/definitions/response.Response'
       summary: api for admin to list users
       tags:
-      - User Controlls
+      - Admin
   /admin/users/block:
     patch:
       operationId: BlockUser
@@ -771,7 +751,7 @@ paths:
             $ref: '#/definitions/response.Response'
       summary: api for admin to block or unblock user
       tags:
-      - User Controlls
+      - Admin
   /admin/users/orders:
     patch:
       operationId: ChangeOrderStatus
@@ -797,7 +777,7 @@ paths:
             $ref: '#/definitions/response.Response'
       summary: api for admin to change order status of user
       tags:
-      - Order Controlls
+      - Admin
   /admin/users/orders/delivery-update:
     patch:
       consumes:
@@ -827,7 +807,7 @@ paths:
             $ref: '#/definitions/response.Response'
       summary: Update delivery status of user orders
       tags:
-      - Order Controlls
+      - Admin
   /admin/users/orders/return-order/approval:
     patch:
       consumes:
@@ -857,7 +837,7 @@ paths:
             $ref: '#/definitions/response.Response'
       summary: Approve return order
       tags:
-      - Order Controlls
+      - Admin
   /brands:
     get:
       operationId: ListBrands-admin
@@ -872,9 +852,10 @@ paths:
             $ref: '#/definitions/response.Response'
       security:
       - ApiKeyAuth: []
-      summary: api for admin to list all brands
+      summary: api for admin and user to list all brands
       tags:
-      - Product brands
+      - Admin
+      - User
   /cart:
     delete:
       description: user can delete a stock in product to cart
@@ -895,7 +876,7 @@ paths:
       - ApiKeyAuth: []
       summary: api for delete product item from cart
       tags:
-      - User Cart
+      - User
     get:
       description: user can get cart items
       operationId: UserGetCartItems
@@ -915,7 +896,7 @@ paths:
       - ApiKeyAuth: []
       summary: api for user to get cart items
       tags:
-      - User GetCartItems
+      - User
     post:
       description: user can update a stock in product to cart
       operationId: UpdateCart
@@ -935,7 +916,7 @@ paths:
       - ApiKeyAuth: []
       summary: api for update user cart
       tags:
-      - User Cart
+      - User
   /carts/checkout:
     get:
       operationId: CheckoutCart
@@ -952,7 +933,7 @@ paths:
       - ApiKeyAuth: []
       summary: api for user to checkout cart, apply voucher and proceed for payment
       tags:
-      - User Cart
+      - User
   /carts/checkout/razorpay:
     post:
       operationId: RazorpayPage
@@ -976,7 +957,7 @@ paths:
       - ApiKeyAuth: []
       summary: api for create an razorpay order
       tags:
-      - User Cart
+      - User
   /carts/checkout/razorpay/success:
     post:
       operationId: RazorpayVerify
@@ -999,7 +980,7 @@ paths:
       - ApiKeyAuth: []
       summary: api user for verify razorpay payment
       tags:
-      - User Cart
+      - User
   /carts/orders:
     get:
       operationId: orderHistory
@@ -1018,9 +999,10 @@ paths:
             $ref: '#/definitions/response.Response'
       security:
       - ApiKeyAuth: []
-      summary: api for user to get all order history made
+      summary: api for admin and user to get all order history made
       tags:
-      - User orderHistory
+      - User
+      - Admin
   /carts/place-order/cod:
     post:
       operationId: PlaceCODOrder
@@ -1047,7 +1029,7 @@ paths:
       - ApiKeyAuth: []
       summary: api for user to place an order on cart with COD
       tags:
-      - User Cart
+      - User
   /login:
     post:
       operationId: UserLogin
@@ -1075,20 +1057,8 @@ paths:
       - ApiKeyAuth: []
       summary: api for user login
       tags:
-      - User Login
-  /logout:
-    post:
-      description: user can logout
-      operationId: UserLogout
-      responses:
-        "200":
-          description: Log out successful
-      security:
-      - ApiKeyAuth: []
-      summary: api for user to logout
-      tags:
-      - User Logout
-  /otp-verify:
+      - User
+  /login/otp-verify:
     post:
       operationId: UserOtpVerify
       parameters:
@@ -1115,7 +1085,19 @@ paths:
       - ApiKeyAuth: []
       summary: api for user otp verification
       tags:
-      - User OTP verification
+      - User
+  /logout:
+    post:
+      description: user can logout
+      operationId: UserLogout
+      responses:
+        "200":
+          description: Log out successful
+      security:
+      - ApiKeyAuth: []
+      summary: api for user to logout
+      tags:
+      - User
   /products:
     get:
       operationId: ListProducts-User
@@ -1139,9 +1121,10 @@ paths:
             $ref: '#/definitions/response.Response'
       security:
       - ApiKeyAuth: []
-      summary: api for user to list all products
+      summary: api for user and admin to list all products
       tags:
-      - User Products
+      - User
+      - Admin
   /signup:
     post:
       operationId: UserSignUp
@@ -1161,7 +1144,7 @@ paths:
       - ApiKeyAuth: []
       summary: api for register user
       tags:
-      - User Signup
+      - User
   /wallet/history:
     get:
       description: user can get wallet history
@@ -1179,7 +1162,7 @@ paths:
       - ApiKeyAuth: []
       summary: api for user to get wallet history
       tags:
-      - User GetWalletHistory
+      - User
   /wishlist:
     get:
       description: user can get wishlist
@@ -1197,7 +1180,7 @@ paths:
       - ApiKeyAuth: []
       summary: api for user to get wishlist
       tags:
-      - User GetWishlist
+      - User
   /wishlist/{id}:
     delete:
       description: user can delete product from wishlist
@@ -1221,7 +1204,7 @@ paths:
       - ApiKeyAuth: []
       summary: api for user to delete product from wishlist
       tags:
-      - User DeleteFromWishlist
+      - User
   /wishlist/{product_id}:
     post:
       description: user can add product to wishlist
@@ -1246,5 +1229,5 @@ paths:
       - ApiKeyAuth: []
       summary: api for user to add product to wishlist
       tags:
-      - User AddToWishlist
+      - User
 swagger: "2.0"

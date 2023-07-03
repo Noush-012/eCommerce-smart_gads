@@ -25,7 +25,7 @@ const docTemplate = `{
                 ],
                 "description": "after user login user will seen this page with user informations",
                 "tags": [
-                    "Home"
+                    "User"
                 ],
                 "summary": "api for user home page",
                 "operationId": "User Home",
@@ -44,7 +44,7 @@ const docTemplate = `{
                     }
                 ],
                 "tags": [
-                    "User Account"
+                    "User"
                 ],
                 "summary": "api for see user details",
                 "operationId": "Account",
@@ -70,7 +70,7 @@ const docTemplate = `{
                 ],
                 "description": "get a new address from user to store the the database",
                 "tags": [
-                    "User Address"
+                    "User"
                 ],
                 "summary": "api for adding a new address for user",
                 "operationId": "AddAddress",
@@ -81,7 +81,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/domain.Address"
+                            "$ref": "#/definitions/request.Address"
                         }
                     }
                 ],
@@ -110,7 +110,7 @@ const docTemplate = `{
                 ],
                 "description": "user can get address",
                 "tags": [
-                    "User GetAllAddress"
+                    "User"
                 ],
                 "summary": "api for user to get all address",
                 "operationId": "GetAllAddress",
@@ -145,7 +145,7 @@ const docTemplate = `{
                 ],
                 "description": "user can update a address",
                 "tags": [
-                    "User Address"
+                    "User"
                 ],
                 "summary": "api for update user address",
                 "operationId": "UpdateAddress",
@@ -183,7 +183,7 @@ const docTemplate = `{
                 ],
                 "description": "user can delete a address",
                 "tags": [
-                    "User Address"
+                    "User"
                 ],
                 "summary": "api for delete user address",
                 "operationId": "DeleteAddress",
@@ -215,7 +215,7 @@ const docTemplate = `{
         "/admin": {
             "get": {
                 "tags": [
-                    "Admin Home"
+                    "Admin"
                 ],
                 "summary": "api admin home",
                 "operationId": "AdminHome",
@@ -232,9 +232,10 @@ const docTemplate = `{
         "/admin/coupons": {
             "get": {
                 "tags": [
-                    "Admin ListAllCoupons"
+                    "Admin",
+                    "User"
                 ],
-                "summary": "api for admin to list all coupons",
+                "summary": "api for admin and user to list all coupons",
                 "operationId": "ListAllCoupons",
                 "parameters": [
                     {
@@ -273,7 +274,7 @@ const docTemplate = `{
             },
             "put": {
                 "tags": [
-                    "Admin UpdateCoupon"
+                    "Admin"
                 ],
                 "summary": "api for admin to update a cooupon",
                 "operationId": "UpdateCoupon",
@@ -311,7 +312,7 @@ const docTemplate = `{
             },
             "post": {
                 "tags": [
-                    "Admin CreateNewCoupon"
+                    "Admin"
                 ],
                 "summary": "api for admin to create a cooupon",
                 "operationId": "CreateNewCoupon",
@@ -351,7 +352,7 @@ const docTemplate = `{
         "/admin/coupons/{id}": {
             "delete": {
                 "tags": [
-                    "Admin DeleteCoupon"
+                    "Admin"
                 ],
                 "summary": "api for admin to delete a cooupon",
                 "operationId": "DeleteCoupon",
@@ -389,7 +390,7 @@ const docTemplate = `{
         "/admin/login": {
             "post": {
                 "tags": [
-                    "Admin Login / Signup"
+                    "Admin"
                 ],
                 "summary": "api for admin to login",
                 "operationId": "AdminLogin",
@@ -429,7 +430,7 @@ const docTemplate = `{
         "/admin/products": {
             "put": {
                 "tags": [
-                    "Admin Product"
+                    "Admin"
                 ],
                 "summary": "api for admin to delete a product",
                 "operationId": "UpdateProduct",
@@ -467,7 +468,7 @@ const docTemplate = `{
             },
             "post": {
                 "tags": [
-                    "Admin Brand / Category"
+                    "Admin"
                 ],
                 "summary": "api for admin to add a parent category or child brand",
                 "operationId": "AddCategory",
@@ -501,7 +502,7 @@ const docTemplate = `{
         "/admin/products/product-item": {
             "post": {
                 "tags": [
-                    "Admin Product"
+                    "Admin"
                 ],
                 "summary": "api for admin to add product item for particular product",
                 "operationId": "AddProductItem",
@@ -548,7 +549,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Order Controlls"
+                    "Admin"
                 ],
                 "summary": "List all return request",
                 "responses": {
@@ -576,7 +577,7 @@ const docTemplate = `{
         "/admin/sales-report": {
             "get": {
                 "tags": [
-                    "Business Reports"
+                    "Admin"
                 ],
                 "summary": "api for admin to download sales report as csv format",
                 "operationId": "SalesReport",
@@ -599,7 +600,7 @@ const docTemplate = `{
         "/admin/users": {
             "get": {
                 "tags": [
-                    "User Controlls"
+                    "Admin"
                 ],
                 "summary": "api for admin to list users",
                 "operationId": "ListUsers",
@@ -642,7 +643,7 @@ const docTemplate = `{
         "/admin/users/block": {
             "patch": {
                 "tags": [
-                    "User Controlls"
+                    "Admin"
                 ],
                 "summary": "api for admin to block or unblock user",
                 "operationId": "BlockUser",
@@ -676,7 +677,7 @@ const docTemplate = `{
         "/admin/users/orders": {
             "patch": {
                 "tags": [
-                    "Order Controlls"
+                    "Admin"
                 ],
                 "summary": "api for admin to change order status of user",
                 "operationId": "ChangeOrderStatus",
@@ -723,7 +724,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Order Controlls"
+                    "Admin"
                 ],
                 "summary": "Update delivery status of user orders",
                 "parameters": [
@@ -769,7 +770,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Order Controlls"
+                    "Admin"
                 ],
                 "summary": "Approve return order",
                 "parameters": [
@@ -813,9 +814,10 @@ const docTemplate = `{
                     }
                 ],
                 "tags": [
-                    "Product brands"
+                    "Admin",
+                    "User"
                 ],
-                "summary": "api for admin to list all brands",
+                "summary": "api for admin and user to list all brands",
                 "operationId": "ListBrands-admin",
                 "responses": {
                     "200": {
@@ -842,7 +844,7 @@ const docTemplate = `{
                 ],
                 "description": "user can get cart items",
                 "tags": [
-                    "User GetCartItems"
+                    "User"
                 ],
                 "summary": "api for user to get cart items",
                 "operationId": "UserGetCartItems",
@@ -874,7 +876,7 @@ const docTemplate = `{
                 ],
                 "description": "user can update a stock in product to cart",
                 "tags": [
-                    "User Cart"
+                    "User"
                 ],
                 "summary": "api for update user cart",
                 "operationId": "UpdateCart",
@@ -906,7 +908,7 @@ const docTemplate = `{
                 ],
                 "description": "user can delete a stock in product to cart",
                 "tags": [
-                    "User Cart"
+                    "User"
                 ],
                 "summary": "api for delete product item from cart",
                 "operationId": "DeleteCartItem",
@@ -939,7 +941,7 @@ const docTemplate = `{
                     }
                 ],
                 "tags": [
-                    "User Cart"
+                    "User"
                 ],
                 "summary": "api for user to checkout cart, apply voucher and proceed for payment",
                 "operationId": "CheckoutCart",
@@ -967,7 +969,7 @@ const docTemplate = `{
                     }
                 ],
                 "tags": [
-                    "User Cart"
+                    "User"
                 ],
                 "summary": "api for create an razorpay order",
                 "operationId": "RazorpayPage",
@@ -1006,7 +1008,7 @@ const docTemplate = `{
                     }
                 ],
                 "tags": [
-                    "User Cart"
+                    "User"
                 ],
                 "summary": "api user for verify razorpay payment",
                 "operationId": "RazorpayVerify",
@@ -1043,9 +1045,10 @@ const docTemplate = `{
                     }
                 ],
                 "tags": [
-                    "User orderHistory"
+                    "User",
+                    "Admin"
                 ],
-                "summary": "api for user to get all order history made",
+                "summary": "api for admin and user to get all order history made",
                 "operationId": "orderHistory",
                 "responses": {
                     "200": {
@@ -1077,7 +1080,7 @@ const docTemplate = `{
                     }
                 ],
                 "tags": [
-                    "User Cart"
+                    "User"
                 ],
                 "summary": "api for user to place an order on cart with COD",
                 "operationId": "PlaceCODOrder",
@@ -1120,7 +1123,7 @@ const docTemplate = `{
                     }
                 ],
                 "tags": [
-                    "User Login"
+                    "User"
                 ],
                 "summary": "api for user login",
                 "operationId": "UserLogin",
@@ -1157,27 +1160,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/logout": {
-            "post": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
-                "description": "user can logout",
-                "tags": [
-                    "User Logout"
-                ],
-                "summary": "api for user to logout",
-                "operationId": "UserLogout",
-                "responses": {
-                    "200": {
-                        "description": "Log out successful"
-                    }
-                }
-            }
-        },
-        "/otp-verify": {
+        "/login/otp-verify": {
             "post": {
                 "security": [
                     {
@@ -1185,7 +1168,7 @@ const docTemplate = `{
                     }
                 ],
                 "tags": [
-                    "User OTP verification"
+                    "User"
                 ],
                 "summary": "api for user otp verification",
                 "operationId": "UserOtpVerify",
@@ -1222,6 +1205,26 @@ const docTemplate = `{
                 }
             }
         },
+        "/logout": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "user can logout",
+                "tags": [
+                    "User"
+                ],
+                "summary": "api for user to logout",
+                "operationId": "UserLogout",
+                "responses": {
+                    "200": {
+                        "description": "Log out successful"
+                    }
+                }
+            }
+        },
         "/products": {
             "get": {
                 "security": [
@@ -1230,9 +1233,10 @@ const docTemplate = `{
                     }
                 ],
                 "tags": [
-                    "User Products"
+                    "User",
+                    "Admin"
                 ],
-                "summary": "api for user to list all products",
+                "summary": "api for user and admin to list all products",
                 "operationId": "ListProducts-User",
                 "parameters": [
                     {
@@ -1272,7 +1276,7 @@ const docTemplate = `{
                     }
                 ],
                 "tags": [
-                    "User Signup"
+                    "User"
                 ],
                 "summary": "api for register user",
                 "operationId": "UserSignUp",
@@ -1306,7 +1310,7 @@ const docTemplate = `{
                 ],
                 "description": "user can get wallet history",
                 "tags": [
-                    "User GetWalletHistory"
+                    "User"
                 ],
                 "summary": "api for user to get wallet history",
                 "operationId": "GetWalletHistory",
@@ -1335,7 +1339,7 @@ const docTemplate = `{
                 ],
                 "description": "user can get wishlist",
                 "tags": [
-                    "User GetWishlist"
+                    "User"
                 ],
                 "summary": "api for user to get wishlist",
                 "operationId": "GetWishlist",
@@ -1364,7 +1368,7 @@ const docTemplate = `{
                 ],
                 "description": "user can delete product from wishlist",
                 "tags": [
-                    "User DeleteFromWishlist"
+                    "User"
                 ],
                 "summary": "api for user to delete product from wishlist",
                 "operationId": "DeleteFromWishlist",
@@ -1402,7 +1406,7 @@ const docTemplate = `{
                 ],
                 "description": "user can add product to wishlist",
                 "tags": [
-                    "User AddToWishlist"
+                    "User"
                 ],
                 "summary": "api for user to add product to wishlist",
                 "operationId": "AddToWishlist",
@@ -1435,61 +1439,6 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "domain.Address": {
-            "type": "object",
-            "required": [
-                "address_line_1",
-                "address_line_2",
-                "city",
-                "country",
-                "state",
-                "zip_code"
-            ],
-            "properties": {
-                "address_line_1": {
-                    "type": "string",
-                    "maxLength": 40,
-                    "minLength": 2
-                },
-                "address_line_2": {
-                    "type": "string",
-                    "maxLength": 40,
-                    "minLength": 2
-                },
-                "city": {
-                    "type": "string",
-                    "maxLength": 20,
-                    "minLength": 2
-                },
-                "country": {
-                    "type": "string",
-                    "maxLength": 20,
-                    "minLength": 2
-                },
-                "createdAt": {
-                    "type": "string"
-                },
-                "house": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "state": {
-                    "type": "string",
-                    "maxLength": 20,
-                    "minLength": 2
-                },
-                "updatedAt": {
-                    "type": "string"
-                },
-                "zip_code": {
-                    "type": "string",
-                    "maxLength": 10,
-                    "minLength": 2
-                }
-            }
-        },
         "domain.Admin": {
             "type": "object",
             "required": [
@@ -1550,6 +1499,38 @@ const docTemplate = `{
                 },
                 "quantity": {
                     "type": "integer"
+                }
+            }
+        },
+        "request.Address": {
+            "type": "object",
+            "properties": {
+                "address_id": {
+                    "type": "integer"
+                },
+                "address_line_1": {
+                    "type": "string"
+                },
+                "address_line_2": {
+                    "type": "string"
+                },
+                "city": {
+                    "type": "string"
+                },
+                "country": {
+                    "type": "string"
+                },
+                "house": {
+                    "type": "string"
+                },
+                "is_default": {
+                    "type": "boolean"
+                },
+                "state": {
+                    "type": "string"
+                },
+                "zip_code": {
+                    "type": "string"
                 }
             }
         },

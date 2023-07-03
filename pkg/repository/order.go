@@ -172,7 +172,7 @@ func (o *OrderDatabase) PlaceCODOrder(ctx context.Context, userId, PaymentMethod
 		OrderTotal:      checkOut.FinalPrice,
 		PaymentMethodID: PaymentMethodID,
 		PaymentStatusID: 1, // set payment status as pending ID 1 = "Pending"
-		PaymentRef:      "",
+		PaymentRef:      utils.GeneratePaymentRef(10),
 		UpdatedAt:       time.Now(),
 	}); err != nil {
 		tnx.Rollback()

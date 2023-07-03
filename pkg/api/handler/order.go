@@ -24,7 +24,7 @@ func NewOrderHandler(orderUseCase service.OrderService) *OrderHandler {
 // PlaceCODOrder godoc
 // @summary api for user to place an order on cart with COD
 // @security ApiKeyAuth
-// @tags User Cart
+// @tags User
 // @id PlaceCODOrder
 // @Param id path uint true "Payment option ID"
 // @Router /carts/place-order/cod [post]
@@ -68,7 +68,7 @@ func (o *OrderHandler) PlaceCODOrder(c *gin.Context) {
 // CheckoutCart godoc
 // @summary api for user to checkout cart, apply voucher and proceed for payment
 // @security ApiKeyAuth
-// @tags User Cart
+// @tags User
 // @id CheckoutCart
 // @Router /carts/checkout [get]
 // @Success 200 {object} response.Response{}  "Successfuly checked out"
@@ -97,9 +97,10 @@ func (o *OrderHandler) CheckOut(c *gin.Context) {
 }
 
 // GetAllOrderHistory godoc
-// @summary api for user to get all order history made
+// @summary api for admin and user to get all order history made
 // @security ApiKeyAuth
-// @tags User orderHistory
+// @tags User
+// @tags Admin
 // @id orderHistory
 // @Router /carts/orders [get]
 // @Success 200 {object} response.Response{}  "Order history successful"
@@ -151,7 +152,7 @@ func (o *OrderHandler) GetAllOrderHistory(c *gin.Context) {
 // RazorpayCheckout godoc
 // @summary api for create an razorpay order
 // @security ApiKeyAuth
-// @tags User Cart
+// @tags User
 // @id RazorpayPage
 // @Param input body   request.RazorpayReq{} true "inputs"
 // @Router /carts/checkout/razorpay [post]
@@ -195,7 +196,7 @@ func (o *OrderHandler) RazorPayCheckout(c *gin.Context) {
 // RazorpayVerify godoc
 // @summary api user for verify razorpay payment
 // @security ApiKeyAuth
-// @tags User Cart
+// @tags User
 // @id RazorpayVerify
 // @Param payment_method_id formData uint true "Payment Method ID"
 // @Router /carts/checkout/razorpay/success [post]
@@ -242,7 +243,7 @@ func (o *OrderHandler) RazorpayVerify(c *gin.Context) {
 // ReturnOrder godoc
 // @summary api user for return order
 // @security ApiKeyAuth
-// @tags User Cart
+// @tags User
 // @id ReturnOrder
 // @Param payment_method_id formData uint true "Order ID"
 func (o *OrderHandler) ReturnRequest(c *gin.Context) {
@@ -271,7 +272,7 @@ func (o *OrderHandler) ReturnRequest(c *gin.Context) {
 // CancellOrder godoc
 // @summary api user for cancel order
 // @security ApiKeyAuth
-// @tags User Order
+// @tags User
 // @id CancellOrder
 // @Param payment_method_id formData uint true "Order ID"
 func (o *OrderHandler) CancellOrder(c *gin.Context) {

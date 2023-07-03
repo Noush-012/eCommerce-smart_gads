@@ -30,7 +30,7 @@ func NewAdminHandler(adminService interfaces.AdminService, orderUseCase interfac
 // AdminSignUp godoc
 // @summary api for admin to login
 // @id AdminSignUp
-// @tags Admin Login / Signup
+// @tags Admin
 // @Param input body domain.Admin{} true "inputs"
 // @Router /admin/login [post]
 // @Success 200 {object} response.Response{} "Create admin account successful"
@@ -58,7 +58,7 @@ func (a *AdminHandler) AdminSignUp(c *gin.Context) {
 // AdminLogin godoc
 // @summary api for admin to login
 // @id AdminLogin
-// @tags Admin Login / Signup
+// @tags Admin
 // @Param input body request.LoginData{} true "Credentials"
 // @Router /admin/login [post]
 // @Success 200 {object} response.Response{} "successfully logged in"
@@ -98,7 +98,7 @@ func (a *AdminHandler) AdminLoginSubmit(c *gin.Context) {
 // AdminHome godoc
 // @summary api admin home
 // @id AdminHome
-// @tags Admin Home
+// @tags Admin
 // @Router /admin [get]
 // @Success 200 {object} response.Response{} "Welcome to Admin Home"
 func (a *AdminHandler) AdminHome(c *gin.Context) {
@@ -113,7 +113,7 @@ func (a *AdminHandler) AdminHome(c *gin.Context) {
 // @summary api for admin to logout
 // @description admin can logout
 // @security ApiKeyAuth
-// @id AdminLogout
+// @tags Admin
 // @tags Admin Logout
 // @Router /logout [post]
 // @Success 200 "Log out successful"
@@ -126,7 +126,7 @@ func (a *AdminHandler) LogoutAdmin(c *gin.Context) {
 // ListUsers godoc
 // @summary api for admin to list users
 // @id ListUsers
-// @tags User Controlls
+// @tags Admin
 // @Param page_number query int false "Page Number"
 // @Param count query int false "Count Of Order"
 // @Router /admin/users [get]
@@ -172,7 +172,7 @@ func (a *AdminHandler) ListUsers(c *gin.Context) {
 // BlockUser godoc
 // @summary api for admin to block or unblock user
 // @id BlockUser
-// @tags User Controlls
+// @tags Admin
 // @Param input body request.UserID{} true "inputs"
 // @Router /admin/users/block [patch]
 // @Success 200 {object} response.Response{} "Successfully changed user block_status"
@@ -208,7 +208,7 @@ func (a *AdminHandler) UserOrderHistory(c *gin.Context) {
 // ChangeOrderStatus godoc
 // @summary api for admin to change order status of user
 // @id ChangeOrderStatus
-// @tags Order Controlls
+// @tags Admin
 // @Param input body request.UpdateStatus{} true "inputs"
 // @Router /admin/users/orders [patch]
 // @Success 200 {object} response.Response{} "Order status updated successfully!"
@@ -236,7 +236,7 @@ func (a *AdminHandler) ChangeOrderStatus(c *gin.Context) {
 // SalesReport godoc
 // @summary api for admin to download sales report as csv format
 // @id SalesReport
-// @tags Business Reports
+// @tags Admin
 // @Router /admin/sales-report [get]
 // @Success 500 {object} response.Response{} "Something went wrong!"
 // @Failure 500 {object} response.Response{} "Something went wrong! failed to generate sales report"
@@ -291,7 +291,7 @@ func (a *AdminHandler) SalesReport(c *gin.Context) {
 // GetAllReturnRequest godoc
 // @Summary List all return request
 // @Description List all return request
-// @tags Order Controlls
+// @tags Admin
 // @Accept  json
 // @Produce  json
 // @Router /admin/return-request [get]
@@ -328,7 +328,7 @@ func (a *AdminHandler) GetAllReturnOrder(c *gin.Context) {
 // UpdateDeliveryStatus godoc
 // @Summary Update delivery status of user orders
 // @Description Update delivery status of user orders
-// @tags Order Controlls
+// @tags Admin
 // @Accept  json
 // @Produce  json
 // @Param input body request.UpdateStatus{} true "inputs"
@@ -357,7 +357,7 @@ func (a *AdminHandler) UpdateDeliveryStatus(c *gin.Context) {
 // ApproveReturnOrder godoc
 // @Summary Approve return order
 // @Description Approve return order
-// @tags Order Controlls
+// @tags Admin
 // @Accept  json
 // @Produce  json
 // @Param input body request.ApproveReturnRequest{} true "inputs"

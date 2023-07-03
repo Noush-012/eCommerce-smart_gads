@@ -2,10 +2,12 @@ package utils
 
 import (
 	"crypto/hmac"
+	"crypto/rand"
 	"crypto/sha256"
 	"crypto/subtle"
 	"encoding/hex"
 	"fmt"
+	"math/big"
 	"strconv"
 
 	"github.com/Noush-012/Project-eCommerce-smart_gads/pkg/config"
@@ -13,6 +15,8 @@ import (
 	"github.com/gin-gonic/gin"
 	razorpay "github.com/razorpay/razorpay-go"
 )
+
+const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 
 func StringToUint(str string) (uint, error) {
 	val, err := strconv.Atoi(str)
@@ -91,4 +95,22 @@ func VerifyRazorPayPayment(razorPayBody request.RazorpayVerifyReq) error {
 		return fmt.Errorf("failed to verify payment \n razor pay payment with payment_id %v", razorPayBody.PaymentID)
 	}
 	return nil
+}
+
+func GeneratePaymentRef(length int) string {
+	// Create a byte slice with the desired length
+	randomBytes := make([]byte, length)
+
+	// Generate random indices within the charset
+	for i := range randomBytes {
+		// Generate a random number between 0 and len(charset)
+		randomIndex, _ := rand.Int(rand.Reader, big.NewInt(int64(len(charset))))
+
+		// Use the random number as an index to select a character from the charset
+		randomBytes[i] = charset[randomIndex.Int64()]
+	}
+
+	// Convert the byte slice to a string
+	randomString := string(randomBytes)
+	return randomString
 }

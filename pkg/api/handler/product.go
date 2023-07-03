@@ -25,9 +25,10 @@ func NewProductHandler(prodUseCase service.ProductService) *ProductHandler {
 }
 
 // ListProducts-User godoc
-// @summary api for user to list all products
+// @summary api for user and admin to list all products
 // @security ApiKeyAuth
-// @tags User Products
+// @tags User
+// @tags Admin
 // @id ListProducts-User
 // @Param page_number query int false "Page Number"
 // @Param count query int false "Count Of Order"
@@ -70,7 +71,7 @@ func (p *ProductHandler) ListProducts(c *gin.Context) {
 // AddProduct godoc
 // @summary api for admin to update a product
 // @id AddProducts
-// @tags Admin Product
+// @tags Admin
 // @Param input body  request.ProductReq{} true "inputs"
 // @Router /admin/products [post]
 // @Success 200 {object} response.Response{} "Product added successful"
@@ -98,7 +99,7 @@ func (p *ProductHandler) AddProduct(c *gin.Context) {
 // AddCategory Admin godoc
 // @summary api for admin to add a parent category or child brand
 // @id AddCategory
-// @tags Admin Brand / Category
+// @tags Admin
 // @Param input body request.CategoryReq{} true "inputs"
 // @Router /admin/products [post]
 // @Success 200 {object} response.Response{} "Successfuly added a new brand/Category in database"
@@ -128,9 +129,10 @@ func (p *ProductHandler) AddCategory(c *gin.Context) {
 }
 
 // ListBrands-Admin godoc
-// @summary api for admin to list all brands
+// @summary api for admin and user to list all brands
 // @security ApiKeyAuth
-// @tags Product brands
+// @tags Admin
+// @tags User
 // @id ListBrands-admin
 // @Router /brands [get]
 // @Success 200 {object} response.Response{} ""Successfuly listed all brands""
@@ -151,7 +153,7 @@ func (p *ProductHandler) GetAllBrands(c *gin.Context) {
 // UpdateProduct godoc
 // @summary api for admin to update a product
 // @id UpdateProduct
-// @tags Admin Product
+// @tags Admin
 // @Param input body request.UpdateProductReq{} true "inputs"
 // @Router /admin/products [put]
 // @Success 200 {object} response.Response{} "Product updated successful"
@@ -185,7 +187,7 @@ func (p *ProductHandler) UpdateProduct(c *gin.Context) {
 // UpdateProduct godoc
 // @summary api for admin to delete a product
 // @id UpdateProduct
-// @tags Admin Product
+// @tags Admin
 // @Param input body request.DeleteProductReq{} true "inputs"
 // @Router /admin/products [put]
 // @Success 200 {object} response.Response{} "Successfuly deleted product"
@@ -213,7 +215,7 @@ func (p *ProductHandler) DeleteProduct(c *gin.Context) {
 // AddProductItem godoc
 // @summary api for admin to add product item for particular product
 // @id AddProductItem
-// @tags Admin Product
+// @tags Admin
 // @Param input body request.ProductItemReq{} true "inputs"
 // @Router /admin/products/product-item [post]
 // @Success 200 {object} response.Response{} "Product item added successful"
@@ -246,7 +248,8 @@ GetProductItem godoc
 @Description This handler receives a GET request with a product ID as a parameter
 and returns the corresponding product item. If the product ID is invalid or if
 there are no product items for the given ID, it returns an error response.
-@Tags Product
+@Tags Admin
+@Tags User
 @Param product_id path uint true "Product ID"
 @Success 200 {object} response.SuccessResponse "Successful response with product items"
 @Failure 400 {object} response.ErrorResponse "Invalid input or error fetching product item"
