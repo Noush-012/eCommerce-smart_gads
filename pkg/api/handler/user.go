@@ -22,7 +22,7 @@ func NewUserHandler(userUsecase interfaces.UserService) handler.UserHandler {
 }
 
 // Home godoc
-// @summary api for user home page
+// @summary testing
 // @description after user login user will seen this page with user informations
 // @security ApiKeyAuth
 // @id User Home

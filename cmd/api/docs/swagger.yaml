@@ -275,6 +275,8 @@ definitions:
         type: number
       valid_till:
         type: string
+    required:
+    - id
     type: object
   request.UpdateProductReq:
     properties:
@@ -337,7 +339,7 @@ paths:
           description: Welcome to home !
       security:
       - ApiKeyAuth: []
-      summary: api for user home page
+      summary: testing
       tags:
       - User
   /account:
@@ -1057,8 +1059,20 @@ paths:
       - ApiKeyAuth: []
       summary: api for user login
       tags:
+      - User Login
+  /logout:
+    post:
+      description: user can logout
+      operationId: UserLogout
+      responses:
+        "200":
+          description: Log out successful
+      security:
+      - ApiKeyAuth: []
+      summary: api for user to logout
+      tags:
       - User
-  /login/otp-verify:
+  /otp-verify:
     post:
       operationId: UserOtpVerify
       parameters:
@@ -1085,19 +1099,7 @@ paths:
       - ApiKeyAuth: []
       summary: api for user otp verification
       tags:
-      - User
-  /logout:
-    post:
-      description: user can logout
-      operationId: UserLogout
-      responses:
-        "200":
-          description: Log out successful
-      security:
-      - ApiKeyAuth: []
-      summary: api for user to logout
-      tags:
-      - User
+      - User OTP verification
   /products:
     get:
       operationId: ListProducts-User
@@ -1138,13 +1140,17 @@ paths:
       responses:
         "200":
           description: Account created successfuly
+          schema:
+            $ref: '#/definitions/response.Response'
         "400":
-          description: invalid entry
+          description: user already exist
+          schema:
+            $ref: '#/definitions/response.Response'
       security:
       - ApiKeyAuth: []
       summary: api for register user
       tags:
-      - User
+      - User Signup
   /wallet/history:
     get:
       description: user can get wallet history

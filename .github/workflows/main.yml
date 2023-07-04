@@ -40,7 +40,7 @@ jobs:
                   echo "Connected to AWS EC2 instance"
                   cd eCommerce-smart_gads
                   git pull
-                  go build -o ./cmd/api ./build/bin
+                  go build -o ./build/bin ./cmd/api 
                   sudo systemctl restart myapp.service
              
 

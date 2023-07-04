@@ -27,7 +27,7 @@ const docTemplate = `{
                 "tags": [
                     "User"
                 ],
-                "summary": "api for user home page",
+                "summary": "testing",
                 "operationId": "User Home",
                 "responses": {
                     "200": {
@@ -1123,7 +1123,7 @@ const docTemplate = `{
                     }
                 ],
                 "tags": [
-                    "User"
+                    "User Login"
                 ],
                 "summary": "api for user login",
                 "operationId": "UserLogin",
@@ -1160,7 +1160,27 @@ const docTemplate = `{
                 }
             }
         },
-        "/login/otp-verify": {
+        "/logout": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "user can logout",
+                "tags": [
+                    "User"
+                ],
+                "summary": "api for user to logout",
+                "operationId": "UserLogout",
+                "responses": {
+                    "200": {
+                        "description": "Log out successful"
+                    }
+                }
+            }
+        },
+        "/otp-verify": {
             "post": {
                 "security": [
                     {
@@ -1168,7 +1188,7 @@ const docTemplate = `{
                     }
                 ],
                 "tags": [
-                    "User"
+                    "User OTP verification"
                 ],
                 "summary": "api for user otp verification",
                 "operationId": "UserOtpVerify",
@@ -1201,26 +1221,6 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/response.Response"
                         }
-                    }
-                }
-            }
-        },
-        "/logout": {
-            "post": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
-                "description": "user can logout",
-                "tags": [
-                    "User"
-                ],
-                "summary": "api for user to logout",
-                "operationId": "UserLogout",
-                "responses": {
-                    "200": {
-                        "description": "Log out successful"
                     }
                 }
             }
@@ -1276,7 +1276,7 @@ const docTemplate = `{
                     }
                 ],
                 "tags": [
-                    "User"
+                    "User Signup"
                 ],
                 "summary": "api for register user",
                 "operationId": "UserSignUp",
@@ -1293,10 +1293,16 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "Account created successfuly"
+                        "description": "Account created successfuly",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
                     },
                     "400": {
-                        "description": "invalid entry"
+                        "description": "user already exist",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
                     }
                 }
             }
@@ -1822,6 +1828,9 @@ const docTemplate = `{
         },
         "request.UpdateCoupon": {
             "type": "object",
+            "required": [
+                "id"
+            ],
             "properties": {
                 "code": {
                     "type": "string"
