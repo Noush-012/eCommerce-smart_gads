@@ -30,18 +30,18 @@ jobs:
             - name: Build
               run: make build   
 
-            - name: Connect to EC2 instance
+            - name: Deploy to AWS EC2
               uses: appleboy/ssh-action@master
               with:
-                 host: ${{secrets.EC2_PUBLIC_IP}}
-                 username: ubuntu
-                 key: ${{secrets.EC2_SSH_KEY}}
-                 script: |
+                host: ${{secrets.EC2_PUBLIC_IP}}
+                username: ubuntu
+                key:  ${{secrets.EC2_SSH_KEY}}
+                script: |
                   echo "Connected to AWS EC2 instance"
                   cd eCommerce-smart_gads
                   git pull
-                  make build
-                  cd ~
+                  go build -o ./cmd/api ./build/bin
                   sudo systemctl restart myapp.service
+             
 
           
