@@ -27,7 +27,7 @@ const docTemplate = `{
                 "tags": [
                     "User"
                 ],
-                "summary": "testing",
+                "summary": "api for user home page",
                 "operationId": "User Home",
                 "responses": {
                     "200": {

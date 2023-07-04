@@ -339,7 +339,7 @@ paths:
           description: Welcome to home !
       security:
       - ApiKeyAuth: []
-      summary: testing
+      summary: api for user home page
       tags:
       - User
   /account:
