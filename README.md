@@ -20,7 +20,6 @@ Technologies
 > Go Gin: A lightweight and fast web framework for Go.
 > PostgreSQL: A powerful and open-source relational database.
 > RESTful API: A standard architecture for building web APIs.
-> Stripe: A secure and easy-to-use payment processing service.
 > Swagger: A tool for designing, building, and documenting APIs.
 > GitHub Actions: A tool for automating workflows and continuous integration/deployment.
 
