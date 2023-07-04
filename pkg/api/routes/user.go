@@ -25,6 +25,12 @@ func UserRoutes(api *gin.RouterGroup, userHandler interfaces.UserHandler, authHa
 		login.POST("/otp-verify", authHandler.UserOTPVerify)
 	}
 
+	api.GET("/heath-check", func(ctx *gin.Context) {
+		ctx.JSON(200, gin.H{
+			"message": "Health - OK",
+		})
+	})
+
 	// Middleware routes
 	api.Use(middleware.AuthenticateUser)
 	{
