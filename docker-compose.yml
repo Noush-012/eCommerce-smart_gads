@@ -1,0 +1,31 @@
+version: '3'
+
+services:
+  postgres:
+    image: postgres
+    restart: always
+    volumes:
+      - ./data:/var/lib/postgresql/data
+    ports:
+      - '5432:5432'
+    environment:
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_NAME}
+    networks:
+      - testNetwork
+
+  api:
+    build: . 
+    image: Noush-012/eCommerce-smart_gads
+    ports: 
+      - 3000:3000
+    restart: on-failure
+    depends_on:
+      - postgres
+    networks:
+      -  testNetwork
+
+networks:
+  testNetwork:
+    driver: bridge
