@@ -14,3 +14,6 @@ bin/
 *.dll
 *.so
 *.dylib
+
+# k8s secret
+secret/*
