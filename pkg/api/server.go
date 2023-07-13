@@ -23,8 +23,8 @@ func NewServerHTTP(adminHandler *handler.AdminHandler, userHandler interfaces.Us
 
 	// to load views
 	// Serve static files
-	engine.Static("/assets", "./views/static/assets")
-	engine.LoadHTMLGlob("views/static/*.html")
+	// engine.Static("/assets", "./views/static/assets")
+	engine.LoadHTMLGlob("views/*.html")
 
 	// Add the Gin Logger middleware.
 	engine.Use(gin.Logger())
