@@ -16,4 +16,4 @@ bin/
 *.dylib
 
 # k8s secret
-secret/*
+secret.yaml
