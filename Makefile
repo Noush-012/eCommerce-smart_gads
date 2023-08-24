@@ -71,6 +71,7 @@ mockgen: ## Generate mock repository and usecase functions
 	mockgen -source=pkg/useCase/interfaces/authInterface.go -destination=pkg/mock/useCaseMock/authUseCaseMock.go -package=mock
 	mockgen -source=pkg/repository/interfaces/userRepo.go -destination=pkg/mock/repoMock/userRepMock.go -package=mock
 	mockgen -source=pkg/useCase/interfaces/userInterface.go -destination=pkg/mock/useCaseMock/userUseCaseMock.go -package=mock
+	mockgen -source=github.com/gin-gonic/gin/context.go -destination=pkg/mock/contextMock/helperMock.go -package=mock
 
 docker-up: ## To up the docker compose file
 	sudo docker-compose up 

@@ -5,6 +5,7 @@ import (
 	"crypto/rand"
 	"crypto/sha256"
 	"crypto/subtle"
+	"encoding/base64"
 	"encoding/hex"
 	"fmt"
 	"math/big"
@@ -113,4 +114,11 @@ func GeneratePaymentRef(length int) string {
 	// Convert the byte slice to a string
 	randomString := string(randomBytes)
 	return randomString
+}
+
+// Function to generate a random string of a given length
+func GenerateRandomString(length int) string {
+	randomBytes := make([]byte, length)
+	rand.Read(randomBytes)
+	return base64.URLEncoding.EncodeToString(randomBytes)[:length]
 }

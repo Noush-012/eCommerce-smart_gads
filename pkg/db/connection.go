@@ -27,7 +27,7 @@ func ConnToDB(cfg config.Config) (*gorm.DB, error) {
 		return nil, errors.New("failed to connect database")
 	}
 	fmt.Println("Successfully Connected to database")
-
+	// defer DB.Close()
 	// Migrate models
 	err := DB.AutoMigrate(
 		// Users

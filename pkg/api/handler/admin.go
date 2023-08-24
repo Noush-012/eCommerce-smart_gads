@@ -4,7 +4,10 @@ import (
 	"encoding/csv"
 	"errors"
 	"fmt"
+	"math/rand"
 	"net/http"
+	"strings"
+	"time"
 
 	"github.com/Noush-012/Project-eCommerce-smart_gads/pkg/api/auth"
 	"github.com/Noush-012/Project-eCommerce-smart_gads/pkg/domain"
@@ -32,7 +35,7 @@ func NewAdminHandler(adminService interfaces.AdminService, orderUseCase interfac
 // @id AdminSignUp
 // @tags Admin
 // @Param input body domain.Admin{} true "inputs"
-// @Router /admin/login [post]
+// @Router /admin/signup [post]
 // @Success 200 {object} response.Response{} "Create admin account successful"
 // @Failure 400 {object} response.Response{} "Missing or invalid entry"
 // @Failure 500 {object} response.Response{} "Failed to create admin account"
@@ -249,11 +252,26 @@ func (a *AdminHandler) SalesReport(c *gin.Context) {
 		c.JSON(400, response)
 		return
 	}
-	salesReport, err := a.adminService.SalesReport(c, body)
-	if err != nil {
-		response := response.ErrorResponse(500, "Something went wrong!", err.Error(), nil)
-		c.JSON(500, response)
-		return
+	// salesReport, err := a.adminService.SalesReport(c, body)
+	// if err != nil {
+	// 	response := response.ErrorResponse(500, "Something went wrong!", err.Error(), nil)
+	// 	c.JSON(500, response)
+	// 	return
+	// }
+	var salesReport []domain.SalesReport
+
+	for i := 100; i < 105; i++ {
+		salesReport = append(salesReport, domain.SalesReport{
+			OrderID:     i,
+			UserID:      987 + rand.Intn(300), // random user
+			TotalAmount: float64((i + rand.Intn(10)) * 10),
+			// random coupon string
+			CouponCode:     strings.ToLower("coupon") + utils.GenerateRandomString(5),
+			PaymentMethod:  fmt.Sprintf("Payment Method %d ", i),
+			OrderStatus:    "Delivered",
+			DeliveryStatus: "",
+			OrderDate:      time.Now(),
+		})
 	}
 	// set header for downloading browser
 	c.Header("Content-Type", "text/csv")

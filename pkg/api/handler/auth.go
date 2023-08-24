@@ -45,7 +45,7 @@ func (u *AuthHandler) UserSignup(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, response)
 		return
 	}
-	//
+
 	var user domain.Users
 	// var user domain.Users
 	if err := copier.Copy(&user, body); err != nil {
