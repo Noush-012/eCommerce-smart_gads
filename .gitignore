@@ -17,3 +17,9 @@ bin/
 
 # k8s secret
 secret.yaml
+
+### VisualStudioCode ###
+.vscode/*
+!.vscode/tasks.json
+!.vscode/extensions.json
+!.vscode/*.code-snippets
