@@ -8,11 +8,6 @@ import (
 )
 
 type Config struct {
-	// DBHost     string `mapstructure:"DB_HOST"`
-	// DBName     string `mapstructure:"DB_NAME"`
-	// DBUser     string `mapstructure:"DB_USER"`
-	// DBPassword string `mapstructure:"DB_PASSWORD"`
-	// DBPort     string `mapstructure:"DB_PORT"`
 	DATABASE   string `mapstructure:"DATABASE"`
 	JWT        string `mapstructure:"SECRET_KEY"`
 	AUTHTOKEN  string `mapstructure:"TWILIO_AUTH_TOKEN"`
