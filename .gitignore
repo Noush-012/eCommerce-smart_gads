@@ -23,3 +23,25 @@ secret.yaml
 !.vscode/tasks.json
 !.vscode/extensions.json
 !.vscode/*.code-snippets
+
+### Additional Ignores ###
+.verascan-cache
+.idea
+.tmp
+bin
+*.done
+.DS_Store
+**/out
+*.pem
+out
+**/VERSION
+veracode-cli-*.zip
+/cmd/veracode/veracode
+**/metadata.json
+**/vulnerability.db
+**/fanal.db
+coverage.txt
+veracode-cli-code-quality-report.json
+*iml
+dist/
+*.env
